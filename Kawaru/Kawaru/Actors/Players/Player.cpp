@@ -45,6 +45,9 @@ namespace
 	// アニメーションのブレンド速度
 	constexpr float ANIM_BLEND_SPEED = 0.1f;
 
+	// アニメーションアタッチ番号の、アタッチなしのときの値
+	constexpr int ANIM_ATTACH_NUM_INVALID = -1;
+
 	// 影の大きさ
 	constexpr float SHADOW_SIZE = 200.0f;
 	
@@ -198,7 +201,7 @@ void Player::Update(const Input& input)
 		jumpPower_ -= GRAVITY;
 
 		// もし落下していて且つ再生されているアニメーションが上昇中用のものだった場合は
-		if (jumpPower_ < 0.0f && MV1GetAttachAnim(modelHandle_, playAnim1_) == 2)
+		if (jumpPower_ < 0.0f && CheckNowAnim(animAttachNum1_, PLAYER_ANIM_NAME::JUMP))
 		{
 			// 落下中ようのアニメーションを再生する
 			ChangeAnim(PLAYER_ANIM_NAME::FALL);
@@ -631,22 +634,21 @@ void Player::UpdateAngle()
 void Player::ChangeAnim(PLAYER_ANIM_NAME playAnim)
 {
 	// 再生中のモーション２が有効だったらデタッチする
-	if (playAnim2_ != -1)
+	if (animAttachNum2_ != ANIM_ATTACH_NUM_INVALID)
 	{
-		MV1DetachAnim(modelHandle_, playAnim2_);
-		playAnim2_ = -1;
+		DetachAnim(animAttachNum2_);
 	}
 
 	// 今まで再生中のモーション１だったものの情報を２に移動する
-	playAnim2_ = playAnim1_;
+	animAttachNum2_ = animAttachNum1_;
 	animPlayCount2_ = animPlayCount1_;
 
 	// 新たに指定のモーションをモデルにアタッチして、アタッチ番号を保存する
-	playAnim1_ = MV1AttachAnim(modelHandle_, static_cast<int>(playAnim));
+	animAttachNum1_ = AttachAnim(playAnim);
 	animPlayCount1_ = 0.0f;
 
 	// ブレンド率は再生中のモーション２が有効ではない場合は１．０ｆ( 再生中のモーション１が１００％の状態 )にする
-	animBlendRate_ = playAnim2_ == -1 ? 1.0f : 0.0f;
+	animBlendRate_ = (animAttachNum2_ == ANIM_ATTACH_NUM_INVALID) ? 1.0f : 0.0f;
 }
 
 void Player::UpdateAnim()
@@ -656,10 +658,10 @@ void Player::UpdateAnim()
 	UpdateAnimBlendRate();
 
 	// 再生しているアニメーション１の処理
-	if (playAnim1_ != -1)
+	if (animAttachNum1_ != ANIM_ATTACH_NUM_INVALID)
 	{
 		// アニメーションの総時間を取得
-		totalTime = MV1GetAttachAnimTotalTime(modelHandle_, playAnim1_);
+		totalTime = GetAnimTotalTime(animAttachNum1_);
 
 		// 再生時間を進める
 		animPlayCount1_ += ANIM_PLAY_SPEED;
@@ -671,17 +673,17 @@ void Player::UpdateAnim()
 		}
 
 		// 変更した再生時間をモデルに反映させる
-		MV1SetAttachAnimTime(modelHandle_, playAnim1_, animPlayCount1_);
+		SetAnimTime(animAttachNum1_, animPlayCount1_);
 
 		// アニメーション１のモデルに対する反映率をセット
-		MV1SetAttachAnimBlendRate(modelHandle_, playAnim1_, animBlendRate_);
+		SetAnimBlendRate(animAttachNum1_, animBlendRate_);
 	}
 
 	// 再生しているアニメーション２の処理
-	if (playAnim2_ != -1)
+	if (animAttachNum2_ != ANIM_ATTACH_NUM_INVALID)
 	{
 		// アニメーションの総時間を取得
-		totalTime = MV1GetAttachAnimTotalTime(modelHandle_, playAnim2_);
+		totalTime = GetAnimTotalTime(animAttachNum2_);
 
 		// 再生時間を進める
 		animPlayCount2_ += ANIM_PLAY_SPEED;
@@ -693,10 +695,10 @@ void Player::UpdateAnim()
 		}
 
 		// 変更した再生時間をモデルに反映させる
-		MV1SetAttachAnimTime(modelHandle_, playAnim2_, animPlayCount2_);
+		SetAnimTime(animAttachNum2_, animPlayCount2_);
 
 		// アニメーション２のモデルに対する反映率をセット
-		MV1SetAttachAnimBlendRate(modelHandle_, playAnim2_, 1.0f - animBlendRate_);
+		SetAnimBlendRate(animAttachNum2_, 1.0f - animBlendRate_);
 	}
 }
 
@@ -708,6 +710,36 @@ void Player::UpdateAnimBlendRate()
 	}
 
 	animBlendRate_ = min(animBlendRate_ + ANIM_BLEND_SPEED, 1.0f);
+}
+
+bool Player::CheckNowAnim(int animAttachNum, PLAYER_ANIM_NAME target) const
+{
+	return MV1GetAttachAnim(modelHandle_, animAttachNum) == static_cast<int>(target);
+}
+
+int Player::AttachAnim(PLAYER_ANIM_NAME animName)
+{
+	return MV1AttachAnim(modelHandle_, static_cast<int>(animName));
+}
+
+void Player::DetachAnim(int animAttachNum)
+{
+	MV1DetachAnim(modelHandle_, animAttachNum);
+}
+
+float Player::GetAnimTotalTime(int animattachNum)
+{
+	return MV1GetAttachAnimTotalTime(modelHandle_, animattachNum);
+}
+
+void Player::SetAnimTime(int animAttachNum, int count)
+{
+	MV1SetAttachAnimTime(modelHandle_, animAttachNum, count);
+}
+
+void Player::SetAnimBlendRate(int animAttachNum, float rate)
+{
+	MV1SetAttachAnimBlendRate(modelHandle_, animAttachNum, rate);
 }
 
 void Player::DrawShadow()

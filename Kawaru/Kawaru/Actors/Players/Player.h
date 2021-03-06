@@ -42,7 +42,7 @@ private:
     /// <summary>
     /// アニメーションの変更
     /// </summary>
-    /// <param name="playAnim">アニメーションの名前</param>
+    /// <param name="playAnim">アニメーション名</param>
     void ChangeAnim(PLAYER_ANIM_NAME playAnim);
 
     /// <summary>
@@ -54,6 +54,38 @@ private:
     /// アニメーションのブレンド状況を更新
     /// </summary>
     void UpdateAnimBlendRate();
+
+    /// <summary>
+    /// 再生中のアニメーションと一致するか
+    /// </summary>
+    /// <param name="animAttachNum">アニメーションアタッチ番号</param>
+    /// <param name="target">調べたいアニメーション名</param>
+    /// <returns>true : 一致した</returns>
+    bool CheckNowAnim(int animAttachNum, PLAYER_ANIM_NAME target)const;
+
+    /// <summary>
+    /// アニメーションのアタッチ
+    /// </summary>
+    /// <param name="animName">アタッチするアニメーション名</param>
+    /// <returns>アタッチ番号</returns>
+    int AttachAnim(PLAYER_ANIM_NAME animName);
+
+    /// <summary>
+    /// アニメーションのデタッチ
+    /// </summary>
+    /// <param name="animAttachNum">アニメーションアタッチ番号</param>
+    void DetachAnim(int animAttachNum);
+
+    /// <summary>
+    /// 指定アニメーションの総再生時間を取得
+    /// </summary>
+    /// <param name="animattachNum">アニメーションアタッチ番号</param>
+    /// <returns>総再生時間</returns>
+    float GetAnimTotalTime(int animattachNum);
+
+    void SetAnimTime(int animAttachNum, int count);
+
+    void SetAnimBlendRate(int animAttachNum, float rate);
 
     void DrawShadow();
 
@@ -67,11 +99,11 @@ private:
 
     int state_ = 0;
 
-    int playAnim1_;				// 再生しているアニメーション１のアタッチ番号( -1:何もアニメーションがアタッチされていない )
+    int animAttachNum1_ = -1;	// 再生しているアニメーション１のアタッチ番号( -1:何もアニメーションがアタッチされていない )
     float animPlayCount1_;			// 再生しているアニメーション１の再生時間
-    int playAnim2_;				// 再生しているアニメーション２のアタッチ番号( -1:何もアニメーションがアタッチされていない )
+    int animAttachNum2_ = -1;	// 再生しているアニメーション２のアタッチ番号( -1:何もアニメーションがアタッチされていない )
     float animPlayCount2_;			// 再生しているアニメーション２の再生時間
-    float animBlendRate_;				// 再生しているアニメーション１と２のブレンド率
+    float animBlendRate_;			// 再生しているアニメーション１と２のブレンド率
 
     int shadowHandle_;
 };
