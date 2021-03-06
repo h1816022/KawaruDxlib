@@ -13,10 +13,126 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{12167144-50e8-41f6-bebb-0fa4528c9997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{954bf605-be5f-433c-bf31-78c58300c436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes">
+      <UniqueIdentifier>{5383c332-2605-4f9d-8938-deb771c6a4f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{b2359b44-d2fd-4a27-a607-19870db5d7a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tools">
+      <UniqueIdentifier>{45eeee93-44e2-45b0-992d-8a1a45b7d493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{11565512-6e3d-4a88-88f2-41b81f359e75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{ab05355b-c18b-4b0e-8d40-27b9c28a87ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Actors">
+      <UniqueIdentifier>{707ae9d3-18fb-43da-b098-b859340bb719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Actors\Players">
+      <UniqueIdentifier>{e82ca4b3-e1d5-418d-be8b-3bb60df6094a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Actors">
+      <UniqueIdentifier>{f92b8fc1-1a12-43ca-bcb6-311b1304dfd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Actors\Players">
+      <UniqueIdentifier>{a3cf096e-e31b-4263-82eb-cf48ac63c3c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\SceneController.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\Scene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\TitleScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\GameplayingScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Systems\Input.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Actor.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Players\Player.cpp">
+      <Filter>Source Files\Game\Actors\Players</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Camera.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Plane.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Stage.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Cube.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\Scene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\SceneController.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\TitleScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\GameplayingScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\Input.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\Arithmetic.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Actor.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Players\Player.h">
+      <Filter>Header Files\Game\Actors\Players</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Camera.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Plane.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Stage.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Cube.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
