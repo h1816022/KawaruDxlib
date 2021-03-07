@@ -18,6 +18,12 @@ public:
     void SetTargetActor(std::shared_ptr<Actor> target);
 
 private:
+    void UpdateAngle(const Input& input);
+
+    void UpdatePos();
+
+    void ClampAngle();
+
     VECTOR targetPos_;
 
     // êÖïΩäpìx

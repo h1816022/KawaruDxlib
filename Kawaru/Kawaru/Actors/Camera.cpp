@@ -33,131 +33,14 @@ Camera::~Camera()
 
 void Camera::Update(const Input& input)
 {
-	// パッドの３ボタンか、シフトキーが押されている場合のみ角度変更操作を行う
 	if (input.IsPressed("Camera"))
 	{
-		// 「←」ボタンが押されていたら水平角度をマイナスする
-		if (input.IsPressed("Left"))
-		{
-			angleH_ -= ROT_SPEED;
-
-			// －１８０度以下になったら角度値が大きくなりすぎないように３６０度を足す
-			if (angleH_ < -DX_PI_F)
-			{
-				angleH_ += DX_TWO_PI_F;
-			}
-		}
-
-		// 「→」ボタンが押されていたら水平角度をプラスする
-		if (input.IsPressed("Right"))
-		{
-			angleH_ += ROT_SPEED;
-
-			// １８０度以上になったら角度値が大きくなりすぎないように３６０度を引く
-			if (angleH_ > DX_PI_F)
-			{
-				angleH_ -= DX_TWO_PI_F;
-			}
-		}
-
-		// 「↑」ボタンが押されていたら垂直角度をマイナスする
-		if (input.IsPressed("Up"))
-		{
-			angleV_ -= ROT_SPEED;
-
-			// ある一定角度以下にはならないようにする
-			if (angleV_ < -DX_PI_F / 2.0f + 0.6f)
-			{
-				angleV_ = -DX_PI_F / 2.0f + 0.6f;
-			}
-		}
-
-		// 「↓」ボタンが押されていたら垂直角度をプラスする
-		if (input.IsPressed("Down"))
-		{
-			angleV_ += ROT_SPEED;
-
-			// ある一定角度以上にはならないようにする
-			if (angleV_ > DX_PI_F / 2.0f - 0.6f)
-			{
-				angleV_ = DX_PI_F / 2.0f - 0.6f;
-			}
-		}
+		UpdateAngle(input);
 	}
 
-	// カメラの注視点はプレイヤー座標から規定値分高い座標
 	targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, TARGET_HEIGHT_OFFSET, 0.0f));
 
-	// カメラの座標を決定する
-	{
-		MATRIX RotZ, RotY;
-		float Camera_Player_Length;
-		MV1_COLL_RESULT_POLY_DIM HRes;
-		int HitNum;
-
-		// 水平方向の回転はＹ軸回転
-		RotY = MGetRotY(angleH_);
-
-		// 垂直方向の回転はＺ軸回転 )
-		RotZ = MGetRotZ(angleV_);
-
-		// カメラからプレイヤーまでの初期距離をセット
-		Camera_Player_Length = CAMERA_ARM_LENGTH;
-
-		// カメラの座標を算出
-		// Ｘ軸にカメラとプレイヤーとの距離分だけ伸びたベクトルを
-		// 垂直方向回転( Ｚ軸回転 )させたあと水平方向回転( Ｙ軸回転 )して更に
-		// 注視点の座標を足したものがカメラの座標
-		pos_ = VAdd(VTransform(VTransform(VGet(-Camera_Player_Length, 0.0f, 0.0f), RotZ), RotY), targetPos_);
-
-		// 注視点からカメラの座標までの間にステージのポリゴンがあるか調べる
-		HRes = stage_.CollCheckCapsule(targetPos_, pos_, COLLISION_SIZE);
-		HitNum = HRes.HitNum;
-		MV1CollResultPolyDimTerminate(HRes);
-		if (HitNum != 0)
-		{
-			float NotHitLength;
-			float HitLength;
-			float TestLength;
-			VECTOR TestPosition;
-
-			// 当たらない位置までプレイヤーに近づく
-
-			// ポリゴンに当たらない距離をセット
-			NotHitLength = 0.0f;
-
-			// ポリゴンに当たる距離をセット
-			HitLength = Camera_Player_Length;
-			do
-			{
-				// 当たるかどうかテストする距離をセット( 当たらない距離と当たる距離の中間 )
-				TestLength = NotHitLength + (HitLength - NotHitLength) / 2.0f;
-
-				// テスト用のカメラ座標を算出
-				TestPosition = VAdd(VTransform(VTransform(VGet(-TestLength, 0.0f, 0.0f), RotZ), RotY), targetPos_);
-
-				// 新しい座標で壁に当たるかテスト
-				HRes = stage_.CollCheckCapsule(targetPos_, TestPosition, COLLISION_SIZE);
-				HitNum = HRes.HitNum;
-				MV1CollResultPolyDimTerminate(HRes);
-				if (HitNum != 0)
-				{
-					// 当たったら当たる距離を TestLength に変更する
-					HitLength = TestLength;
-				}
-				else
-				{
-					// 当たらなかったら当たらない距離を TestLength に変更する
-					NotHitLength = TestLength;
-				}
-
-				// HitLength と NoHitLength が十分に近づいていなかったらループ
-			} while (HitLength - NotHitLength > 0.1f);
-
-			// カメラの座標をセット
-			pos_ = TestPosition;
-		}
-	}
+	UpdatePos();
 
 	// カメラの情報をライブラリのカメラに反映させる
 	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
@@ -173,4 +56,106 @@ const VECTOR& Camera::GetTargetPos() const
 void Camera::SetTargetActor(std::shared_ptr<Actor> target)
 {
 	targetActor_ = target;
+}
+
+void Camera::UpdateAngle(const Input& input)
+{
+	if (input.IsPressed("Left"))
+	{
+		angleH_ -= ROT_SPEED;
+	}
+
+	if (input.IsPressed("Right"))
+	{
+		angleH_ += ROT_SPEED;
+	}
+
+	if (input.IsPressed("Up"))
+	{
+		angleV_ -= ROT_SPEED;
+	}
+
+	if (input.IsPressed("Down"))
+	{
+		angleV_ += ROT_SPEED;
+	}
+
+	ClampAngle();
+}
+
+void Camera::UpdatePos()
+{
+	MATRIX rotZ;
+	MATRIX rotY;
+	float armLength;
+	MV1_COLL_RESULT_POLY_DIM hitResult;
+	int hitNum;
+
+	rotY = MGetRotY(angleH_);
+	rotZ = MGetRotZ(angleV_);
+
+	armLength = CAMERA_ARM_LENGTH;
+
+	// カメラの座標を算出
+	pos_ = VAdd(VTransform(VTransform(VGet(-armLength, 0.0f, 0.0f), rotZ), rotY), targetPos_);
+
+	// 注視点からカメラの座標までの間にステージのポリゴンがあるか調べる
+	hitResult = stage_.CollCheckCapsule(targetPos_, pos_, COLLISION_SIZE);
+	hitNum = hitResult.HitNum;
+	MV1CollResultPolyDimTerminate(hitResult);
+	if (hitNum != 0)
+	{
+		float notHitLength;
+		float hitLength;
+		float testLength;
+		VECTOR testPosition;
+
+		// 当たらない位置までプレイヤーに近づく
+
+		notHitLength = 0.0f;
+
+		hitLength = armLength;
+		do
+		{
+			testLength = notHitLength + (hitLength - notHitLength) / 2.0f;
+
+			testPosition = VAdd(VTransform(VTransform(VGet(-testLength, 0.0f, 0.0f), rotZ), rotY), targetPos_);
+
+			hitResult = stage_.CollCheckCapsule(targetPos_, testPosition, COLLISION_SIZE);
+			hitNum = hitResult.HitNum;
+			MV1CollResultPolyDimTerminate(hitResult);
+			if (hitNum != 0)
+			{
+				hitLength = testLength;
+			}
+			else
+			{
+				notHitLength = testLength;
+			}
+
+		} while (hitLength - notHitLength > 0.1f);
+
+		pos_ = testPosition;
+	}
+}
+
+void Camera::ClampAngle()
+{
+	if (angleH_ < -DX_PI_F)
+	{
+		angleH_ += DX_TWO_PI_F;
+	}
+	else if (angleH_ > DX_PI_F)
+	{
+		angleH_ -= DX_TWO_PI_F;
+	}
+
+	if (angleV_ < -DX_PI_F / 2.0f + 0.6f)
+	{
+		angleV_ = -DX_PI_F / 2.0f + 0.6f;
+	}
+	else if (angleV_ > DX_PI_F / 2.0f - 0.6f)
+	{
+		angleV_ = DX_PI_F / 2.0f - 0.6f;
+	}
 }
