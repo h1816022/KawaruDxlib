@@ -38,4 +38,6 @@ private:
 
     VECTOR setEye_;
     VECTOR setTarget_;
+    
+    bool kesu = false;
 };

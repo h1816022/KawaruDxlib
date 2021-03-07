@@ -2,7 +2,7 @@
 #include "../Systems/Input.h"
 
 Stage::Stage():
-	Actor(L"Models/ColTestStage.mqo")
+	Actor(L"Models/TestMap.mqo")
 {
 }
 

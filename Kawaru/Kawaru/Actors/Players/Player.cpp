@@ -147,6 +147,17 @@ void Player::Draw()
 	MV1DrawModel(modelHandle_);
 
 	DrawShadow();
+	DINPUT_JOYSTATE input;
+	GetJoypadDirectInputState(DX_INPUT_PAD1, &input);
+	DrawFormatString(0, 0, 0xffffff, L"X:%d Y:%d Z:%d",
+		input.X, input.Y, input.Z);
+	DrawFormatString(0, 16, 0xffffff, L"Rx:%d Ry:%d Rz:%d",
+		input.Rx, input.Ry, input.Rz);
+	DrawFormatString(0, 32, 0xffffff, L"Slider 0:%d 1:%d",
+		input.Slider[0], input.Slider[1]);
+	DrawFormatString(0, 48, 0xffffff, L"POV 0:%d 1:%d 2:%d 3:%d",
+		input.POV[0], input.POV[1],
+		input.POV[2], input.POV[3]);
 }
 
 void Player::IdleUpdate(const Input& input)

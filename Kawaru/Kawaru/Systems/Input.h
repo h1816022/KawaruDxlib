@@ -4,7 +4,7 @@
 #include <string>
 
 // 入力情報を保存するバッファサイズ
-constexpr int input_record_size = 2;
+constexpr int INPUT_RECORD_SIZE = 2;
 
 // 入力デバイスの種類
 enum class PeripheralType
@@ -125,7 +125,7 @@ private:
 
 	// 現在の入力情報バッファ
 	using InputStateTalbe = std::unordered_map<std::string, bool>;
-	std::array<InputStateTalbe, input_record_size> inputStateTable_;
+	std::array<InputStateTalbe, INPUT_RECORD_SIZE> inputStateTable_;
 
 	using PeripheralReferenceTable_t = std::unordered_map<std::string, std::vector<PeripheralInfo>>;
 

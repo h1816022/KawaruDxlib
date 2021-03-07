@@ -13,6 +13,7 @@ namespace
 	// 視点座標から注視点までの距離
 	constexpr float CAMERA_ARM_LENGTH = 1600.0f;
 
+	// 遮蔽物検出用コリジョンの大きさ
 	constexpr float COLLISION_SIZE = 50.0f;
 }
 
