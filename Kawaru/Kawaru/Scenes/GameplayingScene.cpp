@@ -8,6 +8,7 @@
 #include "../Actors/Camera.h"
 #include "../Actors/Plane.h"
 #include "../Actors/Stage.h"
+#include "PauseScene.h"
 
 GameplayingScene::GameplayingScene(SceneController& controller) :
 	Scene(controller),
@@ -31,9 +32,9 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 
 void GameplayingScene::NormalUpdate(const Input& input)
 {
-	if (input.IsTriggered("OK"))
+	if (input.IsTriggered("Pause"))
 	{
-		controller_.ChangeScene(new TitleScene(controller_));
+		controller_.PushScene(new PauseScene(controller_));
 		return;
 	}
 }
@@ -54,7 +55,6 @@ void GameplayingScene::EndFadeOut()
 
 void GameplayingScene::NormalDraw()
 {
-	DrawString(0, 0, L"Game", 0xffffffff);
 }
 
 void GameplayingScene::FadeInDraw()

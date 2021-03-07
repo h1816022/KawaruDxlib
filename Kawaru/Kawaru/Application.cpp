@@ -3,9 +3,6 @@
 #include "Scenes/SceneController.h"
 #include "Geometry.h"
 #include "Systems/Input.h"
-//#include "Games/EffectManager.h"
-//#include "Systems/FileManager.h"
-//#include "Systems/File.h"
 
 namespace
 {
@@ -27,11 +24,6 @@ const Viewport& Application::GetViewport() const
 	return viewport_;
 }
 
-//EffectManager& Application::GetEffectManager() const
-//{
-//	return *effectManager_;
-//}
-
 Size Viewport::GetSize()const
 {
 	Size ret = { VIEWPORT_SIZE_X, VIEWPORT_SIZE_Y };
@@ -50,8 +42,6 @@ bool Application::Initialize()
 		return false;
 	}
 
-	//effectManager_ = std::make_shared<EffectManager>();
-
 	sceneController_.reset(new SceneController);
 
 	InitVKeyName();
@@ -67,15 +57,16 @@ void Application::Run()
 	{
 		input.Update();
 
-		//effectManager_->Update();
+		if (input.IsTriggered("Exit"))
+		{
+			return;
+		}
 
 		sceneController_->Update(input);
 		
 		ClearDrawScreen();
 
 		sceneController_->Draw();
-
-		//effectManager_->Draw();
 
 		ScreenFlip();
 	}

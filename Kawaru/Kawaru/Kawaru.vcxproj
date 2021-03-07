@@ -152,6 +152,8 @@
     <ClCompile Include="Actors\Camera.cpp" />
     <ClCompile Include="Actors\Plane.cpp" />
     <ClCompile Include="Actors\Stage.cpp" />
+    <ClCompile Include="Scenes\PauseScene.cpp" />
+    <ClCompile Include="Scenes\MenuSceneBase.cpp" />
     <ClCompile Include="Systems\Input.cpp" />
     <ClCompile Include="Scenes\GameplayingScene.cpp" />
     <ClCompile Include="Geometry.cpp" />
@@ -168,6 +170,8 @@
     <ClInclude Include="Actors\Camera.h" />
     <ClInclude Include="Actors\Plane.h" />
     <ClInclude Include="Actors\Stage.h" />
+    <ClInclude Include="Scenes\PauseScene.h" />
+    <ClInclude Include="Scenes\MenuSceneBase.h" />
     <ClInclude Include="Tools\Arithmetic.h" />
     <ClInclude Include="Systems\Input.h" />
     <ClInclude Include="Scenes\GameplayingScene.h" />

@@ -4,6 +4,7 @@
 
 class Camera;
 class Stage;
+struct HitCheckPolyData;
 
 // アニメーションの名前
 enum class PLAYER_ANIM_NAME : int
@@ -28,16 +29,24 @@ public:
     void Draw()override final;
 
 private:
-    using UpdateFunc = void (Player::*)();
+    using UpdateFunc = void (Player::*)(const Input& input);
     UpdateFunc updater_;
 
-    void IdleUpdate();
-    void RunUpdate();
-    void JumpUpdate();
+    void IdleUpdate(const Input& input);
+    void RunUpdate(const Input& input);
+    void JumpUpdate(const Input& input);
+
+    void Jump();
 
     void Move(const VECTOR& moveVector);
 
+    void CalcUnitMoveVector(VECTOR& upMoveVec, VECTOR& leftMoveVec);
+
+    bool CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECTOR& leftMoveVec, const Input& input);
+
     void UpdateAngle();
+
+    float CalcAngleDiff(float target)const;
 
     /// <summary>
     /// アニメーションの変更
@@ -89,15 +98,28 @@ private:
 
     void DrawShadow();
 
+    void GetWallPolyAndFloorPoly(HitCheckPolyData& outPolyData, const MV1_COLL_RESULT_POLY_DIM& HitData);
+
+    bool CheckHitWithWall(bool moveFlag, const HitCheckPolyData& polyData, const VECTOR& moveVector, VECTOR& nowPos);
+
+    void CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyData, VECTOR& nowPos);
+
+    /// <summary>
+    /// 押し出し
+    /// </summary>
+    /// <param name="polyData">判定するポリゴンデータ</param>
+    /// <param name="nowPos">現在座標</param>
+    void Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos);
+
     float jumpPower_ = 0.0f;
 
     VECTOR moveDirection_;
 
+    VECTOR moveVec;
+
     const Camera& camera_;
 
     const Stage& stage_;
-
-    int state_ = 0;
 
     int animAttachNum1_ = -1;	// 再生しているアニメーション１のアタッチ番号( -1:何もアニメーションがアタッチされていない )
     float animPlayCount1_;			// 再生しているアニメーション１の再生時間

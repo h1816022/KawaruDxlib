@@ -4,7 +4,6 @@
 #include "Geometry.h"
 
 class SceneController;
-class EffectManager;
 struct Size;
 
 class Viewport
@@ -46,7 +45,6 @@ public:
 	void Exit();
 
 	const Viewport& GetViewport()const;
-	//EffectManager& GetEffectManager()const;
 
 	/// <summary>
 	/// キーの表示名をインデックスで参照できるように入れておく
@@ -68,8 +66,6 @@ private:
 
 	// アプリケーション終了フラグ
 	bool isExit = false;
-
-	//std::shared_ptr<EffectManager> effectManager_;
 
 	uint32_t nowCount_ = 0;
 

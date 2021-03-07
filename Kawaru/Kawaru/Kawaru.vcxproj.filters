@@ -90,6 +90,12 @@
     <ClCompile Include="Actors\Cube.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Scenes\MenuSceneBase.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\PauseScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -133,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="Actors\Cube.h">
       <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\MenuSceneBase.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\PauseScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
