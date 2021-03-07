@@ -17,7 +17,7 @@ namespace
 	constexpr float FALL_UP_POWER = 20.0f;
 	
 	// èdóÕ
-	constexpr float GRAVITY = 3.0f;
+	constexpr float GRAVITY = 6.0f;
 
 	// âÒì]ë¨ìx
 	constexpr float ROT_SPEED = 0.2f;

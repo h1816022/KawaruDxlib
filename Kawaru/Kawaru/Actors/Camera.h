@@ -39,5 +39,7 @@ private:
     VECTOR setEye_;
     VECTOR setTarget_;
     
-    bool kesu = false;
+    float targetHeightOffset_;
+
+    float armLength_;
 };
