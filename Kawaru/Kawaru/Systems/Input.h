@@ -19,6 +19,29 @@ struct PeripheralInfo
 	int index;
 };
 
+enum class AnalogInputType
+{
+	LEFT,
+	RIGHT
+};
+
+struct AnalogInputData
+{
+	AnalogInputData():
+	horizontal(0.0f), vertical(0.0f) {}
+
+	AnalogInputData(float hori, float vert) :
+		horizontal(hori), vertical(vert) {}
+
+	float Length()
+	{
+		return sqrtf(horizontal * horizontal + vertical * vertical);
+	};
+
+	float horizontal;
+	float vertical;
+};
+
 class KeyConfigScene;
 class GameplayingScene;
 
@@ -60,6 +83,8 @@ public:
 	/// <param name="cmd">ñºëO</param>
 	/// <returns>true : Ç±ÇÃÉtÉåÅ[ÉÄÇ…ó£Ç≥ÇÍÇΩ</returns>
 	bool IsReleased(const char* cmd)const;
+
+	AnalogInputData GetAnalogInput(AnalogInputType type)const;
 
 private:
 	/// <summary>

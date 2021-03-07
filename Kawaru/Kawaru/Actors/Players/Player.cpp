@@ -8,7 +8,7 @@
 namespace
 {
 	// 移動速度
-	constexpr float MOVE_SPEED = 30.0f;
+	constexpr float DEFAULT_MOVE_SPEED = 30.0f;
 	
 	// ジャンプ力
 	constexpr float JUMP_POWER = 100.0f;
@@ -41,7 +41,7 @@ namespace
 	constexpr float HIT_SLIDE_LENGTH = 5.0f;
 
 	// アニメーションの再生速度
-	constexpr float ANIM_PLAY_SPEED = 500.0f;
+	constexpr float ANIM_PLAY_SPEED = 400.0f;
 	
 	// アニメーションのブレンド速度
 	constexpr float ANIM_BLEND_SPEED = 0.1f;
@@ -104,7 +104,9 @@ void Player::Update(const Input& input)
 	{
 		moveDirection_ = VNorm(moveVec);
 
-		moveVec = VScale(moveDirection_, MOVE_SPEED);
+		const float MOVE_SPEED_RATE = input.GetAnalogInput(AnalogInputType::LEFT).Length();
+
+		moveVec = VScale(moveDirection_, DEFAULT_MOVE_SPEED * MOVE_SPEED_RATE);
 
 		if (updater_ == &Player::IdleUpdate)
 		{
@@ -147,17 +149,6 @@ void Player::Draw()
 	MV1DrawModel(modelHandle_);
 
 	DrawShadow();
-	DINPUT_JOYSTATE input;
-	GetJoypadDirectInputState(DX_INPUT_PAD1, &input);
-	DrawFormatString(0, 0, 0xffffff, L"X:%d Y:%d Z:%d",
-		input.X, input.Y, input.Z);
-	DrawFormatString(0, 16, 0xffffff, L"Rx:%d Ry:%d Rz:%d",
-		input.Rx, input.Ry, input.Rz);
-	DrawFormatString(0, 32, 0xffffff, L"Slider 0:%d 1:%d",
-		input.Slider[0], input.Slider[1]);
-	DrawFormatString(0, 48, 0xffffff, L"POV 0:%d 1:%d 2:%d 3:%d",
-		input.POV[0], input.POV[1],
-		input.POV[2], input.POV[3]);
 }
 
 void Player::IdleUpdate(const Input& input)
@@ -269,30 +260,19 @@ bool Player::CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECT
 
 	bool moveFlag = false;
 
+	auto analogInpoutData = input.GetAnalogInput(AnalogInputType::LEFT);
+
 	// 左右移動
-	if (input.IsPressed("Left"))
+	if (analogInpoutData.horizontal != 0.0f)
 	{
-		moveVec = VAdd(moveVec, leftMoveVec);
-
-		moveFlag = true;
-	}
-	else if (input.IsPressed("Right"))
-	{
-		moveVec = VAdd(moveVec, VScale(leftMoveVec, -1.0f));
-
+		moveVec = VAdd(moveVec, VScale(leftMoveVec, -analogInpoutData.horizontal));
+	
 		moveFlag = true;
 	}
 
-	// 前後移動
-	if (input.IsPressed("Up"))
+	if (analogInpoutData.vertical != 0.0f)
 	{
-		moveVec = VAdd(moveVec, upMoveVec);
-
-		moveFlag = true;
-	}
-	else if (input.IsPressed("Down"))
-	{
-		moveVec = VAdd(moveVec, VScale(upMoveVec, -1.0f));
+		moveVec = VAdd(moveVec, VScale(upMoveVec, analogInpoutData.vertical));
 
 		moveFlag = true;
 	}

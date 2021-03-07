@@ -61,22 +61,22 @@ void Camera::SetTargetActor(std::shared_ptr<Actor> target)
 
 void Camera::UpdateAngle(const Input& input)
 {
-	if (input.IsPressed("Left"))
+	if (input.IsPressed("RLeft"))
 	{
 		angleH_ -= ROT_SPEED;
 	}
 
-	if (input.IsPressed("Right"))
+	if (input.IsPressed("RRight"))
 	{
 		angleH_ += ROT_SPEED;
 	}
 
-	if (input.IsPressed("Up"))
+	if (input.IsPressed("RUp"))
 	{
 		angleV_ -= ROT_SPEED;
 	}
 
-	if (input.IsPressed("Down"))
+	if (input.IsPressed("RDown"))
 	{
 		angleV_ += ROT_SPEED;
 	}

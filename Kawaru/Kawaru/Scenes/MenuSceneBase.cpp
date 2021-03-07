@@ -256,7 +256,7 @@ void MenuSceneBase::NormalUpdate(const Input& input)
 				return;
 			}
 
-			if (input.IsTriggered("Up"))
+			if (input.IsTriggered("MenuUp"))
 			{
 				menuItems_[currentSelectNo_].isActive = false;
 				currentSelectNo_ = max(currentSelectNo_ - 1, 0);
@@ -264,7 +264,7 @@ void MenuSceneBase::NormalUpdate(const Input& input)
 				CursorMoveStart(true);
 			}
 
-			if (input.IsTriggered("Down"))
+			if (input.IsTriggered("MenuDown"))
 			{
 				menuItems_[currentSelectNo_].isActive = false;
 				currentSelectNo_ = min(currentSelectNo_ + 1, (static_cast<int>(menuItems_.size()) - 1));
