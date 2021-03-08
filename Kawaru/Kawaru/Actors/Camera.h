@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "Actor.h"
+#include "Players/Player.h"
 
 class Stage;
 
@@ -13,9 +14,15 @@ public:
 
     void Update(const Input& input)override final;
 
+    void Draw()override final;
+
     const VECTOR& GetTargetPos()const;
 
     void SetTargetActor(std::shared_ptr<Actor> target);
+
+    void SetPlayer(std::shared_ptr<Player> player);
+
+    bool CanSeeThePlayer();
 
 private:
     void UpdateAngle(const Input& input);
@@ -33,6 +40,8 @@ private:
     float angleV_;
 
     std::shared_ptr<Actor> targetActor_;
+
+    std::shared_ptr<Player> player_;
 
     const Stage& stage_;
 

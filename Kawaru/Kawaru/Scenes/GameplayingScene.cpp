@@ -28,6 +28,7 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	AddActors(player);
 
 	camera->SetTargetActor(player);
+	camera->SetPlayer(player);
 }
 
 void GameplayingScene::NormalUpdate(const Input& input)

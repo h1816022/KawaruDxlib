@@ -30,3 +30,18 @@ const VECTOR& Actor::GetPos() const
 {
 	return pos_;
 }
+
+DxLib::MV1_COLL_RESULT_POLY Actor::CollCheckLine(const VECTOR& start, const VECTOR& end) const
+{
+	return MV1CollCheck_Line(modelHandle_, -1, start, end);
+}
+
+DxLib::MV1_COLL_RESULT_POLY_DIM Actor::CollCheckSphere(const VECTOR& center, float radius)const
+{
+	return MV1CollCheck_Sphere(modelHandle_, -1, center, radius);
+}
+
+DxLib::MV1_COLL_RESULT_POLY_DIM Actor::CollCheckCapsule(const VECTOR& pos1, const VECTOR& pos2, float radius) const
+{
+	return MV1CollCheck_Capsule(modelHandle_, -1, pos1, pos2, radius);
+}

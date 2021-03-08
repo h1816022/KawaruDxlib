@@ -54,6 +54,9 @@ namespace
 	
 	// âeÇÃóéÇøÇÈçÇÇ≥
 	constexpr float SHADOW_HEIGHT = 700.0f;
+
+	// ëÃÇÃïù
+	constexpr float BODY_WIDTH = HIT_WIDTH / 3 * 2;
 }
 
 // è’ìÀîªíËÇÇ∑ÇÈÉ|ÉäÉSÉìÇ…ä÷Ç∑ÇÈÉfÅ[É^
@@ -67,10 +70,19 @@ struct HitCheckPolyData
 };
 
 Player::Player(const Camera& camera, const Stage& stage, const float posX, const float posY, const float posZ):
-	Actor(L"Models/DxChara.x", posX, posY, posZ), camera_(camera), stage_(stage), updater_(&Player::IdleUpdate)
+	Actor(L"Models/DxChara.x", posX, posY, posZ), camera_(camera), stage_(stage), 
+	updater_(&Player::IdleUpdate),
+	moveDirection_(VGet(1.0f, 0.0f, 0.0f)),
+	shadowHandle_(LoadGraph(L"Images/Shadow.tga"))
 {
-	moveDirection_ = VGet(1.0f, 0.0f, 0.0f);
-	shadowHandle_ = LoadGraph(L"Images/Shadow.tga");
+	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, 1.0f, -BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, 1.0f, -BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, 1.0f, BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, 1.0f, BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, HIT_HEIGHT, -BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, HIT_HEIGHT, -BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, HIT_HEIGHT, BODY_WIDTH));
+	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, HIT_HEIGHT, BODY_WIDTH));
 }
 
 Player::~Player()
@@ -149,6 +161,11 @@ void Player::Draw()
 	MV1DrawModel(modelHandle_);
 
 	DrawShadow();
+}
+
+const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const
+{
+	return lineTraceSamplingOffsets_;
 }
 
 void Player::IdleUpdate(const Input& input)
@@ -678,7 +695,7 @@ void Player::CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyData, 
 			lineRes = HitCheck_Line_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, HIT_HEIGHT, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 
 			// ê⁄êGÇµÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁâΩÇ‡ÇµÇ»Ç¢
-			if (lineRes.HitFlag == false)
+			if (!lineRes.HitFlag)
 			{
 				continue;
 			}
@@ -737,7 +754,7 @@ void Player::CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyData, 
 			}
 
 			// ìñÇΩÇ¡ÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁâΩÇ‡ÇµÇ»Ç¢
-			if (lineRes.HitFlag == false)
+			if (!lineRes.HitFlag)
 			{
 				continue;
 			}

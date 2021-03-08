@@ -47,12 +47,34 @@ void Camera::Update(const Input& input)
 
 	targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
 
-	UpdatePos();
+	if (input.IsPressed("Camera"))
+	{
+		UpdatePos();
+	}
 
 	// カメラの情報をライブラリのカメラに反映させる
 	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
 	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
 	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
+}
+
+void Camera::Draw()
+{
+	for (auto& targetPos : player_->GetLineTraceSamplingOffsets())
+	{
+		DrawSphere3D(VAdd(player_->GetPos(), targetPos), 50.0f, 100, 0xffff00, 0xffffff, true);
+	}
+
+	
+	if (CanSeeThePlayer()
+		)
+	{
+		DrawString(0, 0, L"true", 0xffffff);
+	}
+	else
+	{
+		DrawString(0, 0, L"false", 0xffffff);
+	}
 }
 
 const VECTOR& Camera::GetTargetPos() const
@@ -63,6 +85,25 @@ const VECTOR& Camera::GetTargetPos() const
 void Camera::SetTargetActor(std::shared_ptr<Actor> target)
 {
 	targetActor_ = target;
+}
+
+void Camera::SetPlayer(std::shared_ptr<Player> player)
+{
+	player_ = player;
+}
+
+bool Camera::CanSeeThePlayer()
+{
+	for (auto& targetPos : player_->GetLineTraceSamplingOffsets())
+	{
+		auto hitResult = stage_.CollCheckLine(pos_, VAdd(player_->GetPos(), targetPos));
+		if (!hitResult.HitFlag)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void Camera::UpdateAngle(const Input& input)

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "../Actor.h"
 
 class Camera;
@@ -27,6 +28,8 @@ public:
     void Update(const Input& input)override final;
 
     void Draw()override final;
+
+    const std::vector<VECTOR>& GetLineTraceSamplingOffsets()const;
 
 private:
     using UpdateFunc = void (Player::*)(const Input& input);
@@ -128,4 +131,7 @@ private:
     float animBlendRate_;			// 再生しているアニメーション１と２のブレンド率
 
     int shadowHandle_;
+
+    // トーレスを行う際に終端とするサンプリング座標の、自身の座標からのオフセット値
+    std::vector<VECTOR> lineTraceSamplingOffsets_;
 };
