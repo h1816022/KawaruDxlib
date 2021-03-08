@@ -22,14 +22,16 @@ public:
 
     void SetPlayer(std::shared_ptr<Player> player);
 
-    bool CanSeeThePlayer();
-
 private:
     void UpdateAngle(const Input& input);
 
     void UpdatePos();
 
     void ClampAngle();
+
+    void UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ);
+
+    bool CanSeeThePlayer();
 
     VECTOR targetPos_;
 

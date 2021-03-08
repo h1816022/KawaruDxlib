@@ -43,38 +43,20 @@ Camera::~Camera()
 
 void Camera::Update(const Input& input)
 {
+	UpdatePos();
+
 	UpdateAngle(input);
 
 	targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
 
-	if (input.IsPressed("Camera"))
-	{
-		UpdatePos();
-	}
-
-	// カメラの情報をライブラリのカメラに反映させる
 	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
 	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
+
 	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
 }
 
 void Camera::Draw()
 {
-	for (auto& targetPos : player_->GetLineTraceSamplingOffsets())
-	{
-		DrawSphere3D(VAdd(player_->GetPos(), targetPos), 50.0f, 100, 0xffff00, 0xffffff, true);
-	}
-
-	
-	if (CanSeeThePlayer()
-		)
-	{
-		DrawString(0, 0, L"true", 0xffffff);
-	}
-	else
-	{
-		DrawString(0, 0, L"false", 0xffffff);
-	}
 }
 
 const VECTOR& Camera::GetTargetPos() const
@@ -90,20 +72,6 @@ void Camera::SetTargetActor(std::shared_ptr<Actor> target)
 void Camera::SetPlayer(std::shared_ptr<Player> player)
 {
 	player_ = player;
-}
-
-bool Camera::CanSeeThePlayer()
-{
-	for (auto& targetPos : player_->GetLineTraceSamplingOffsets())
-	{
-		auto hitResult = stage_.CollCheckLine(pos_, VAdd(player_->GetPos(), targetPos));
-		if (!hitResult.HitFlag)
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 
 void Camera::UpdateAngle(const Input& input)
@@ -125,55 +93,13 @@ void Camera::UpdateAngle(const Input& input)
 
 void Camera::UpdatePos()
 {
-	MATRIX rotZ;
-	MATRIX rotY;
-	MV1_COLL_RESULT_POLY_DIM hitResult;
-	int hitNum;
-
-	rotY = MGetRotY(angleH_);
-	rotZ = MGetRotZ(angleV_);
+	const MATRIX rotY = MGetRotY(angleH_);
+	const MATRIX rotZ = MGetRotZ(angleV_);
 
 	// カメラの座標を算出
 	pos_ = VAdd(VTransform(VTransform(VGet(-armLength_, 0.0f, 0.0f), rotZ), rotY), targetPos_);
 
-	// 注視点からカメラの座標までの間にステージのポリゴンがあるか調べる
-	hitResult = stage_.CollCheckCapsule(targetPos_, pos_, COLLISION_SIZE);
-	hitNum = hitResult.HitNum;
-	MV1CollResultPolyDimTerminate(hitResult);
-	if (hitNum != 0)
-	{
-		float notHitLength;
-		float hitLength;
-		float testLength;
-		VECTOR testPosition;
-
-		// 当たらない位置までプレイヤーに近づく
-
-		notHitLength = 0.0f;
-
-		hitLength = armLength_;
-		do
-		{
-			testLength = notHitLength + (hitLength - notHitLength) / 2.0f;
-
-			testPosition = VAdd(VTransform(VTransform(VGet(-testLength, 0.0f, 0.0f), rotZ), rotY), targetPos_);
-
-			hitResult = stage_.CollCheckCapsule(targetPos_, testPosition, COLLISION_SIZE);
-			hitNum = hitResult.HitNum;
-			MV1CollResultPolyDimTerminate(hitResult);
-			if (hitNum != 0)
-			{
-				hitLength = testLength;
-			}
-			else
-			{
-				notHitLength = testLength;
-			}
-
-		} while (hitLength - notHitLength > 0.1f);
-
-		pos_ = testPosition;
-	}
+	UpdateArmLength(rotY, rotZ);
 }
 
 void Camera::ClampAngle()
@@ -195,4 +121,62 @@ void Camera::ClampAngle()
 	{
 		angleV_ = DX_PI_F / 2.0f - 0.6f;
 	}
+}
+
+void Camera::UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ)
+{
+	MV1_COLL_RESULT_POLY_DIM hitResult;
+	int hitNum;
+
+	hitResult = stage_.CheckHitCapsule(targetPos_, pos_, COLLISION_SIZE);
+	hitNum = hitResult.HitNum;
+	MV1CollResultPolyDimTerminate(hitResult);
+	if (hitNum != 0)
+	{
+		float notHitLength;
+		float hitLength;
+		float testLength;
+		VECTOR testPosition;
+
+		// 当たらない位置までプレイヤーに近づく
+
+		notHitLength = 0.0f;
+
+		hitLength = armLength_;
+		do
+		{
+			testLength = notHitLength + (hitLength - notHitLength) / 2.0f;
+
+			testPosition = VAdd(VTransform(VTransform(VGet(-testLength, 0.0f, 0.0f), rotZ), rotY), targetPos_);
+
+			hitResult = stage_.CheckHitCapsule(targetPos_, testPosition, COLLISION_SIZE);
+			hitNum = hitResult.HitNum;
+			MV1CollResultPolyDimTerminate(hitResult);
+			if (hitNum != 0)
+			{
+				hitLength = testLength;
+			}
+			else
+			{
+				notHitLength = testLength;
+			}
+
+		} while (hitLength - notHitLength > 0.1f);
+
+		pos_ = testPosition;
+	}
+}
+
+bool Camera::CanSeeThePlayer()
+{
+	for (auto& targetPos : player_->GetLineTraceSamplingOffsets())
+	{
+		auto hitResult = stage_.CheckHitLine(pos_, VAdd(player_->GetPos(), targetPos));
+		if (!hitResult.HitFlag)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

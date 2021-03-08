@@ -161,6 +161,14 @@ void Player::Draw()
 	MV1DrawModel(modelHandle_);
 
 	DrawShadow();
+
+	auto result = stage_.CheckHitLine(VAdd(pos_, VGet(0.0f, 100.0f, 0.0f)), VSub(pos_, VGet(0.0f, 100.0f, 0.0f)));
+
+	DrawLine3D(result.Position[0], result.Position[1], 0xff0000);
+	DrawLine3D(result.Position[1], result.Position[2], 0xff0000);
+	DrawLine3D(result.Position[2], result.Position[0], 0xff0000);
+
+	DrawFormatString(0, 0, 0xffffff, L"%d", result.PolygonIndex);
 }
 
 const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const
@@ -221,7 +229,7 @@ void Player::Move(const VECTOR& moveVector)
 	nowPos = VAdd(pos_, moveVector);
 
 	// プレイヤーの周囲にあるステージポリゴンを取得する
-	hitDim = stage_.CollCheckSphere(pos_, COLLISION_SPHERE_SIZE + VSize(moveVector));
+	hitDim = stage_.CheckHitSphere(pos_, COLLISION_SPHERE_SIZE + VSize(moveVector));
 
 	// x軸かy軸方向に0.01f以上移動した場合は移動したとする
 	moveFlag = (fabs(moveVector.x) > 0.01f || fabs(moveVector.z) > 0.01f);
@@ -477,7 +485,7 @@ void Player::DrawShadow()
 	SetTextureAddressMode(DX_TEXADDRESS_CLAMP);
 
 	// プレイヤーの直下に存在する地面のポリゴンを取得
-	hitResDim = stage_.CollCheckCapsule(pos_, VAdd(pos_, VGet(0.0f, -SHADOW_HEIGHT, 0.0f)), SHADOW_SIZE);
+	hitResDim = stage_.CheckHitCapsule(pos_, VAdd(pos_, VGet(0.0f, -SHADOW_HEIGHT, 0.0f)), SHADOW_SIZE);
 
 	// 頂点データで変化が無い部分をセット
 	vertex[0].dif = GetColorU8(255, 255, 255, 255);
