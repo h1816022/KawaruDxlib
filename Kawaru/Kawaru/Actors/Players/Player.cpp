@@ -1,8 +1,11 @@
 #include <Dxlib.h>
 #include <array>
+#include <memory>
 #include "Player.h"
 #include "../Camera.h"
 #include "../Stage.h"
+#include "../NavMesh.h"
+#include "../../NavMeshPath.h"
 #include "../../Systems/Input.h"
 
 namespace
@@ -162,13 +165,30 @@ void Player::Draw()
 
 	DrawShadow();
 
-	auto result = stage_.CheckHitLine(VAdd(pos_, VGet(0.0f, 100.0f, 0.0f)), VSub(pos_, VGet(0.0f, 100.0f, 0.0f)));
+	NavMesh& navMesh = stage_.GetNavMesh();
+
+	auto result = navMesh.CheckHitLine(VAdd(pos_, VGet(0.0f, 100.0f, 0.0f)), VSub(pos_, VGet(0.0f, 100.0f, 0.0f)));
+
+	auto goal = navMesh.CheckHitLine(VAdd(pos_, VGet(3000.0f, 100.0f, 4000.0f)), VSub(pos_, VGet(-3000.0f, 100.0f, -4000.0f)));
 
 	DrawLine3D(result.Position[0], result.Position[1], 0xff0000);
 	DrawLine3D(result.Position[1], result.Position[2], 0xff0000);
 	DrawLine3D(result.Position[2], result.Position[0], 0xff0000);
 
+	DrawLine3D(goal.Position[0], goal.Position[1], 0x00ff00);
+	DrawLine3D(goal.Position[1], goal.Position[2], 0x00ff00);
+	DrawLine3D(goal.Position[2], goal.Position[0], 0x00ff00);
+
 	DrawFormatString(0, 0, 0xffffff, L"%d", result.PolygonIndex);
+	DrawFormatString(0, 40, 0xffffff, L"%d", goal.PolygonIndex);
+
+	NavMeshPath path;
+	navMesh.FindPath(path, result.PolygonIndex, result.HitPosition, goal.PolygonIndex, goal.HitPosition);
+
+	for (auto p : path.GetWaypoints())
+	{
+		DrawSphere3D(p.pos, 100.0f, 100, 0xffffff, 0xffffff, true);
+	}
 }
 
 const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const

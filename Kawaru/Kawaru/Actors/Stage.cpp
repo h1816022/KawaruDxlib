@@ -1,8 +1,8 @@
 #include "Stage.h"
 #include "../Systems/Input.h"
 
-Stage::Stage():
-	Actor(L"Models/TestMap.mqo", 500.0f, 0.0f, 0.0f)
+Stage::Stage(NavMesh& navMesh):
+	Actor(L"Models/map.mqo"), navMesh_(navMesh)
 {
 }
 
@@ -18,4 +18,9 @@ void Stage::Update(const Input& input)
 void Stage::Draw()
 {
 	MV1DrawModel(modelHandle_);
+}
+
+NavMesh& Stage::GetNavMesh() const
+{
+	return navMesh_;
 }

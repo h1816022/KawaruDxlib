@@ -379,3 +379,5 @@ struct SlashShape
 	Vector2f v1;
 	Vector2f v2;
 };
+
+bool CheckMatch(const VECTOR& v1, const VECTOR& v2);

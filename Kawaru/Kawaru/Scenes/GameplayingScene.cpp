@@ -8,6 +8,7 @@
 #include "../Actors/Camera.h"
 #include "../Actors/Plane.h"
 #include "../Actors/Stage.h"
+#include "../Actors/NavMesh.h"
 #include "PauseScene.h"
 
 GameplayingScene::GameplayingScene(SceneController& controller) :
@@ -18,7 +19,10 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 {
 	StartFade(FadeMode::In);
 
-	auto stage = std::make_shared<Stage>();
+	auto navMesh = std::make_shared<NavMesh>();
+	AddActors(navMesh);
+
+	auto stage = std::make_shared<Stage>(*navMesh);
 	AddActors(stage);
 
 	auto camera = std::make_shared<Camera>(*stage, 0.0f, 500.0f, -4000.0f);

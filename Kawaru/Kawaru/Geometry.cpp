@@ -800,6 +800,13 @@ float GetAngle2Vector(const Vector2f& v1, const Vector2f& v2)
 	return angle;
 }
 
+bool CheckMatch(const VECTOR& v1, const VECTOR& v2)
+{
+	const float ALLOWABLE_ERROR = 0.1f;
+
+	return (abs(v1.x - v2.x) < ALLOWABLE_ERROR) && (abs(v1.y - v2.y) < ALLOWABLE_ERROR) && (abs(v1.z - v2.z) < ALLOWABLE_ERROR);
+}
+
 SlashShape::SlashShape(const Position2f& inCenter, const Vector2f& inV1, const Vector2f& inV2) :
 	center(inCenter), v1(inV1), v2(inV2)
 {
