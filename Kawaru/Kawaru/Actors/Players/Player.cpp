@@ -171,23 +171,38 @@ void Player::Draw()
 
 	auto goal = navMesh.CheckHitLine(VAdd(pos_, VGet(3000.0f, 100.0f, 4000.0f)), VSub(pos_, VGet(-3000.0f, 100.0f, -4000.0f)));
 
-	DrawLine3D(result.Position[0], result.Position[1], 0xff0000);
-	DrawLine3D(result.Position[1], result.Position[2], 0xff0000);
-	DrawLine3D(result.Position[2], result.Position[0], 0xff0000);
+	//DrawLine3D(result.Position[0], result.Position[1], 0xff0000);
+	//DrawLine3D(result.Position[1], result.Position[2], 0xff0000);
+	//DrawLine3D(result.Position[2], result.Position[0], 0xff0000);
 
-	DrawLine3D(goal.Position[0], goal.Position[1], 0x00ff00);
-	DrawLine3D(goal.Position[1], goal.Position[2], 0x00ff00);
-	DrawLine3D(goal.Position[2], goal.Position[0], 0x00ff00);
-
-	DrawFormatString(0, 0, 0xffffff, L"%d", result.PolygonIndex);
-	DrawFormatString(0, 40, 0xffffff, L"%d", goal.PolygonIndex);
+	//DrawLine3D(goal.Position[0], goal.Position[1], 0x00ff00);
+	//DrawLine3D(goal.Position[1], goal.Position[2], 0x00ff00);
+	//DrawLine3D(goal.Position[2], goal.Position[0], 0x00ff00);
 
 	NavMeshPath path;
 	navMesh.FindPath(path, result.PolygonIndex, result.HitPosition, goal.PolygonIndex, goal.HitPosition);
 
-	for (auto p : path.GetWaypoints())
+	for (int i = 0; i < path.GetWaypoints().size() - 1; ++i)
 	{
-		DrawSphere3D(p.pos, 100.0f, 100, 0xffffff, 0xffffff, true);
+		DrawLine3D(path.GetWaypoints()[i].pos, path.GetWaypoints()[i + 1].pos, 0xffffff);
+	}
+
+	auto p = path.GetStraightPath(0.0f);
+	for (int i = 0; i < (p.size() - 1); ++i)
+	{
+		DrawLine3D(VAdd(p[i], VGet(0.0f, 0.0f, 0.0f)), VAdd(p[i + 1], VGet(0.0f, 0.0f, 0.0f)), 0xff0000);
+	}
+
+	p = path.GetStraightPath(0.5f);
+	for (int i = 0; i < (p.size() - 1); ++i)
+	{
+		DrawLine3D(VAdd(p[i], VGet(0.0f, 0.0f, 0.0f)), VAdd(p[i + 1], VGet(0.0f, 0.0f, 0.0f)), 0x00ff00);
+	}
+
+	p = path.GetStraightPath(1.0f);
+	for (int i = 0; i < (p.size() - 1); ++i)
+	{
+		DrawLine3D(VAdd(p[i], VGet(0.0f, 0.0f, 0.0f)), VAdd(p[i + 1], VGet(0.0f, 0.0f, 0.0f)), 0x0000ff);
 	}
 }
 

@@ -162,6 +162,7 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 	}
 
 	path.AddWaypoint(startPos);
+	currentNode = currentNode->parent;
 
 	while (currentNode->parent != nullptr)
 	{

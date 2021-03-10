@@ -6,8 +6,8 @@ NavMeshCells::NavMeshCells(const VECTOR& pos1, const VECTOR& pos2, const VECTOR&
 	positions_ = { pos1, pos2, pos3 };
 
 	edges_[0] = { pos1, pos2 };
-	edges_[0] = { pos2, pos3 };
-	edges_[0] = { pos3, pos1 };
+	edges_[1] = { pos2, pos3 };
+	edges_[2] = { pos3, pos1 };
 }
 
 NavMeshCells::~NavMeshCells()

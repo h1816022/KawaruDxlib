@@ -5,7 +5,8 @@
 
 struct CellEdge
 {
-	CellEdge() {};
+	CellEdge() :
+		left(VECTOR()), right(VECTOR()) {};
 
 	CellEdge(const VECTOR& l, const VECTOR& r) :
 		left(l), right(r) {}
