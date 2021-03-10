@@ -2,7 +2,7 @@
 #include "../Systems/Input.h"
 
 Stage::Stage(NavMesh& navMesh):
-	Actor(L"Models/map.mqo"), navMesh_(navMesh)
+	Actor(L"Models/t4.mqo"), navMesh_(navMesh)
 {
 }
 

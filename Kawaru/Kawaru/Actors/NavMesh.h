@@ -21,7 +21,7 @@ struct NavNode
     // このノードからゴールまでの推定コスト
     float hCost;
 
-    std::shared_ptr<NavNode> parent;
+    std::shared_ptr<NavNode> parent = nullptr;
 };
 
 class NavMesh :
@@ -37,6 +37,8 @@ public:
     const std::array<std::shared_ptr<NavMeshCells>, 3>& GetNeighbors(int index)const;
 
     bool FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos);
+
+    MV1_REF_POLYGONLIST GetMeshRef();
 
 private:
     std::shared_ptr<NavNode> PopLowestFCostNode(std::vector<std::shared_ptr<NavNode>>& list);

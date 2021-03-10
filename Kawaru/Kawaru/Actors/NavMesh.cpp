@@ -4,7 +4,7 @@
 #include "../Geometry.h"
 
 NavMesh::NavMesh():
-	Actor(L"Models/navMap.mqo")
+	Actor(L"Models/t5.mqo")
 {
 	MV1SetupReferenceMesh(modelHandle_, -1, true);
 	auto result = MV1GetReferenceMesh(modelHandle_, -1, true);
@@ -97,6 +97,8 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 	int loopCount = 0;
 	const int loopLimit = 1000;
 
+	bool success = false;
+
 	while (openList.size() != 0 && loopCount < loopLimit)
 	{
 		++loopCount;
@@ -105,6 +107,7 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 
 		if (currentNode->id == startID)
 		{
+			success = true;
 			break;
 		}
 
@@ -156,13 +159,17 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 		}
 	}
 
-	if (loopCount >= loopLimit)
+	if (!success)
 	{
 		return false;
 	}
 
 	path.AddWaypoint(startPos);
-	currentNode = currentNode->parent;
+
+	if (currentNode->parent != nullptr)
+	{
+		currentNode = currentNode->parent;
+	}
 
 	while (currentNode->parent != nullptr)
 	{
@@ -175,6 +182,11 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 	path.AddWaypoint(goalPos);
 
 	return true;
+}
+
+MV1_REF_POLYGONLIST NavMesh::GetMeshRef()
+{
+	return MV1GetReferenceMesh(modelHandle_, -1, true);
 }
 
 std::shared_ptr<NavNode> NavMesh::PopLowestFCostNode(std::vector<std::shared_ptr<NavNode>>& list)
