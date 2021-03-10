@@ -11,6 +11,13 @@ Actor::Actor(const wchar_t* modelFilePath, const float posX, const float posY, c
 	Init(posX, posY, posZ);
 }
 
+Actor::Actor(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX, const float posY, const float posZ)
+{
+	MV1SetLoadModelAnimFilePath(motionFilePath);
+	modelHandle_ = MV1LoadModel(modelFilePath);
+	Init(posX, posY, posZ);
+}
+
 Actor::~Actor()
 {
 	MV1DeleteModel(modelHandle_);

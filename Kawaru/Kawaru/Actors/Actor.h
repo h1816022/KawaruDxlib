@@ -9,6 +9,7 @@ class Actor
 public:
 	Actor(const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
 	Actor(const wchar_t* modelFilePath, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+	Actor(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
 	virtual ~Actor();
 
 	void Init(const float posX, const float posY, const float posZ);
