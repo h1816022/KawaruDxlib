@@ -154,6 +154,7 @@
     <ClCompile Include="Actors\Stage.cpp" />
     <ClCompile Include="Actors\NavMesh.cpp" />
     <ClCompile Include="Actors\Character.cpp" />
+    <ClCompile Include="Actors\Enemy.cpp" />
     <ClCompile Include="NavMeshCells.cpp" />
     <ClCompile Include="NavMeshPath.cpp" />
     <ClCompile Include="Scenes\PauseScene.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Actors\Stage.h" />
     <ClInclude Include="Actors\NavMesh.h" />
     <ClInclude Include="Actors\Character.h" />
+    <ClInclude Include="Actors\Enemy.h" />
     <ClInclude Include="NavMeshCells.h" />
     <ClInclude Include="NavMeshPath.h" />
     <ClInclude Include="Scenes\PauseScene.h" />

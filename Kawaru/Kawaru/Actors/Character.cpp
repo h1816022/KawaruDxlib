@@ -58,7 +58,8 @@ struct HitCheckPolyData
 Character::Character(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
 	Actor(modelFilePath, motionFilePath, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
-	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight), moveDirection_(VGet(1.0f, 0.0f, 0.0f))
+	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight), 
+	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f))
 {
 }
 

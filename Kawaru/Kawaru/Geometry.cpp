@@ -807,6 +807,11 @@ bool CheckMatch(const VECTOR& v1, const VECTOR& v2)
 	return (abs(v1.x - v2.x) < ALLOWABLE_ERROR) && (abs(v1.y - v2.y) < ALLOWABLE_ERROR) && (abs(v1.z - v2.z) < ALLOWABLE_ERROR);
 }
 
+bool CheckMatch2D(const VECTOR& v1, const VECTOR& v2)
+{
+	return CheckMatch(VGet(v1.x, 0.0f, v1.z), VGet(v2.x, 0.0f, v2.z));
+}
+
 SlashShape::SlashShape(const Position2f& inCenter, const Vector2f& inV1, const Vector2f& inV2) :
 	center(inCenter), v1(inV1), v2(inV2)
 {

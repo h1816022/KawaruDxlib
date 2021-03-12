@@ -16,21 +16,52 @@ public:
 
     void Draw()override final;
 
+    /// <summary>
+    /// 注視点の座標を取得
+    /// </summary>
+    /// <returns>注視点の座標</returns>
     const VECTOR& GetTargetPos()const;
 
+    /// <summary>
+    /// 注視点の基準とするアクターをセット
+    /// </summary>
+    /// <param name="target">注視点の基準</param>
     void SetTargetActor(std::shared_ptr<Actor> target);
 
+    /// <summary>
+    /// プレイヤーのポインタをセット
+    /// </summary>
+    /// <param name="player">プレイヤー</param>
     void SetPlayer(std::shared_ptr<Player> player);
 
 private:
+    /// <summary>
+    /// 角度更新
+    /// </summary>
+    /// <param name="input">入力情報</param>
     void UpdateAngle(const Input& input);
 
+    /// <summary>
+    /// 座標(視点)更新
+    /// </summary>
     void UpdatePos();
 
+    /// <summary>
+    /// 膨らんだ角度を同等の数値に整える
+    /// </summary>
     void ClampAngle();
 
+    /// <summary>
+    /// カメラアームの更新
+    /// </summary>
+    /// <param name="rotY">Y回転</param>
+    /// <param name="rotZ">Z回転</param>
     void UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ);
 
+    /// <summary>
+    /// プレイヤーが見えているか
+    /// </summary>
+    /// <returns>true : 見えている</returns>
     bool CanSeeThePlayer();
 
     VECTOR targetPos_;

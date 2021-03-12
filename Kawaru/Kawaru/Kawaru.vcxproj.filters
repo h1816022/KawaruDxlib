@@ -108,6 +108,9 @@
     <ClCompile Include="Actors\Character.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Actors\Enemy.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -168,6 +171,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Actors\Character.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Enemy.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@
 #include "../Actors/Plane.h"
 #include "../Actors/Stage.h"
 #include "../Actors/NavMesh.h"
+#include "../Actors/Enemy.h"
 #include "PauseScene.h"
 
 GameplayingScene::GameplayingScene(SceneController& controller) :
@@ -27,6 +28,9 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 
 	auto camera = std::make_shared<Camera>(*stage, 0.0f, 500.0f, -4000.0f);
 	AddActors(camera);
+
+	auto enemy = std::make_shared<Enemy>(*stage, 500.0f, 0.0f, 0.0f);
+	AddActors(enemy);
 
 	auto player = std::make_shared<Player>(*camera, *stage, 0.0f, 0.0f, 0.0f);
 	AddActors(player);

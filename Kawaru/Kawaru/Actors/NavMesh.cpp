@@ -41,7 +41,7 @@ NavMesh::NavMesh():
 			{
 				for (int j = 0; j < 3; ++j)
 				{
-					if (CheckMatch(currentCell->GetPositions()[i], otherCell->GetPositions()[j]))
+					if (CheckMatch2D(currentCell->GetPositions()[i], otherCell->GetPositions()[j]))
 					{
 						matchIndex.emplace_back(i);
 						matchIndex.emplace_back(j);
