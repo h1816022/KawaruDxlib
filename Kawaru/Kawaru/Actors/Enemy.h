@@ -1,6 +1,10 @@
 #pragma once
+#include <DxLib.h>
+#include <vector>
+#include <memory>
 #include "Character.h"
-#include "../NavMeshPath.h"
+
+class NavMeshMoveComponent;
 
 class Enemy :
     public Character
@@ -13,14 +17,13 @@ public:
 
     void Draw()override final;
 
+protected:
+    VECTOR floatingOffset_;
+
 private:
-    bool CheckPath()const;
-
-    bool ReachToGoal()const;
-
     void UpdatePaths();
 
-    VECTOR goalPos[3];
+    //std::vector<VECTOR> paths_;
 
-    std::vector<VECTOR> paths_;
+    std::unique_ptr<NavMeshMoveComponent> navMeshMoveComponent_;
 };

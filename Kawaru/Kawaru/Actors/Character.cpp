@@ -399,8 +399,8 @@ void Character::CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyDat
 		{
 			// 当たった場合
 
-			// 接触したポリゴンで一番高いＹ座標をプレイヤーのＹ座標にする
-			nowPos.y = maxY;
+			// 「接触したポリゴンで一番高いＹ座標」と現在のY座標の高い方を改めてＹ座標とする
+			nowPos.y = max(nowPos.y, maxY);
 
 			// Ｙ軸方向の移動速度は０に
 			jumpPower_ = 0.0f;
