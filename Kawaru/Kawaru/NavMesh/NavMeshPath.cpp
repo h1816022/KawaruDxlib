@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "NavMeshPath.h"
 #include "NavMeshCells.h"
-#include "Geometry.h"
+#include "../Geometry.h"
 
 struct NavMeshMath
 {
@@ -48,9 +48,9 @@ void NavMeshPath::AddWaypoint(const VECTOR& pos)
 	waypoints_.emplace_back(Waypoint(pos));
 }
 
-void NavMeshPath::AddWaypoint(std::shared_ptr<NavMeshCells> cell, std::shared_ptr<NavMeshCells> parent)
+void NavMeshPath::AddWaypoint(NAV_TYPE type, std::shared_ptr<NavMeshCells> cell, std::shared_ptr<NavMeshCells> parent)
 {
-	waypoints_.emplace_back(cell->GetCenter(), cell->GetID(), cell->GetArrivalEdge(parent->GetID()));
+	waypoints_.emplace_back(cell->GetCenter(), cell->GetID(), cell->GetArrivalEdge(type, parent->GetID()));
 }
 
 const std::vector<Waypoint>& NavMeshPath::GetWaypoints() const

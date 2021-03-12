@@ -1,6 +1,6 @@
 #include "NavMesh.h"
-#include "../NavMeshCells.h"
-#include "../NavMeshPath.h"
+#include "../NavMesh/NavMeshCells.h"
+#include "../NavMesh/NavMeshPath.h"
 #include "../Geometry.h"
 
 NavMesh::NavMesh():
@@ -16,48 +16,8 @@ NavMesh::NavMesh():
 		cells_.emplace_back(std::make_shared<NavMeshCells>(vert[poly.VIndex[0]].Position, vert[poly.VIndex[1]].Position, vert[poly.VIndex[2]].Position, index));
 	}
 
-	for (auto currentCell : cells_)
-	{
-		for (auto otherCell : cells_)
-		{
-			if (currentCell == otherCell)
-			{
-				continue;
-			}
-
-			if (currentCell->CheckAlreadyLink(otherCell))
-			{
-				continue;
-			}
-
-			if (currentCell->CheckAllLinked())
-			{
-				continue;
-			}
-
-			std::vector<int> matchIndex;
-
-			for (int i = 0; i < 3; ++i)
-			{
-				for (int j = 0; j < 3; ++j)
-				{
-					if (CheckMatch2D(currentCell->GetPositions()[i], otherCell->GetPositions()[j]))
-					{
-						matchIndex.emplace_back(i);
-						matchIndex.emplace_back(j);
-						break;
-					}
-				}
-			}
-
-			if (matchIndex.size() != 4)
-			{
-				continue;
-			}
-
-			currentCell->SetNeighbor(otherCell, matchIndex[0], matchIndex[2]);
-		}
-	}
+	CalcNeighbor(NAV_TYPE::grounded);
+	CalcNeighbor(NAV_TYPE::floated);
 }
 
 NavMesh::~NavMesh()
@@ -73,12 +33,12 @@ void NavMesh::Draw()
 
 }
 
-const std::array<std::shared_ptr<NavMeshCells>, 3>& NavMesh::GetNeighbors(int index) const
-{
-	return cells_[index]->GetNeighbors();
-}
+//const std::array<std::shared_ptr<NavMeshCells>, 3>& NavMesh::GetNeighbors(int index) const
+//{
+//	return cells_[index]->GetNeighbors();
+//}
 
-bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos)
+bool NavMesh::FindPath(NavMeshPath& path, NAV_TYPE type, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos)
 {
 	std::shared_ptr<NavNode> currentNode = nullptr;
 
@@ -115,7 +75,7 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 
 		auto currentCell = cells_[currentNode->id];
 
-		for (auto neighbor : currentCell->GetNeighbors())
+		for (const auto& neighbor : currentCell->GetNeighbors(type))
 		{
 			if (neighbor == nullptr)
 			{
@@ -175,7 +135,7 @@ bool NavMesh::FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, i
 	{
 		auto currentCell = cells_[currentNode->id];
 		auto parentCell = cells_[currentNode->parent->id];
-		path.AddWaypoint(currentCell, parentCell);
+		path.AddWaypoint(type, currentCell, parentCell);
 		currentNode = currentNode->parent;
 	}
 
@@ -223,4 +183,67 @@ float NavMesh::CalcHeuristic(const VECTOR& v1, const VECTOR& v2) const
 {
 	VECTOR diff = VSub(v1, v2);
 	return ((diff.x * diff.x) + (diff.y * diff.y) + (diff.z * diff.z));
+}
+
+void NavMesh::CalcNeighbor(NAV_TYPE type)
+{
+	for (auto currentCell : cells_)
+	{
+		for (auto otherCell : cells_)
+		{
+			if (currentCell == otherCell)
+			{
+				continue;
+			}
+
+			if (currentCell->CheckAlreadyLink(type, otherCell))
+			{
+				continue;
+			}
+
+			if (currentCell->CheckAllLinked(type))
+			{
+				continue;
+			}
+
+			std::vector<int> matchIndices;
+
+			FindMatchingIndices(matchIndices, type, currentCell, otherCell);
+
+			if (matchIndices.size() != 4)
+			{
+				continue;
+			}
+
+			currentCell->SetNeighbor(type, otherCell, matchIndices[0], matchIndices[2]);
+		}
+	}
+}
+
+void NavMesh::FindMatchingIndices(std::vector<int>& outIndices, NAV_TYPE type, const std::shared_ptr<NavMeshCells>& currentCell, const std::shared_ptr<NavMeshCells>& otherCell)
+{
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			if (type == NAV_TYPE::grounded)
+			{
+				if (CheckMatch(currentCell->GetPositions()[i], otherCell->GetPositions()[j]))
+				{
+					outIndices.emplace_back(i);
+					outIndices.emplace_back(j);
+					break;
+				}
+			}
+			else
+			{
+				if (CheckMatch2D(currentCell->GetPositions()[i], otherCell->GetPositions()[j]))
+				{
+					outIndices.emplace_back(i);
+					outIndices.emplace_back(j);
+					break;
+				}
+			}
+		}
+	}
 }

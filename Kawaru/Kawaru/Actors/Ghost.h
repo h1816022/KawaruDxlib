@@ -1,22 +1,24 @@
 #pragma once
-#include <DxLib.h>
-#include <vector>
 #include <memory>
 #include "Character.h"
 
+class Input;
+class Stage;
 class NavMeshMoveComponent;
 
-class Enemy :
+class Ghost :
     public Character
 {
 public:
-    Enemy(const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
-    ~Enemy();
+    Ghost(const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    ~Ghost();
 
     void Update(const Input& input)override final;
 
-    void Draw()override final;
+    void Draw();
 
 private:
     std::unique_ptr<NavMeshMoveComponent> navMeshMoveComponent_;
+
+    VECTOR floatingOffset_;
 };

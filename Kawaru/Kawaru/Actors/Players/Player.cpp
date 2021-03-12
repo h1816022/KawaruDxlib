@@ -4,8 +4,8 @@
 #include "Player.h"
 #include "../Camera.h"
 #include "../Stage.h"
-#include "../NavMesh.h"
-#include "../../NavMeshPath.h"
+#include "../../NavMesh/NavMesh.h"
+#include "../../NavMesh/NavMeshPath.h"
 #include "../../Systems/Input.h"
 
 namespace

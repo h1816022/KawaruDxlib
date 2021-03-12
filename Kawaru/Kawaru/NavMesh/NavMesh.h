@@ -2,11 +2,18 @@
 #include <vector>
 #include <memory>
 #include <array>
-#include "Actor.h"
+#include "../Actors/Actor.h"
 
 class NavNode;
 class NavMeshCells;
 class NavMeshPath;
+
+// Ç«Ç§Ç¢Ç§ëOíÒÇ≈åoòHíTçıÇ∑ÇÈÇ©
+enum class NAV_TYPE
+{
+    grounded,   // ê⁄ínÇ∑ÇÈ
+    floated     // ïÇÇ©Ç‘
+};
 
 struct NavNode
 {
@@ -34,9 +41,7 @@ public:
     void Update(const Input& input)override final;
     void Draw();
 
-    const std::array<std::shared_ptr<NavMeshCells>, 3>& GetNeighbors(int index)const;
-
-    bool FindPath(NavMeshPath& path, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos);
+    bool FindPath(NavMeshPath& path, NAV_TYPE type, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos);
 
     MV1_REF_POLYGONLIST GetMeshRef();
 
@@ -44,6 +49,10 @@ private:
     std::shared_ptr<NavNode> PopLowestFCostNode(std::vector<std::shared_ptr<NavNode>>& list);
 
     float CalcHeuristic(const VECTOR& v1, const VECTOR& v2)const;
+
+    void CalcNeighbor(NAV_TYPE type);
+
+    void FindMatchingIndices(std::vector<int>& outIndices, NAV_TYPE type, const std::shared_ptr<NavMeshCells>& currentCell, const std::shared_ptr<NavMeshCells>& otherCell);
 
     std::vector<std::shared_ptr<NavMeshCells>> cells_;
 };

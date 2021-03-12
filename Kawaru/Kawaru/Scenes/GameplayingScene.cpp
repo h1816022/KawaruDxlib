@@ -8,8 +8,9 @@
 #include "../Actors/Camera.h"
 #include "../Actors/Plane.h"
 #include "../Actors/Stage.h"
-#include "../Actors/NavMesh.h"
+#include "../NavMesh/NavMesh.h"
 #include "../Actors/Enemy.h"
+#include "../Actors/Ghost.h"
 #include "PauseScene.h"
 
 GameplayingScene::GameplayingScene(SceneController& controller) :
@@ -29,8 +30,11 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	auto camera = std::make_shared<Camera>(*stage, 0.0f, 500.0f, -4000.0f);
 	AddActors(camera);
 
-	auto enemy = std::make_shared<Enemy>(*stage, 500.0f, 0.0f, 0.0f);
-	AddActors(enemy);
+	//auto enemy = std::make_shared<Enemy>(*stage, 500.0f, 0.0f, 0.0f);
+	//AddActors(enemy);
+
+	auto ghost = std::make_shared<Ghost>(*stage, 500.0f, 0.0f, 0.0f);
+	AddActors(ghost);
 
 	auto player = std::make_shared<Player>(*camera, *stage, 0.0f, 0.0f, 0.0f);
 	AddActors(player);
@@ -46,6 +50,8 @@ void GameplayingScene::NormalUpdate(const Input& input)
 		controller_.PushScene(new PauseScene(controller_));
 		return;
 	}
+
+	Scene::UpdateActors(input);
 }
 
 void GameplayingScene::ChangeSceneUpdate(const Input& input)
@@ -78,8 +84,6 @@ void GameplayingScene::Update(const Input& input)
 {
 	(this->*updater_)(input);
 	Scene::UpdateFade(input);
-
-	Scene::UpdateActors(input);
 
 	++nowCount_;
 }

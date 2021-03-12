@@ -55,6 +55,14 @@ struct HitCheckPolyData
 	std::array<MV1_COLL_RESULT_POLY*, MAX_HIT_COLLISION> floor;	// 床ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
 };
 
+Character::Character(const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
+	Actor(posX, posY, posZ), stage_(stage),
+	updater_(&Character::IdleUpdate),
+	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight),
+	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f))
+{
+}
+
 Character::Character(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
 	Actor(modelFilePath, motionFilePath, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
@@ -477,7 +485,7 @@ void Character::Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos)
 			}
 
 			// 当たっていたら規定距離分プレイヤーを壁の法線方向に移動させる
-			nowPos = VAdd(nowPos, VScale(poly->Normal, HIT_SLIDE_LENGTH));
+			nowPos = VAdd(nowPos, VScale(VNorm(VSub(nowPos, poly->HitPosition)), HIT_SLIDE_LENGTH));
 
 			// 移動した上で壁ポリゴンと接触しているかどうかを判定
 			int wallIndex;

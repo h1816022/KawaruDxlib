@@ -46,6 +46,12 @@
     <Filter Include="Source Files\Game\Actors\Players">
       <UniqueIdentifier>{a3cf096e-e31b-4263-82eb-cf48ac63c3c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\NavMesh">
+      <UniqueIdentifier>{7755d68b-45e2-4fa4-82e2-9f216989a6be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NavMesh">
+      <UniqueIdentifier>{3212272f-7fec-43df-8d96-97239171fe48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -96,23 +102,26 @@
     <ClCompile Include="Scenes\PauseScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Actors\NavMesh.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
-    <ClCompile Include="NavMeshCells.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NavMeshPath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Actors\Character.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Actors\Enemy.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="NavMeshMoveComponent.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Actors\Ghost.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh\NavMesh.cpp">
+      <Filter>Source Files\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh\NavMeshCells.cpp">
+      <Filter>Source Files\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh\NavMeshMoveComponent.cpp">
+      <Filter>Source Files\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh\NavMeshPath.cpp">
+      <Filter>Source Files\NavMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,23 +173,26 @@
     <ClInclude Include="Scenes\PauseScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="Actors\NavMesh.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
-    <ClInclude Include="NavMeshCells.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NavMeshPath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Actors\Character.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
     <ClInclude Include="Actors\Enemy.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="NavMeshMoveComponent.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Actors\Ghost.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh\NavMesh.h">
+      <Filter>Header Files\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh\NavMeshPath.h">
+      <Filter>Header Files\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh\NavMeshCells.h">
+      <Filter>Header Files\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh\NavMeshMoveComponent.h">
+      <Filter>Header Files\NavMesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

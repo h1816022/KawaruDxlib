@@ -17,7 +17,7 @@ namespace
 	constexpr float CAMERA_ARM_LENGTH_FIRST = 1.0f;
 
 	// 視点座標から注視点までの距離、三人称視点時
-	constexpr float CAMERA_ARM_LENGTH_THIRD = 8000.0f;
+	constexpr float CAMERA_ARM_LENGTH_THIRD = 1800.0f;
 
 	// 遮蔽物検出用コリジョンの大きさ
 	constexpr float COLLISION_SIZE = 50.0f;

@@ -1,12 +1,13 @@
 #include "NavMeshMoveComponent.h"
-#include "Actors/Stage.h"
-#include "Actors/NavMesh.h"
+#include "../Actors/Stage.h"
+#include "NavMesh.h"
 #include "NavMeshPath.h"
-#include "Actors/Actor.h"
+#include "../Actors/Actor.h"
 
 NavMeshMoveComponent::NavMeshMoveComponent(const Actor& owner, const Stage& stage):
 	owner_(owner), stage_(stage)
 {
+	type_ = NAV_TYPE::grounded;
 }
 
 NavMeshMoveComponent::~NavMeshMoveComponent()
@@ -27,7 +28,7 @@ bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPo
 	}
 
 	NavMeshPath path;
-	if (!navMesh.FindPath(path, nowPos.PolygonIndex, nowPos.HitPosition, goal.PolygonIndex, goal.HitPosition))
+	if (!navMesh.FindPath(path, type_, nowPos.PolygonIndex, nowPos.HitPosition, goal.PolygonIndex, goal.HitPosition))
 	{
 		return false;
 	}

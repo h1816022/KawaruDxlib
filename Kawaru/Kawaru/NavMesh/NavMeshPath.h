@@ -24,7 +24,7 @@ public:
 
 	void AddWaypoint(const VECTOR& pos);
 
-	void AddWaypoint(std::shared_ptr<NavMeshCells> cell, std::shared_ptr<NavMeshCells> parent);
+	void AddWaypoint(NAV_TYPE type, std::shared_ptr<NavMeshCells> cell, std::shared_ptr<NavMeshCells> parent);
 
 	const std::vector<Waypoint>& GetWaypoints()const;
 

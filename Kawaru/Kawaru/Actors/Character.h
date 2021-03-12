@@ -27,11 +27,13 @@ class Character :
     public Actor
 {
 public:
+    Character(const Stage& stage, const float hitWidth, const float hitHeight,const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+
     Character(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, 
         const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     virtual ~Character();
 
-    virtual void Update(const Input& input);
+    virtual void Update(const Input& input) = 0;
     virtual void Draw() = 0;
 
     void ChangeUpadater(UPDATE_TYPE type);
@@ -134,12 +136,11 @@ private:
 
     float jumpPower_ = 0.0f;
 
-    int animAttachNum1_ = -1;	// 再生しているアニメーション１のアタッチ番号( -1:何もアニメーションがアタッチされていない )
-    float animPlayCount1_;			// 再生しているアニメーション１の再生時間
-    int animAttachNum2_ = -1;	// 再生しているアニメーション２のアタッチ番号( -1:何もアニメーションがアタッチされていない )
-    float animPlayCount2_;			// 再生しているアニメーション２の再生時間
-    float animBlendRate_;			// 再生しているアニメーション１と２のブレンド率
+    int animAttachNum1_ = -1;	    // 再生しているアニメーション１のアタッチ番号(-1:何もアニメーションがアタッチされていない)
+    float animPlayCount1_ = 0.0f;	// 再生しているアニメーション１の再生時間
+    int animAttachNum2_ = -1;	    // 再生しているアニメーション２のアタッチ番号(-1:何もアニメーションがアタッチされていない)
+    float animPlayCount2_ = 0.0f;	// 再生しているアニメーション２の再生時間
+    float animBlendRate_ = 0.0f;	// 再生しているアニメーション１と２のブレンド率
 
     UPDATE_TYPE nowUpdateType_ = UPDATE_TYPE::Idle;
 };
-

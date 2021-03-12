@@ -4,6 +4,7 @@
 
 class Actor;
 class Stage;
+enum class NAV_TYPE;
 
 class NavMeshMoveComponent
 {
@@ -31,4 +32,6 @@ private:
 	std::vector<VECTOR> paths_;
 
 	const Actor& owner_;
+
+	NAV_TYPE type_;
 };
