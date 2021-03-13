@@ -16,6 +16,8 @@ public:
 
     void Draw()override final;
 
+    void SetPos(const VECTOR& pos);
+
     /// <summary>
     /// 注視点の座標を取得
     /// </summary>
@@ -33,6 +35,19 @@ public:
     /// </summary>
     /// <param name="player">プレイヤー</param>
     void SetPlayer(std::shared_ptr<Player> player);
+
+    /// <summary>
+    /// プレイヤーが見えているか
+    /// </summary>
+    /// <returns>true : 見えている</returns>
+    bool CanSeePlayer();
+
+    /// <summary>
+    /// プレイヤーが見えているか
+    /// </summary>
+    /// <param name="visiblePos">見えた座標</param>
+    /// <returns>true : 見えている</returns>
+    bool CanSeePlayer(VECTOR& visiblePos);
 
 private:
     /// <summary>
@@ -58,12 +73,6 @@ private:
     /// <param name="rotZ">Z回転</param>
     void UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ);
 
-    /// <summary>
-    /// プレイヤーが見えているか
-    /// </summary>
-    /// <returns>true : 見えている</returns>
-    bool CanSeeThePlayer();
-
     VECTOR targetPos_;
 
     // 水平角度
@@ -84,4 +93,9 @@ private:
     float targetHeightOffset_;
 
     float armLength_;
+    
+    float a;
+    float b;
+
+    bool c = false;
 };

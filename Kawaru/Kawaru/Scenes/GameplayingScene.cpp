@@ -33,7 +33,7 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	//auto enemy = std::make_shared<Enemy>(*stage, 500.0f, 0.0f, 0.0f);
 	//AddActors(enemy);
 
-	auto ghost = std::make_shared<Ghost>(*stage, 500.0f, 0.0f, 0.0f);
+	auto ghost = std::make_shared<Ghost>(*camera, *stage, -5000.0f, 500.0f, 0.0f);
 	AddActors(ghost);
 
 	auto player = std::make_shared<Player>(*camera, *stage, 0.0f, 0.0f, 0.0f);

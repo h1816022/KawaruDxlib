@@ -382,3 +382,5 @@ struct SlashShape
 
 bool CheckMatch(const VECTOR& v1, const VECTOR& v2);
 bool CheckMatch2D(const VECTOR& v1, const VECTOR& v2);
+
+float GetLength(const VECTOR& v);

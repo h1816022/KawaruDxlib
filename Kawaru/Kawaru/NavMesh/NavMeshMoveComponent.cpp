@@ -4,10 +4,9 @@
 #include "NavMeshPath.h"
 #include "../Actors/Actor.h"
 
-NavMeshMoveComponent::NavMeshMoveComponent(const Actor& owner, const Stage& stage):
-	owner_(owner), stage_(stage)
+NavMeshMoveComponent::NavMeshMoveComponent(const Actor& owner, const Stage& stage, NAV_TYPE type):
+	owner_(owner), stage_(stage), type_(type)
 {
-	type_ = NAV_TYPE::grounded;
 }
 
 NavMeshMoveComponent::~NavMeshMoveComponent()
@@ -20,7 +19,7 @@ bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPo
 
 	auto nowPos = navMesh.CheckHitLine(VAdd(startPos, VGet(0.0f, 5000.0f, 0.0f)), VSub(startPos, VGet(0.0f, 5000.0f, 0.0f)));
 
-	auto goal = navMesh.CheckHitLine(VAdd(goalPos, VGet(-1000.0f, 5000.0f, 1500.0f)), VSub(goalPos, VGet(1000.0f, 5000.0f, -1500.0f)));
+	auto goal = navMesh.CheckHitLine(VAdd(goalPos, VGet(0.0f, 5000.0f, 0.0f)), VSub(goalPos, VGet(0.0f, 5000.0f, 0.0f)));
 
 	if (!nowPos.HitFlag || !goal.HitFlag)
 	{

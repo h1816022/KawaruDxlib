@@ -812,6 +812,11 @@ bool CheckMatch2D(const VECTOR& v1, const VECTOR& v2)
 	return CheckMatch(VGet(v1.x, 0.0f, v1.z), VGet(v2.x, 0.0f, v2.z));
 }
 
+float GetLength(const VECTOR& v)
+{
+	return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
 SlashShape::SlashShape(const Position2f& inCenter, const Vector2f& inV1, const Vector2f& inV2) :
 	center(inCenter), v1(inV1), v2(inV2)
 {

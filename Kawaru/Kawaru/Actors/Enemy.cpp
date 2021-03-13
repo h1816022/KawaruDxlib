@@ -2,6 +2,7 @@
 #include "../Systems/Input.h"
 #include "Stage.h"
 #include "../NavMesh/NavMeshMoveComponent.h"
+#include "../NavMesh/NavMesh.h"
 
 namespace
 {
@@ -24,7 +25,7 @@ namespace
 Enemy::Enemy(const Stage& stage, const float posX, const float posY, const float posZ):
 	Character(L"Models/DxChara.x", L"Models/Hatune/Hatune", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ)
 {
-	navMeshMoveComponent_ = std::make_unique<NavMeshMoveComponent>(*this, stage_);
+	navMeshMoveComponent_ = std::make_unique<NavMeshMoveComponent>(*this, stage_, NAV_TYPE::grounded);
 }
 
 Enemy::~Enemy()

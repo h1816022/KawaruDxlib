@@ -88,52 +88,12 @@ void Player::Draw()
 
 	DrawShadow();
 
-	//NavMesh& navMesh = stage_.GetNavMesh();
+	for (auto& offset : lineTraceSamplingOffsets_)
+	{
+		VECTOR p = VAdd(pos_, offset);
 
-	//auto result = navMesh.CheckHitLine(VAdd(pos_, VGet(0.0f, 5000.0f, 0.0f)), VSub(pos_, VGet(0.0f, 5000.0f, 0.0f)));
-
-	//auto goal = navMesh.CheckHitLine(VAdd(pos_, VGet(-3000.0f, 5000.0f, 4000.0f)), VSub(pos_, VGet(3000.0f, 5000.0f, -4000.0f)));
-
-	//DrawLine3D(result.Position[0], result.Position[1], 0xffff00);
-	//DrawLine3D(result.Position[1], result.Position[2], 0xffff00);
-	//DrawLine3D(result.Position[2], result.Position[0], 0xffff00);
-
-	//DrawLine3D(goal.Position[0], goal.Position[1], 0x00ffff);
-	//DrawLine3D(goal.Position[1], goal.Position[2], 0x00ffff);
-	//DrawLine3D(goal.Position[2], goal.Position[0], 0x00ffff);
-
-	//NavMeshPath path;
-	//if (!navMesh.FindPath(path, result.PolygonIndex, result.HitPosition, goal.PolygonIndex, goal.HitPosition))
-	//{
-	//	return;
-	//}
-
-	//for (int i = 0; i < path.GetWaypoints().size() - 1; ++i)
-	//{
-	//	auto n = navMesh.GetMeshRef();
-
-	//	int id = path.GetWaypoints()[i].id;
-	//	if (id == -1)
-	//	{
-	//		continue;
-	//	}
-
-	//	DrawLine3D(n.Vertexs[n.Polygons[id].VIndex[0]].Position, 
-	//		n.Vertexs[n.Polygons[id].VIndex[1]].Position
-	//		, 0xffffff);
-	//	DrawLine3D(n.Vertexs[n.Polygons[id].VIndex[1]].Position, 
-	//		n.Vertexs[n.Polygons[id].VIndex[2]].Position
-	//		, 0xffffff);
-	//	DrawLine3D(n.Vertexs[n.Polygons[id].VIndex[2]].Position, 
-	//		n.Vertexs[n.Polygons[id].VIndex[0]].Position
-	//		, 0xffffff);
-	//}
-
-	//auto p = path.GetStraightPath(0.5f);
-	//for (int i = 0; i < (p.size() - 1); ++i)
-	//{
-	//	DrawLine3D(VAdd(p[i], VGet(0.0f, 0.0f, 0.0f)), VAdd(p[i + 1], VGet(0.0f, 0.0f, 0.0f)), 0x00ff00);
-	//}
+		DrawSphere3D(p, 50.0f, 30, 0x00ff00, 0x00ff00, true);
+	}
 }
 
 const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const

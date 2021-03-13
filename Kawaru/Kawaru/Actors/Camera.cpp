@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "../Systems/Input.h"
 #include "Stage.h"
+#include "../Geometry.h"
 
 namespace
 {
@@ -17,15 +18,15 @@ namespace
 	constexpr float CAMERA_ARM_LENGTH_FIRST = 1.0f;
 
 	// 視点座標から注視点までの距離、三人称視点時
-	constexpr float CAMERA_ARM_LENGTH_THIRD = 1800.0f;
+	constexpr float CAMERA_ARM_LENGTH_THIRD = 1.0f;
 
 	// 遮蔽物検出用コリジョンの大きさ
 	constexpr float COLLISION_SIZE = 50.0f;
 }
 
-Camera::Camera(const Stage& stage, const float posX, const float posY, const float posZ):
-	Actor(posX, posY, posZ), 
-	stage_(stage), 
+Camera::Camera(const Stage& stage, const float posX, const float posY, const float posZ) :
+	Actor(posX, posY, posZ),
+	stage_(stage),
 	targetHeightOffset_(TARGET_HEIGHT_OFFSET_THIRD),
 	armLength_(CAMERA_ARM_LENGTH_THIRD)
 {
@@ -47,7 +48,40 @@ void Camera::Update(const Input& input)
 
 	UpdateAngle(input);
 
-	targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
+	if (input.IsPressed("Camera") || CanSeePlayer())
+	{
+		targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
+		c = true;
+	}
+	else
+	{
+		const MATRIX rotY = MGetRotY(angleH_);
+		const MATRIX rotZ = MGetRotZ(angleV_);
+
+		if (c)
+		{
+			c = false;
+			VECTOR tmpTargetPos = VGet(1.0f, 0.0f, 0.0f);
+
+			VECTOR toPlayerVec = VNorm(VSub(targetPos_, pos_));
+			VECTOR toTmpTargetVec = VNorm(VSub(tmpTargetPos, pos_));
+
+			VECTOR toPlayerXZ = VGet(toPlayerVec.x, 0.0f, toPlayerVec.z);
+			VECTOR toTmpTargetXZ = VGet(toTmpTargetVec.x, 0.0f, toTmpTargetVec.z);
+
+			a = acosf(VDot(toPlayerXZ, toTmpTargetXZ) / (GetLength(toPlayerXZ) * GetLength(toTmpTargetXZ)));
+			angleH_ = (a > 0.0f) ? -a : a;
+
+			VECTOR toPlayerXY = VGet(toPlayerVec.x, toPlayerVec.y, 0.0f);
+			VECTOR toTmpTargetXY = VGet(toTmpTargetVec.x, toTmpTargetVec.y, 0.0f);
+
+			b = acosf(VDot(toPlayerXY, toTmpTargetXY) / (GetLength(toPlayerXY) * GetLength(toTmpTargetXY)));
+			b = (a > 1.6f) ? b - 3.2f : b;
+			angleV_ = b;
+		}
+
+		targetPos_ = VAdd(VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY), pos_);
+	}
 
 	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
 	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
@@ -57,6 +91,13 @@ void Camera::Update(const Input& input)
 
 void Camera::Draw()
 {
+	DrawFormatString(0, 0, 0xffffff, L"%f", a);
+	DrawFormatString(0, 25, 0xffffff, L"%f", angleH_);
+}
+
+void Camera::SetPos(const VECTOR& pos)
+{
+	pos_ = pos;
 }
 
 const VECTOR& Camera::GetTargetPos() const
@@ -97,9 +138,11 @@ void Camera::UpdatePos()
 	const MATRIX rotZ = MGetRotZ(angleV_);
 
 	// カメラの座標を算出
-	pos_ = VAdd(VTransform(VTransform(VGet(-armLength_, 0.0f, 0.0f), rotZ), rotY), targetPos_);
+	//pos_ = VAdd(VTransform(VTransform(VGet(-armLength_, 0.0f, 0.0f), rotZ), rotY), targetPos_);
 
-	UpdateArmLength(rotY, rotZ);
+	//pos_ = targetActor_->GetPos();
+
+	//UpdateArmLength(rotY, rotZ);
 }
 
 void Camera::ClampAngle()
@@ -138,8 +181,6 @@ void Camera::UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ)
 		float testLength;
 		VECTOR testPosition;
 
-		// 当たらない位置までプレイヤーに近づく
-
 		notHitLength = 0.0f;
 
 		hitLength = armLength_;
@@ -167,13 +208,38 @@ void Camera::UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ)
 	}
 }
 
-bool Camera::CanSeeThePlayer()
+bool Camera::CanSeePlayer()
 {
-	for (auto& targetPos : player_->GetLineTraceSamplingOffsets())
+	VECTOR minPos = player_->GetLineTraceSamplingOffsets()[0];
+	VECTOR maxPos = player_->GetLineTraceSamplingOffsets()[0];
+
+	for (auto& targetPosOffset : player_->GetLineTraceSamplingOffsets())
 	{
-		auto hitResult = stage_.CheckHitLine(pos_, VAdd(player_->GetPos(), targetPos));
+		VECTOR targetPos = VAdd(player_->GetPos(), targetPosOffset);
+
+		auto hitResult = stage_.CheckHitLine(pos_, targetPos);
 		if (!hitResult.HitFlag)
 		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Camera::CanSeePlayer(VECTOR& visiblePos)
+{
+	VECTOR minPos = player_->GetLineTraceSamplingOffsets()[0];
+	VECTOR maxPos = player_->GetLineTraceSamplingOffsets()[0];
+
+	for (auto& targetPosOffset : player_->GetLineTraceSamplingOffsets())
+	{
+		VECTOR targetPos = VAdd(player_->GetPos(), targetPosOffset);
+
+		auto hitResult = stage_.CheckHitLine(pos_, targetPos);
+		if (!hitResult.HitFlag)
+		{
+			visiblePos = targetPos;
 			return true;
 		}
 	}

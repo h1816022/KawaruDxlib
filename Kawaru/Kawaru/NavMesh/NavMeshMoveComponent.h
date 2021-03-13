@@ -9,7 +9,7 @@ enum class NAV_TYPE;
 class NavMeshMoveComponent
 {
 public:
-	NavMeshMoveComponent(const Actor& owner, const Stage& stage);
+	NavMeshMoveComponent(const Actor& owner, const Stage& stage, NAV_TYPE type);
 	~NavMeshMoveComponent();
 
 	bool CalcPath(const VECTOR& startPos, const VECTOR& goalPos);
@@ -33,5 +33,5 @@ private:
 
 	const Actor& owner_;
 
-	NAV_TYPE type_;
+	const NAV_TYPE type_;
 };
