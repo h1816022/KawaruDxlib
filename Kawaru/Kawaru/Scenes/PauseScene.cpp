@@ -30,7 +30,7 @@ PauseScene::PauseScene(SceneController& controller) :
 
 	InitMenu();
 
-	Scene::StartFade(FadeMode::In);
+	Scene::StartFade(FADE_MODE::In);
 }
 
 PauseScene::~PauseScene()

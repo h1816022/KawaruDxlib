@@ -19,11 +19,19 @@ public:
     void Draw();
 
 private:
+    bool ApproachPlayer();
+
+    void ApproachTarget(const VECTOR& target);
+
+    VECTOR CalcApproachPos(const VECTOR& target);
+
+    void EndMove();
+
     std::unique_ptr<NavMeshMoveComponent> navMeshMoveComponent_;
 
     VECTOR floatingOffset_;
 
     Camera& camera_;
 
-    VECTOR p;
+    bool followingPlayer_ = false;
 };

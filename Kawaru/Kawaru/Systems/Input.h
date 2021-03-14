@@ -7,22 +7,22 @@
 constexpr int INPUT_RECORD_SIZE = 2;
 
 // 入力デバイスの種類
-enum class PeripheralType
+enum class PERIPHERAL_TYPE
 {
-	keyboard,
-	gamepad
+	Keyboard,
+	Gamepad
 };
 
 struct PeripheralInfo
 {
-	PeripheralType type;
+	PERIPHERAL_TYPE type;
 	int index;
 };
 
-enum class AnalogInputType
+enum class ANALOG_INPUT_TYPE
 {
-	LEFT,
-	RIGHT
+	Left,
+	Right
 };
 
 struct AnalogInputData
@@ -84,7 +84,7 @@ public:
 	/// <returns>true : このフレームに離された</returns>
 	bool IsReleased(const char* cmd)const;
 
-	AnalogInputData GetAnalogInput(AnalogInputType type)const;
+	AnalogInputData GetAnalogInput(ANALOG_INPUT_TYPE type)const;
 
 private:
 	/// <summary>

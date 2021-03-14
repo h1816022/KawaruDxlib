@@ -19,7 +19,7 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	drawer_(&GameplayingScene::FadeInDraw),
 	vpSize_(Application::Instance().GetViewport().GetSize())
 {
-	StartFade(FadeMode::In);
+	StartFade(FADE_MODE::In);
 
 	auto navMesh = std::make_shared<NavMesh>();
 	AddActors(navMesh);
@@ -99,5 +99,5 @@ void GameplayingScene::Draw()
 
 void GameplayingScene::StageClear()
 {
-	Scene::StartFade(FadeMode::Out);
+	Scene::StartFade(FADE_MODE::Out);
 }

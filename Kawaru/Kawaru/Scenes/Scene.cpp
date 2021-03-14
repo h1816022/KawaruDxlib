@@ -16,10 +16,10 @@ Scene::Scene(SceneController& controller) :
 	controller_(controller)
 {
 	fadeCount_ = 0;
-	fadeMode_ = FadeMode::Non;
+	fadeMode_ = FADE_MODE::Non;
 }
 
-void Scene::StartFade(const FadeMode& mode)
+void Scene::StartFade(const FADE_MODE& mode)
 {
 	fadeCount_ = 0;
 	fadeMode_ = mode;
@@ -27,9 +27,9 @@ void Scene::StartFade(const FadeMode& mode)
 
 void Scene::PostDraw()
 {
-	if (fadeMode_ != FadeMode::Non)
+	if (fadeMode_ != FADE_MODE::Non)
 	{
-		if (fadeMode_ == FadeMode::In)
+		if (fadeMode_ == FADE_MODE::In)
 		{
 			Fade(1.0f - (fadeCount_ / static_cast<float>(FADE_INTERVAL)));
 		}
@@ -90,11 +90,11 @@ Scene::~Scene()
 
 void Scene::UpdateFade(const Input& input)
 {
-	if (fadeMode_ != FadeMode::Non)
+	if (fadeMode_ != FADE_MODE::Non)
 	{
 		if (fadeCount_ > FADE_INTERVAL)
 		{
-			if (fadeMode_ == FadeMode::In)
+			if (fadeMode_ == FADE_MODE::In)
 			{
 				EndFadeIn();
 			}
@@ -102,7 +102,7 @@ void Scene::UpdateFade(const Input& input)
 			{
 				EndFadeOut();
 			}
-			fadeMode_ = FadeMode::Non;
+			fadeMode_ = FADE_MODE::Non;
 		}
 	}
 }

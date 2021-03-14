@@ -89,7 +89,7 @@ const CellEdge& NavMeshCells::GetArrivalEdge(NAV_TYPE type, int toCellID) const
 
 std::array<std::shared_ptr<NavMeshCells>, 3>& NavMeshCells::GetNeighbors(NAV_TYPE type)
 {
-	if (type == NAV_TYPE::grounded)
+	if (type == NAV_TYPE::Grounded)
 	{
 		return neighbors_.randed;
 	}
@@ -101,7 +101,7 @@ std::array<std::shared_ptr<NavMeshCells>, 3>& NavMeshCells::GetNeighbors(NAV_TYP
 
 const std::array<std::shared_ptr<NavMeshCells>, 3>& NavMeshCells::GetNeighbors(NAV_TYPE type) const
 {
-	if (type == NAV_TYPE::grounded)
+	if (type == NAV_TYPE::Grounded)
 	{
 		return neighbors_.randed;
 	}

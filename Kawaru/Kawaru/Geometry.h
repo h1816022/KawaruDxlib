@@ -384,3 +384,9 @@ bool CheckMatch(const VECTOR& v1, const VECTOR& v2);
 bool CheckMatch2D(const VECTOR& v1, const VECTOR& v2);
 
 float GetLength(const VECTOR& v);
+
+VECTOR Lerp(const VECTOR& v1, const VECTOR& v2, float rate);
+
+VECTOR RandomVector();
+
+float Lerp(float f1, float f2, float rate);

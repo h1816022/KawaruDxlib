@@ -5,6 +5,19 @@
 
 class Stage;
 
+enum class CAMERA_MODE
+{
+    PlayerFollow,   // プレイヤーを映す
+    TargetFollow,   // ターゲットを映す
+    Manual          // ターゲットを指定しない
+};
+
+struct Angle
+{
+    float horizontal;
+    float vertical;
+};
+
 class Camera :
     public Actor
 {
@@ -37,17 +50,15 @@ public:
     void SetPlayer(std::shared_ptr<Player> player);
 
     /// <summary>
-    /// プレイヤーが見えているか
-    /// </summary>
-    /// <returns>true : 見えている</returns>
-    bool CanSeePlayer();
-
-    /// <summary>
-    /// プレイヤーが見えているか
+    /// プレイヤーが見えているなら、見えている部分の座標を取得
     /// </summary>
     /// <param name="visiblePos">見えた座標</param>
     /// <returns>true : 見えている</returns>
-    bool CanSeePlayer(VECTOR& visiblePos);
+    bool GetVisiblePlayerPos(VECTOR& visiblePos);
+
+    void ChangeMode(CAMERA_MODE mode);
+
+    bool GetFollowingPlayerFlag();
 
 private:
     /// <summary>
@@ -66,6 +77,8 @@ private:
     /// </summary>
     void ClampAngle();
 
+    Angle CalcAngle(const VECTOR& nowVec, const VECTOR& targetVec);
+
     /// <summary>
     /// カメラアームの更新
     /// </summary>
@@ -73,13 +86,26 @@ private:
     /// <param name="rotZ">Z回転</param>
     void UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ);
 
+    void LostPlayer();
+
+    void UpdatePlayerFollowMode();
+
+    void UpdateTargetFollowMode();
+    
+    void UpdateManualMode();
+
+    /// <summary>
+    /// プレイヤーが見えているか
+    /// </summary>
+    /// <returns>true : 見えている</returns>
+    bool CanSeePlayer();
+
+    using UpdateFunc = void (Camera::*)();
+    UpdateFunc updaterByMode_;
+
     VECTOR targetPos_;
 
-    // 水平角度
-    float angleH_;
-
-    // 垂直角度
-    float angleV_;
+    Angle angle_;
 
     std::shared_ptr<Actor> targetActor_;
 
@@ -93,9 +119,8 @@ private:
     float targetHeightOffset_;
 
     float armLength_;
-    
-    float a;
-    float b;
 
-    bool c = false;
+    bool followingPlayer_ = false;
+
+    CAMERA_MODE mode_ = CAMERA_MODE::PlayerFollow;
 };

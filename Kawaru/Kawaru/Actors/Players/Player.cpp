@@ -68,7 +68,7 @@ void Player::Update(const Input& input)
 	{
 		moveDirection_ = VNorm(moveVec_);
 
-		const float MOVE_SPEED_RATE = input.GetAnalogInput(AnalogInputType::LEFT).Length();
+		const float MOVE_SPEED_RATE = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left).Length();
 
 		moveVec_ = VScale(moveDirection_, DEFAULT_MOVE_SPEED * MOVE_SPEED_RATE);
 	}
@@ -87,13 +87,6 @@ void Player::Draw()
 	MV1DrawModel(modelHandle_);
 
 	DrawShadow();
-
-	for (auto& offset : lineTraceSamplingOffsets_)
-	{
-		VECTOR p = VAdd(pos_, offset);
-
-		DrawSphere3D(p, 50.0f, 30, 0x00ff00, 0x00ff00, true);
-	}
 }
 
 const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const
@@ -152,7 +145,7 @@ bool Player::CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECT
 
 	bool moveFlag = false;
 
-	auto analogInpoutData = input.GetAnalogInput(AnalogInputType::LEFT);
+	auto analogInpoutData = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left);
 
 	// ç∂âEà⁄ìÆ
 	if (analogInpoutData.horizontal != 0.0f)

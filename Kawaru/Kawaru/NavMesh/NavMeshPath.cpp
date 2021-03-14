@@ -5,14 +5,14 @@
 
 struct NavMeshMath
 {
-	enum class PointSide
+	enum class POINT_SIDE
 	{
-		LEFT_SIDE,
-		RIGHT_SIDE,
-		ON_LINE
+		LeftSide,
+		RightSide,
+		OnLine
 	};
 
-	static PointSide ClassifyPoint(const VECTOR& A, const VECTOR& B, const VECTOR& C)
+	static POINT_SIDE ClassifyPoint(const VECTOR& A, const VECTOR& B, const VECTOR& C)
 	{
 		Vector2f ab(B.x - A.x, B.y - A.y);
 		Vector2f ac(C.x - A.x, C.y - A.y);
@@ -21,16 +21,16 @@ struct NavMeshMath
 
 		if (value == 0)
 		{
-			return PointSide::ON_LINE;
+			return POINT_SIDE::OnLine;
 		}
 
 		if (value < 0)
 		{
-			return PointSide::LEFT_SIDE;
+			return POINT_SIDE::LeftSide;
 		}
 		else
 		{
-			return PointSide::RIGHT_SIDE;
+			return POINT_SIDE::RightSide;
 		}
 	}
 };
@@ -103,13 +103,13 @@ std::vector<VECTOR> NavMeshPath::GetStraightPath(float cornerOffsetRatio) const
 		VECTOR nextLeft = portalEdges[i].left;
 		VECTOR nextRight = portalEdges[i].right;
 
-		NavMeshMath::PointSide classification = NavMeshMath::ClassifyPoint(portalApex, portalRight, nextRight);
+		NavMeshMath::POINT_SIDE classification = NavMeshMath::ClassifyPoint(portalApex, portalRight, nextRight);
 
-		if (classification != NavMeshMath::PointSide::RIGHT_SIDE)
+		if (classification != NavMeshMath::POINT_SIDE::RightSide)
 		{
 			classification = NavMeshMath::ClassifyPoint(portalApex, portalLeft, nextRight);
 
-			if (CheckMatch(portalApex, portalRight) || classification == NavMeshMath::PointSide::RIGHT_SIDE)
+			if (CheckMatch(portalApex, portalRight) || classification == NavMeshMath::POINT_SIDE::RightSide)
 			{
 				portalRight = nextRight;
 				rightIndex = i;
@@ -135,11 +135,11 @@ std::vector<VECTOR> NavMeshPath::GetStraightPath(float cornerOffsetRatio) const
 
 		classification = NavMeshMath::ClassifyPoint(portalApex, portalLeft, nextLeft);
 
-		if (classification != NavMeshMath::PointSide::LEFT_SIDE)
+		if (classification != NavMeshMath::POINT_SIDE::LeftSide)
 		{
 			classification = NavMeshMath::ClassifyPoint(portalApex, portalRight, nextLeft);
 
-			if (CheckMatch(portalApex, portalLeft) || classification == NavMeshMath::PointSide::LEFT_SIDE)
+			if (CheckMatch(portalApex, portalLeft) || classification == NavMeshMath::POINT_SIDE::LeftSide)
 			{
 				portalLeft = nextLeft;
 				leftIndex = i;

@@ -28,14 +28,15 @@ Camera::Camera(const Stage& stage, const float posX, const float posY, const flo
 	Actor(posX, posY, posZ),
 	stage_(stage),
 	targetHeightOffset_(TARGET_HEIGHT_OFFSET_THIRD),
-	armLength_(CAMERA_ARM_LENGTH_THIRD)
+	armLength_(CAMERA_ARM_LENGTH_THIRD),
+	updaterByMode_(&Camera::UpdatePlayerFollowMode)
 {
 	SetUseZBuffer3D(true);
 	SetWriteZBuffer3D(true);
 	SetUseBackCulling(false);
 
-	angleH_ = DX_PI_F;
-	angleV_ = 0.0f;
+	angle_.horizontal = DX_PI_F;
+	angle_.vertical = 0.0f;
 }
 
 Camera::~Camera()
@@ -46,53 +47,18 @@ void Camera::Update(const Input& input)
 {
 	UpdatePos();
 
-	UpdateAngle(input);
+	//UpdateAngle(input);
 
-	if (input.IsPressed("Camera") || CanSeePlayer())
-	{
-		targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
-		c = true;
-	}
-	else
-	{
-		const MATRIX rotY = MGetRotY(angleH_);
-		const MATRIX rotZ = MGetRotZ(angleV_);
+	(this->*updaterByMode_)();
 
-		if (c)
-		{
-			c = false;
-			VECTOR tmpTargetPos = VGet(1.0f, 0.0f, 0.0f);
-
-			VECTOR toPlayerVec = VNorm(VSub(targetPos_, pos_));
-			VECTOR toTmpTargetVec = VNorm(VSub(tmpTargetPos, pos_));
-
-			VECTOR toPlayerXZ = VGet(toPlayerVec.x, 0.0f, toPlayerVec.z);
-			VECTOR toTmpTargetXZ = VGet(toTmpTargetVec.x, 0.0f, toTmpTargetVec.z);
-
-			a = acosf(VDot(toPlayerXZ, toTmpTargetXZ) / (GetLength(toPlayerXZ) * GetLength(toTmpTargetXZ)));
-			angleH_ = (a > 0.0f) ? -a : a;
-
-			VECTOR toPlayerXY = VGet(toPlayerVec.x, toPlayerVec.y, 0.0f);
-			VECTOR toTmpTargetXY = VGet(toTmpTargetVec.x, toTmpTargetVec.y, 0.0f);
-
-			b = acosf(VDot(toPlayerXY, toTmpTargetXY) / (GetLength(toPlayerXY) * GetLength(toTmpTargetXY)));
-			b = (a > 1.6f) ? b - 3.2f : b;
-			angleV_ = b;
-		}
-
-		targetPos_ = VAdd(VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY), pos_);
-	}
-
-	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
-	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
+	setEye_ = Lerp(setEye_, pos_, 0.2f);
+	setTarget_ = Lerp(setTarget_, targetPos_, 0.2f);
 
 	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
 }
 
 void Camera::Draw()
 {
-	DrawFormatString(0, 0, 0xffffff, L"%f", a);
-	DrawFormatString(0, 25, 0xffffff, L"%f", angleH_);
 }
 
 void Camera::SetPos(const VECTOR& pos)
@@ -117,16 +83,16 @@ void Camera::SetPlayer(std::shared_ptr<Player> player)
 
 void Camera::UpdateAngle(const Input& input)
 {
-	auto analogInpoutData = input.GetAnalogInput(AnalogInputType::RIGHT);
+	auto analogInpoutData = input.GetAnalogInput(ANALOG_INPUT_TYPE::Right);
 
 	if (analogInpoutData.horizontal != 0.0f)
 	{
-		angleH_ += ROT_SPEED * analogInpoutData.horizontal;
+		angle_.horizontal += ROT_SPEED * analogInpoutData.horizontal;
 	}
 
 	if (analogInpoutData.vertical != 0.0f)
 	{
-		angleV_ += ROT_SPEED * analogInpoutData.vertical;
+		angle_.vertical += ROT_SPEED * analogInpoutData.vertical;
 	}
 
 	ClampAngle();
@@ -134,8 +100,8 @@ void Camera::UpdateAngle(const Input& input)
 
 void Camera::UpdatePos()
 {
-	const MATRIX rotY = MGetRotY(angleH_);
-	const MATRIX rotZ = MGetRotZ(angleV_);
+	const MATRIX rotY = MGetRotY(angle_.horizontal);
+	const MATRIX rotZ = MGetRotZ(angle_.vertical);
 
 	// ÉJÉÅÉâÇÃç¿ïWÇéZèo
 	//pos_ = VAdd(VTransform(VTransform(VGet(-armLength_, 0.0f, 0.0f), rotZ), rotY), targetPos_);
@@ -147,23 +113,64 @@ void Camera::UpdatePos()
 
 void Camera::ClampAngle()
 {
-	if (angleH_ < -DX_PI_F)
+	if (angle_.horizontal < -DX_PI_F)
 	{
-		angleH_ += DX_TWO_PI_F;
+		angle_.horizontal += DX_TWO_PI_F;
 	}
-	else if (angleH_ > DX_PI_F)
+	else if (angle_.horizontal > DX_PI_F)
 	{
-		angleH_ -= DX_TWO_PI_F;
+		angle_.horizontal -= DX_TWO_PI_F;
 	}
 
-	if (angleV_ < -DX_PI_F / 2.0f + 0.6f)
+	if (angle_.vertical < -DX_PI_F / 2.0f + 0.6f)
 	{
-		angleV_ = -DX_PI_F / 2.0f + 0.6f;
+		angle_.vertical = -DX_PI_F / 2.0f + 0.6f;
 	}
-	else if (angleV_ > DX_PI_F / 2.0f - 0.6f)
+	else if (angle_.vertical > DX_PI_F / 2.0f - 0.6f)
 	{
-		angleV_ = DX_PI_F / 2.0f - 0.6f;
+		angle_.vertical = DX_PI_F / 2.0f - 0.6f;
 	}
+}
+
+Angle Camera::CalcAngle(const VECTOR& nowVec, const VECTOR& targetVec)
+{
+	Angle ret;
+
+	VECTOR toPlayerXZ = VGet(targetVec.x, 0.0f, targetVec.z);
+	VECTOR toFrontXZ = VGet(nowVec.x, 0.0f, nowVec.z);
+
+	float newAngleH = 0.0f;
+	float newAngleV = 0.0f;
+
+	float size = (GetLength(toPlayerXZ) * GetLength(toFrontXZ));
+	if (size != 0.0f)
+	{
+		newAngleH = acosf(VDot(toPlayerXZ, toFrontXZ) / size);
+		const MATRIX rotY = MGetRotY(angle_.horizontal);
+		const MATRIX rotZ = MGetRotZ(angle_.vertical);
+
+		VECTOR v = VGet(0.0f, 0.0f, 1.0f);
+		VECTOR v2 = VGet(1.0f, 0.0f, 0.0f);
+		VECTOR p = VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY);
+
+		auto s = VDot(v, VSub(p, v2));
+		newAngleH = (s <= 0.0f) ? -newAngleH : newAngleH;
+	}
+
+	VECTOR toPlayerXY = VGet(targetVec.x, targetVec.y, 0.0f);
+	VECTOR toFrontXY = VGet(nowVec.x, nowVec.y, 0.0f);
+
+	size = (GetLength(toPlayerXY) * GetLength(toFrontXY));
+	if (size != 0.0f)
+	{
+		newAngleV = acosf(VDot(toPlayerXY, toFrontXY) / size);
+		//newAngleV = (newAngleV > (DX_PI_F / 2)) ? DX_PI_F - newAngleV : newAngleV;
+	}
+
+	ret.horizontal = newAngleH;
+	ret.vertical = angle_.vertical;
+
+	return ret;
 }
 
 void Camera::UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ)
@@ -208,6 +215,108 @@ void Camera::UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ)
 	}
 }
 
+void Camera::LostPlayer()
+{
+	followingPlayer_ = false;
+
+	Angle newAngle = CalcAngle(VNorm(VSub(VGet(1.0f, 0.0f, 0.0f), pos_)), VNorm(VSub(targetPos_, pos_)));
+	angle_.horizontal = newAngle.horizontal;
+	angle_.vertical = newAngle.vertical;
+}
+
+void Camera::UpdatePlayerFollowMode()
+{
+	if (CanSeePlayer())
+	{
+		targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
+		followingPlayer_ = true;
+	}
+	else
+	{
+		const MATRIX rotY = MGetRotY(angle_.horizontal);
+		const MATRIX rotZ = MGetRotZ(angle_.vertical);
+
+		if (followingPlayer_)
+		{
+			followingPlayer_ = false;
+			VECTOR tmpTargetPos = VGet(1.0f, 0.0f, 0.0f);
+
+			VECTOR toPlayerVec = VNorm(VSub(targetPos_, pos_));
+			VECTOR toTmpTargetVec = VNorm(VSub(tmpTargetPos, pos_));
+
+			VECTOR toPlayerXZ = VGet(toPlayerVec.x, 0.0f, toPlayerVec.z);
+			VECTOR toTmpTargetXZ = VGet(toTmpTargetVec.x, 0.0f, toTmpTargetVec.z);
+
+			auto newAngleH = acosf(VDot(toPlayerXZ, toTmpTargetXZ) / (GetLength(toPlayerXZ) * GetLength(toTmpTargetXZ)));
+			angle_.horizontal = (newAngleH > 0.0f) ? -newAngleH : newAngleH;
+
+			VECTOR toPlayerXY = VGet(toPlayerVec.x, toPlayerVec.y, 0.0f);
+			VECTOR toTmpTargetXY = VGet(toTmpTargetVec.x, toTmpTargetVec.y, 0.0f);
+
+			auto newAngleV = acosf(VDot(toPlayerXY, toTmpTargetXY) / (GetLength(toPlayerXY) * GetLength(toTmpTargetXY)));
+			newAngleV = (newAngleH > DX_PI_F / 2) ? newAngleV - DX_PI_F : newAngleV;
+			angle_.vertical = newAngleV;
+		}
+
+		//targetPos_ = VAdd(VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY), pos_);
+	}
+
+	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
+	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
+
+	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
+}
+
+void Camera::UpdateTargetFollowMode()
+{
+}
+
+void Camera::UpdateManualMode()
+{
+	if (followingPlayer_)
+	{
+		LostPlayer();
+	}
+
+	const MATRIX rotY = MGetRotY(angle_.horizontal);
+	const MATRIX rotZ = MGetRotZ(angle_.vertical);
+
+	targetPos_ = VAdd(VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY), pos_);
+}
+
+void Camera::ChangeMode(CAMERA_MODE mode)
+{
+	if (mode_ == mode)
+	{
+		return;
+	}
+
+	mode_ = mode;
+
+	switch (mode)
+	{
+	case CAMERA_MODE::PlayerFollow:
+		updaterByMode_ = &Camera::UpdatePlayerFollowMode;
+		break;
+
+	case CAMERA_MODE::TargetFollow:
+		updaterByMode_ = &Camera::UpdateTargetFollowMode;
+		break;
+
+	case CAMERA_MODE::Manual:
+		updaterByMode_ = &Camera::UpdateManualMode;
+		break;
+
+	default:
+		break;
+	}
+}
+
+bool Camera::GetFollowingPlayerFlag()
+{
+	return followingPlayer_;
+}
+
 bool Camera::CanSeePlayer()
 {
 	VECTOR minPos = player_->GetLineTraceSamplingOffsets()[0];
@@ -227,7 +336,7 @@ bool Camera::CanSeePlayer()
 	return false;
 }
 
-bool Camera::CanSeePlayer(VECTOR& visiblePos)
+bool Camera::GetVisiblePlayerPos(VECTOR& visiblePos)
 {
 	VECTOR minPos = player_->GetLineTraceSamplingOffsets()[0];
 	VECTOR maxPos = player_->GetLineTraceSamplingOffsets()[0];

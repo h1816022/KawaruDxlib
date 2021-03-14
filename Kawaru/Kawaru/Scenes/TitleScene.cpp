@@ -34,7 +34,7 @@ TitleScene::TitleScene(SceneController& controller) :
 
 	count_ = 0;
 
-	StartFade(FadeMode::In);
+	StartFade(FADE_MODE::In);
 }
 
 void TitleScene::NormalUpdate(const Input& input)

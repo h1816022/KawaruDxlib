@@ -7,7 +7,7 @@ class SceneController;
 class Input;
 class Actor;
 
-enum class FadeMode
+enum class FADE_MODE
 {
 	Non,
 	In,
@@ -63,7 +63,7 @@ protected:
 	/// フェードを開始する
 	/// </summary>
 	/// <param name="mode">イン / アウトを指定</param>
-	void StartFade(const FadeMode& mode);
+	void StartFade(const FADE_MODE& mode);
 
 	/// <summary>
 	/// 様々な描画の後の画面効果(フェードなど)を描画
@@ -90,7 +90,7 @@ private:
 	/// <param name="rate">濃度</param>
 	void Fade(float rate);
 
-	FadeMode fadeMode_;
+	FADE_MODE fadeMode_;
 
 	int fadeCount_;
 

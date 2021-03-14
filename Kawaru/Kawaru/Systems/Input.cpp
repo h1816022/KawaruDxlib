@@ -17,25 +17,25 @@ Input::Input()
 	rawKeyState_.resize(256);
 
 	currentInputIndex_ = 0;
-	RegistAcceptPeripheral("OK", { { PeripheralType::keyboard, KEY_INPUT_SPACE }, { PeripheralType::gamepad, PAD_INPUT_R} });
-	RegistAcceptPeripheral("Pause", { { PeripheralType::keyboard, KEY_INPUT_P }, { PeripheralType::gamepad, PAD_INPUT_L} });
+	RegistAcceptPeripheral("OK", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_SPACE }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_R} });
+	RegistAcceptPeripheral("Pause", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_P }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_L} });
 	
-	RegistAcceptPeripheral("LUp", { { PeripheralType::keyboard, KEY_INPUT_W }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("LDown", { { PeripheralType::keyboard, KEY_INPUT_S }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("LLeft", { { PeripheralType::keyboard, KEY_INPUT_A }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("LRight", { { PeripheralType::keyboard, KEY_INPUT_D }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("RUp", { { PeripheralType::keyboard, KEY_INPUT_UP }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("RDown", { { PeripheralType::keyboard, KEY_INPUT_DOWN }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("RLeft", { { PeripheralType::keyboard, KEY_INPUT_LEFT }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
-	RegistAcceptPeripheral("RRight", { { PeripheralType::keyboard, KEY_INPUT_RIGHT }, { PeripheralType::gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("LUp", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_W }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("LDown", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_S }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("LLeft", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_A }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("LRight", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_D }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("RUp", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_UP }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("RDown", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_DOWN }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("RLeft", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_LEFT }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
+	RegistAcceptPeripheral("RRight", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_RIGHT }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
 
-	RegistAcceptPeripheral("MenuUp", { { PeripheralType::keyboard, KEY_INPUT_W }, { PeripheralType::gamepad, PAD_INPUT_UP} });
-	RegistAcceptPeripheral("MenuDown", { { PeripheralType::keyboard, KEY_INPUT_S }, { PeripheralType::gamepad, PAD_INPUT_DOWN} });
+	RegistAcceptPeripheral("MenuUp", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_W }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_UP} });
+	RegistAcceptPeripheral("MenuDown", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_S }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_DOWN} });
 	
-	RegistAcceptPeripheral("Exit", { { PeripheralType::keyboard, KEY_INPUT_ESCAPE }, { PeripheralType::gamepad, PAD_INPUT_Z} });
-	RegistAcceptPeripheral("DebugMode", { { PeripheralType::keyboard, KEY_INPUT_F1 }, { PeripheralType::gamepad, PAD_INPUT_Y} });
-	RegistAcceptPeripheral("Jump", { { PeripheralType::keyboard, KEY_INPUT_SPACE }, { PeripheralType::gamepad, PAD_INPUT_A} });
-	RegistAcceptPeripheral("Camera", { { PeripheralType::keyboard, KEY_INPUT_LSHIFT }, { PeripheralType::gamepad, PAD_INPUT_C} });
+	RegistAcceptPeripheral("Exit", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_ESCAPE }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_Z} });
+	RegistAcceptPeripheral("DebugMode", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_F1 }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_Y} });
+	RegistAcceptPeripheral("Jump", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_SPACE }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_A} });
+	RegistAcceptPeripheral("Camera", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_LSHIFT }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_C} });
 }
 
 void Input::Update()
@@ -56,11 +56,11 @@ bool Input::CheckPressed(const char* eventName, const char* keyState, int padSta
 
 	for (auto& p : peripheralReferenceTable_[eventName])
 	{
-		if (p.type == PeripheralType::keyboard)
+		if (p.type == PERIPHERAL_TYPE::Keyboard)
 		{
 			ret = ret || keyState[p.index];
 		}
-		else if (p.type == PeripheralType::gamepad)
+		else if (p.type == PERIPHERAL_TYPE::Gamepad)
 		{
 			ret = ret || (padState & p.index);
 		}
@@ -79,14 +79,14 @@ bool Input::IsReleased(const char* cmd) const
 	return !GetCurrentInput(cmd) && PrevInput(cmd);
 }
 
-AnalogInputData Input::GetAnalogInput(AnalogInputType type)const
+AnalogInputData Input::GetAnalogInput(ANALOG_INPUT_TYPE type)const
 {
 	DINPUT_JOYSTATE input;
 	GetJoypadDirectInputState(DX_INPUT_PAD1, &input);
 
 	AnalogInputData data;
 
-	if (type == AnalogInputType::LEFT)
+	if (type == ANALOG_INPUT_TYPE::Left)
 	{
 		data = { static_cast<float>(input.X) / 1000.0f, static_cast<float>(input.Y) / -1000.0f };
 

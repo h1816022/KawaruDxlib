@@ -11,8 +11,8 @@ class NavMeshPath;
 // どういう前提で経路探索するか
 enum class NAV_TYPE
 {
-    grounded,   // 接地する
-    floated     // 浮かぶ
+    Grounded,   // 接地する
+    Floated     // 浮かぶ
 };
 
 struct NavNode

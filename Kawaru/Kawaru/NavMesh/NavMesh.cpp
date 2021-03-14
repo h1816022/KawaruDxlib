@@ -16,8 +16,8 @@ NavMesh::NavMesh():
 		cells_.emplace_back(std::make_shared<NavMeshCells>(vert[poly.VIndex[0]].Position, vert[poly.VIndex[1]].Position, vert[poly.VIndex[2]].Position, index));
 	}
 
-	CalcNeighbor(NAV_TYPE::grounded);
-	CalcNeighbor(NAV_TYPE::floated);
+	CalcNeighbor(NAV_TYPE::Grounded);
+	CalcNeighbor(NAV_TYPE::Floated);
 }
 
 NavMesh::~NavMesh()
@@ -226,7 +226,7 @@ void NavMesh::FindMatchingIndices(std::vector<int>& outIndices, NAV_TYPE type, c
 	{
 		for (int j = 0; j < 3; ++j)
 		{
-			if (type == NAV_TYPE::grounded)
+			if (type == NAV_TYPE::Grounded)
 			{
 				if (CheckMatch(currentCell->GetPositions()[i], otherCell->GetPositions()[j]))
 				{
