@@ -29,9 +29,13 @@ private:
 
     std::unique_ptr<NavMeshMoveComponent> navMeshMoveComponent_;
 
-    VECTOR floatingOffset_;
+    float floatingOffset_;
 
     Camera& camera_;
 
     bool followingPlayer_ = false;
+
+    int floatingCount_ = 0;
+
+    float f;
 };

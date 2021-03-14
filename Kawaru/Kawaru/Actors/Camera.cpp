@@ -22,6 +22,7 @@ namespace
 
 	// 遮蔽物検出用コリジョンの大きさ
 	constexpr float COLLISION_SIZE = 50.0f;
+
 }
 
 Camera::Camera(const Stage& stage, const float posX, const float posY, const float posZ) :
@@ -29,7 +30,9 @@ Camera::Camera(const Stage& stage, const float posX, const float posY, const flo
 	stage_(stage),
 	targetHeightOffset_(TARGET_HEIGHT_OFFSET_THIRD),
 	armLength_(CAMERA_ARM_LENGTH_THIRD),
-	updaterByMode_(&Camera::UpdatePlayerFollowMode)
+	updaterByMode_(&Camera::UpdatePlayerFollowMode),
+	nowShakeOffset_(VECTOR()),
+	targetShakeOffset_(VECTOR())
 {
 	SetUseZBuffer3D(true);
 	SetWriteZBuffer3D(true);
@@ -54,7 +57,16 @@ void Camera::Update(const Input& input)
 	setEye_ = Lerp(setEye_, pos_, 0.2f);
 	setTarget_ = Lerp(setTarget_, targetPos_, 0.2f);
 
-	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
+	SetCameraPositionAndTarget_UpVecY(setEye_, VAdd(setTarget_, nowShakeOffset_));
+
+	nowShakeOffset_ = Lerp(nowShakeOffset_, targetShakeOffset_, 0.001f);
+
+	if (++shakeCount_ > 120)
+	{
+		shakeCount_ = 0;
+
+		targetShakeOffset_ = VScale(RandomVector(), (static_cast<float>(GetRand(500)) + 1.0f) * 10.0f);
+	}
 }
 
 void Camera::Draw()

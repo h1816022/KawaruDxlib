@@ -9,26 +9,28 @@
 namespace
 {
 	// 移動速度
-	constexpr float DEFAULT_MOVE_SPEED = 150.0f;
+	constexpr float DEFAULT_MOVE_SPEED = 80.0f;
 
 	// 当たり判定カプセルの半径
 	constexpr float HIT_WIDTH = 15.0f;
 
-	// 当たり判定カプセルの高さ
-	constexpr float HIT_HEIGHT = 15.0f;
+	// 目標地点に達したとみなす半径、としてfloatingOffset_を使う時に足すみなし距離
+	constexpr float GOAL_REACH_RADIUS_OFFSET = 50.0f;
 
-	// 目標地点に達したとみなす半径
-	constexpr float GOAL_REACH_RADIUS = 1250.0f;
-
+	// 近づけたとする距離
 	constexpr float APPROACH_DISTANCE = 2000.0f;
 
+	constexpr float FLOATING_OFFSET = 500.0f;
+
+	constexpr float FLOAT_LENGTH = 15.0f;
 }
 
 Ghost::Ghost(Camera& camera, const Stage& stage, const float posX, const float posY, const float posZ):
-	Character(stage, HIT_WIDTH * 4, HIT_HEIGHT * 2, posX, posY, posZ), camera_(camera)
+	Character(stage, HIT_WIDTH * 4, HIT_WIDTH * 2, posX, posY, posZ), camera_(camera)
 {
-	floatingOffset_ = VGet(0.0f, 1200.0f, 0.0f);
 	navMeshMoveComponent_ = std::make_unique<NavMeshMoveComponent>(*this, stage_, NAV_TYPE::Floated);
+
+	floatingOffset_ = FLOATING_OFFSET;
 }
 
 Ghost::~Ghost()
@@ -41,14 +43,14 @@ void Ghost::Update(const Input& input)
 	{
 		auto paths = navMeshMoveComponent_->GetPaths();
 
-		moveDirection_ = VNorm(VSub(VAdd(navMeshMoveComponent_->GetNextTargetPos(), floatingOffset_), pos_));
+		moveDirection_ = VNorm(VSub(VAdd(navMeshMoveComponent_->GetNextTargetPos(), VGet(0.0f, FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET, 0.0f)), pos_));
 		moveVec_ = VScale(moveDirection_, DEFAULT_MOVE_SPEED);
 	}
 	else
 	{
 		EndMove();
 
-		if (input.IsTriggered("DebugMode"))
+		if (input.IsTriggered("Call"))
 		{
 			ApproachPlayer();
 		}
@@ -59,9 +61,14 @@ void Ghost::Update(const Input& input)
 	UpdateAngle();
 	UpdateAnim();
 
-	navMeshMoveComponent_->Update(GOAL_REACH_RADIUS);
+	navMeshMoveComponent_->Update(FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET + HIT_WIDTH);
 
-	camera_.SetPos(pos_);
+	camera_.SetPos(VAdd(pos_, VGet(0.0f, floatingOffset_, 0.0f)));
+	
+	//f = FLOAT_LENGTH * (1.0f - abs(1.0f - static_cast<float>(floatingCount_) / 100 * 2.0f));
+	//floatingOffset_ = Lerp(FLOATING_OFFSET, FLOATING_OFFSET + f, 1.0f - (abs(f / FLOAT_LENGTH * 2.0f - 1.0f)));
+	floatingOffset_ = Lerp(floatingOffset_, FLOATING_OFFSET + FLOAT_LENGTH * ((floatingCount_ < 30) ? 1.0f : -1.0f), static_cast<float>(GetRand(3) + 2) / 100.0f);
+	floatingCount_ = (++floatingCount_ > 60) ? 0 : floatingCount_;
 }
 
 void Ghost::Draw()
@@ -69,6 +76,8 @@ void Ghost::Draw()
 	DrawShadow();
 
 	navMeshMoveComponent_->Draw();
+
+	//DrawFormatString(0, 0, 0xffffff, L"%f", abs(f / FLOAT_LENGTH * 2.0f - 1.0f));
 }
 
 bool Ghost::ApproachPlayer()
@@ -127,7 +136,7 @@ VECTOR Ghost::CalcApproachPos(const VECTOR& target)
 		}
 	}
 
-	ret = VGet(ret.x, ret.y + floatingOffset_.y, ret.z);
+	ret = VGet(ret.x, ret.y + FLOATING_OFFSET, ret.z);
 
 	return ret;
 }
@@ -141,7 +150,7 @@ void Ghost::EndMove()
 
 	if (!followingPlayer_ && camera_.GetFollowingPlayerFlag())
 	{
-		auto target = VSub(camera_.GetTargetPos(), floatingOffset_);
+		auto target = VSub(camera_.GetTargetPos(), VGet(0.0f, FLOATING_OFFSET, 0.0f));
 		if (GetLength(VSub(pos_, target)) > APPROACH_DISTANCE)
 		{
 			ApproachTarget(VAdd(target, VScale(VNorm(VSub(pos_, target)), APPROACH_DISTANCE)));

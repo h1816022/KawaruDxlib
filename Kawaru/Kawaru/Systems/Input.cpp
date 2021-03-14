@@ -33,7 +33,7 @@ Input::Input()
 	RegistAcceptPeripheral("MenuDown", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_S }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_DOWN} });
 	
 	RegistAcceptPeripheral("Exit", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_ESCAPE }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_Z} });
-	RegistAcceptPeripheral("DebugMode", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_F1 }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_Y} });
+	RegistAcceptPeripheral("Call", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_C }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_Y} });
 	RegistAcceptPeripheral("Jump", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_SPACE }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_A} });
 	RegistAcceptPeripheral("Camera", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_LSHIFT }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_C} });
 }

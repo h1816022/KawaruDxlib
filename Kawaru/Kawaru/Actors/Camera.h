@@ -123,4 +123,9 @@ private:
     bool followingPlayer_ = false;
 
     CAMERA_MODE mode_ = CAMERA_MODE::PlayerFollow;
+
+    VECTOR nowShakeOffset_;
+    VECTOR targetShakeOffset_;
+
+    int shakeCount_ = 0;
 };
