@@ -55,9 +55,10 @@ void Camera::Update(const Input& input)
 	(this->*updaterByMode_)();
 
 	setEye_ = Lerp(setEye_, pos_, 0.2f);
+
 	setTarget_ = Lerp(setTarget_, targetPos_, 0.2f);
 
-	SetCameraPositionAndTarget_UpVecY(setEye_, VAdd(setTarget_, nowShakeOffset_));
+	SetCameraPositionAndTarget_UpVecY(setEye_, VAdd(setTarget_, VScale(nowShakeOffset_, min(GetLength(VSub(targetPos_, pos_)) / 6000.0f, 1.0f))));
 
 	nowShakeOffset_ = Lerp(nowShakeOffset_, targetShakeOffset_, 0.001f);
 
@@ -71,6 +72,7 @@ void Camera::Update(const Input& input)
 
 void Camera::Draw()
 {
+	DrawFormatString(0, 0, 0xffffff, L"%f", GetLength(VSub(targetActor_->GetPos(), pos_)));
 }
 
 void Camera::SetPos(const VECTOR& pos)
