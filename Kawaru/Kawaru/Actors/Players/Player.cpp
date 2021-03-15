@@ -3,6 +3,7 @@
 #include <memory>
 #include "Player.h"
 #include "../Camera.h"
+#include "../Ghost.h"
 #include "../Stage.h"
 #include "../../NavMesh/NavMesh.h"
 #include "../../NavMesh/NavMeshPath.h"
@@ -11,7 +12,7 @@
 namespace
 {
 	// 移動速度
-	constexpr float DEFAULT_MOVE_SPEED = 30.0f;
+	constexpr float MAX_MOVE_SPEED = 30.0f;
 		
 	// 当たり判定カプセルの半径
 	constexpr float HIT_WIDTH = 150.0f;
@@ -23,8 +24,10 @@ namespace
 	constexpr float BODY_WIDTH = HIT_WIDTH / 3 * 2;
 }
 
-Player::Player(const Camera& camera, const Stage& stage, const float posX, const float posY, const float posZ):
-	Character(/*L"Models/Hatune/初音ミク.pmd"*/L"Models/DxChara.x", L"Models/Hatune/Hatune", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ), camera_(camera)
+Player::Player(const Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
+	Character(L"Models/sotai/素体A.pmx", L"Models/Sotai/Animations/Sotai", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ),
+	camera_(camera),
+	ghost_(ghost)
 {
 	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, 1.0f, -BODY_WIDTH));
 	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, 1.0f, -BODY_WIDTH));
@@ -35,7 +38,7 @@ Player::Player(const Camera& camera, const Stage& stage, const float posX, const
 	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, HIT_HEIGHT, BODY_WIDTH));
 	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, HIT_HEIGHT, BODY_WIDTH));
 
-	//MV1SetScale(modelHandle_, VGet(35.0f, 35.0f, 35.0f));
+	MV1SetScale(modelHandle_, VGet(35.0f, 35.0f, 35.0f));
 
 	int materialNum = MV1GetMaterialNum(modelHandle_);
 
@@ -53,31 +56,38 @@ Player::~Player()
 
 void Player::Update(const Input& input)
 {
+	Character::Update(input);
+
 	VECTOR upMoveVec;
 	VECTOR leftMoveVec;
 
-	Character::Update(input);
-
-	// プレイヤーの移動方向のベクトルを算出
-	CalcUnitMoveVector(upMoveVec, leftMoveVec);
-
-	// 各成分のベクトルより、移動ベクトルを算出
-	moveFlag_ = CalcMoveVector(moveVec_, upMoveVec, leftMoveVec, input);
-
-	if (moveFlag_)
+	if (canMove_)
 	{
-		moveDirection_ = VNorm(moveVec_);
+		// プレイヤーの移動方向のベクトルを算出
+		CalcUnitMoveVector(upMoveVec, leftMoveVec);
 
-		const float MOVE_SPEED_RATE = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left).Length();
+		// 各成分のベクトルより、移動ベクトルを算出
+		moveFlag_ = CalcMoveVector(moveVec_, upMoveVec, leftMoveVec, input);
 
-		moveVec_ = VScale(moveDirection_, DEFAULT_MOVE_SPEED * MOVE_SPEED_RATE);
+		if (moveFlag_)
+		{
+			moveDirection_ = VNorm(moveVec_);
+
+			const float MOVE_SPEED_RATE = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left).Length();
+
+			moveVec_ = VScale(moveDirection_, MAX_MOVE_SPEED * MOVE_SPEED_RATE);
+		}
+
+		(this->*updater_)(input);
+
+		UpdateAngle();
+
+		UpdatePos(moveVec_);
 	}
-
-	(this->*updater_)(input);
-
-	UpdateAngle();
-
-	UpdatePos(moveVec_);
+	else
+	{
+		moveVec_ = VGet(0.0f, 0.0f, 0.0f);
+	}
 
 	UpdateAnim();
 }
@@ -102,6 +112,14 @@ void Player::IdleUpdate(const Input& input)
 		return;
 	}
 
+	if (input.IsTriggered("Call"))
+	{
+		if (CallGhost())
+		{
+			return;
+		}
+	}
+
 	if (moveFlag_)
 	{
 		ChangeAnim(ANIM_NAME::Walk);
@@ -115,6 +133,14 @@ void Player::RunUpdate(const Input& input)
 	{
 		Jump();
 		return;
+	}
+
+	if (input.IsTriggered("Call"))
+	{
+		if (CallGhost())
+		{
+			return;
+		}
 	}
 
 	if (!moveFlag_)
@@ -163,4 +189,20 @@ bool Player::CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECT
 	}
 
 	return moveFlag;
+}
+
+bool Player::CallGhost()
+{
+	if (!ghost_.Call())
+	{
+		return false;
+	}
+
+	ChangeAnim(ANIM_NAME::Call);
+
+	StopMove(GetNowAnimTotalTime());
+
+	ChangeUpadater(UPDATE_TYPE::Idle);
+
+	return true;
 }

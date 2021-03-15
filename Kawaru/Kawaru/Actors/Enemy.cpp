@@ -7,7 +7,7 @@
 namespace
 {
 	// 移動速度
-	constexpr float DEFAULT_MOVE_SPEED = 15.0f;
+	constexpr float MAX_MOVE_SPEED = 15.0f;
 
 	// 当たり判定カプセルの半径
 	constexpr float HIT_WIDTH = 150.0f;
@@ -39,7 +39,7 @@ void Enemy::Update(const Input& input)
 		auto paths = navMeshMoveComponent_->GetPaths();
 
 		moveDirection_ = VNorm(VSub(navMeshMoveComponent_->GetNextTargetPos(), pos_));
-		moveVec_ = VScale(moveDirection_, DEFAULT_MOVE_SPEED);
+		moveVec_ = VScale(moveDirection_, MAX_MOVE_SPEED);
 	}
 	else
 	{

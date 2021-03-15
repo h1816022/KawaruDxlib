@@ -72,7 +72,6 @@ void Camera::Update(const Input& input)
 
 void Camera::Draw()
 {
-	DrawFormatString(0, 0, 0xffffff, L"%f", GetLength(VSub(targetActor_->GetPos(), pos_)));
 }
 
 void Camera::SetPos(const VECTOR& pos)

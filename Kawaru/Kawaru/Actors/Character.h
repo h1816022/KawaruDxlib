@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include "Actor.h"
 
 class Input;
@@ -9,11 +10,19 @@ struct HitCheckPolyData;
 enum class ANIM_NAME : int
 {
     Invalid = -1,   // 無効
-    Walk = 0,       // 歩き
-    Run = 1,        // 走り
+    Idle = 0,       // 待機
+    Walk = 1,       // 歩き
     Jump = 2,       // ジャンプ
     Fall = 3,       // 落下
-    Idle = 4        // 待機
+    Dead = 4,       // やられ
+    Call = 5,       // 呼ぶ
+    Max
+};
+
+struct AnimData
+{
+    bool isLoop;
+    int totalTime;
 };
 
 enum class UPDATE_TYPE
@@ -49,6 +58,8 @@ protected:
 
     void Jump();
 
+    int GetNowAnimTotalTime();
+
     /// <summary>
     /// アニメーションを更新
     /// </summary>
@@ -68,6 +79,8 @@ protected:
     void Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos);
 
     void DrawShadow();
+
+    void StopMove(float time);
 
     using UpdateFunc = void (Character::*)(const Input& input);
     UpdateFunc updater_;
@@ -92,7 +105,11 @@ protected:
 
     const Stage& stage_;
 
+    bool canMove_ = true;
+
 private:
+    void InitAnimData();
+
     /// <summary>
     /// アニメーションのブレンド状況を更新
     /// </summary>
@@ -130,7 +147,13 @@ private:
 
     void SetAnimBlendRate(int animAttachNum, float rate);
 
+    AnimData GetAnimData(int animAttachNum);
+
+    void UpdateAnimCount(int animAttachNum, float& animCount);
+
     float CalcAngleDiff(float target)const;
+
+    void UpdateMoveStopTime();
 
     int shadowHandle_;
 
@@ -143,4 +166,9 @@ private:
     float animBlendRate_ = 0.0f;	// 再生しているアニメーション１と２のブレンド率
 
     UPDATE_TYPE nowUpdateType_ = UPDATE_TYPE::Idle;
+
+    std::unordered_map<ANIM_NAME, AnimData> animData_;
+
+    int nowMoveStopTime_ = 0;
+    int moveStopTime_ = 0;
 };

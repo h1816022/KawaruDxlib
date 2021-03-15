@@ -36,7 +36,7 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	auto ghost = std::make_shared<Ghost>(*camera, *stage, -5000.0f, 500.0f, 0.0f);
 	AddActors(ghost);
 
-	auto player = std::make_shared<Player>(*camera, *stage, 0.0f, 0.0f, 0.0f);
+	auto player = std::make_shared<Player>(*camera, *ghost, *stage, 0.0f, 0.0f, 0.0f);
 	AddActors(player);
 
 	camera->SetTargetActor(player);

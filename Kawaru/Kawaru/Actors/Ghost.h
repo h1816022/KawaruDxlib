@@ -18,6 +18,8 @@ public:
 
     void Draw();
 
+    bool Call();
+
 private:
     bool ApproachPlayer();
 
@@ -37,5 +39,7 @@ private:
 
     int floatingCount_ = 0;
 
-    float f;
+    float moveSpeed_;
+
+    VECTOR oldMoveDirection_;
 };

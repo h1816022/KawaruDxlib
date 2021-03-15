@@ -3,6 +3,11 @@
 #include "../NavMesh/NavMeshPath.h"
 #include "../Geometry.h"
 
+namespace
+{
+	constexpr float CLIMB_HEURISTIC_RATE = 5.0f;
+}
+
 NavMesh::NavMesh():
 	Actor(L"Models/t5.mqo")
 {
@@ -153,7 +158,7 @@ std::shared_ptr<NavNode> NavMesh::PopLowestFCostNode(std::vector<std::shared_ptr
 {
 	std::shared_ptr<NavNode> ret = list[0];
 	std::vector<std::shared_ptr<NavNode>>::iterator removeItr = list.begin();
-	int minCost = FLT_MAX;
+	float minCost = FLT_MAX;
 
 	for (auto itr = list.begin(); itr != list.end(); ++itr)
 	{
@@ -163,7 +168,7 @@ std::shared_ptr<NavNode> NavMesh::PopLowestFCostNode(std::vector<std::shared_ptr
 			continue;
 		}
 
-		int nowCost = node->gCost + node->hCost;
+		float nowCost = node->gCost + node->hCost;
 		if (nowCost < minCost)
 		{
 			minCost = nowCost;
@@ -182,7 +187,7 @@ std::shared_ptr<NavNode> NavMesh::PopLowestFCostNode(std::vector<std::shared_ptr
 float NavMesh::CalcHeuristic(const VECTOR& v1, const VECTOR& v2) const
 {
 	VECTOR diff = VSub(v1, v2);
-	return ((diff.x * diff.x) + (diff.y * diff.y) + (diff.z * diff.z));
+	return sqrtf((diff.x * diff.x) + (diff.y * diff.y) * CLIMB_HEURISTIC_RATE + (diff.z * diff.z));
 }
 
 void NavMesh::CalcNeighbor(NAV_TYPE type)

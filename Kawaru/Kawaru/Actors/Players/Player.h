@@ -4,12 +4,13 @@
 #include "../Character.h"
 
 class Camera;
+class Ghost;
 
 class Player :
     public Character
 {
 public:
-    Player(const Camera& camera, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    Player(const Camera& camera, Ghost& ghost, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Player();
 
     void Update(const Input& input)override final;
@@ -26,7 +27,10 @@ private:
 
     bool CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECTOR& leftMoveVec, const Input& input);
 
+    bool CallGhost();
+
     const Camera& camera_;
+    Ghost& ghost_;
 
     // トーレスを行う際に終端とするサンプリング座標の、自身の座標からのオフセット値
     std::vector<VECTOR> lineTraceSamplingOffsets_;
