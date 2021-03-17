@@ -55,8 +55,8 @@ struct HitCheckPolyData
 	std::array<MV1_COLL_RESULT_POLY*, MAX_HIT_COLLISION> floor;	// 床ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
 };
 
-Character::Character(const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
-	Actor(posX, posY, posZ), stage_(stage),
+Character::Character(Scene& scene, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
+	Actor(scene, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
 	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight),
 	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f))
@@ -64,8 +64,8 @@ Character::Character(const Stage& stage, const float hitWidth, const float hitHe
 	InitAnimData();
 }
 
-Character::Character(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
-	Actor(modelFilePath, motionFilePath, posX, posY, posZ), stage_(stage),
+Character::Character(Scene& scene, const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
+	Actor(scene, modelFilePath, motionFilePath, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
 	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight), 
 	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f))
@@ -115,9 +115,23 @@ void Character::ChangeUpadater(UPDATE_TYPE type)
 		updater_ = &Character::JumpUpdate;
 		break;
 
+	case UPDATE_TYPE::Destroy:
+		updater_ = &Character::DestroyUpdate;
+		break;
+
 	default:
 		break;
 	}
+}
+
+Capsule3D Character::GetCollisionCapsule(const VECTOR& pos)
+{
+	return Capsule3D(pos, VAdd(pos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_);
+}
+
+void Character::Destroy()
+{
+	ChangeUpadater(UPDATE_TYPE::Destroy);
 }
 
 void Character::UpdatePos(const VECTOR& moveVector)
@@ -232,8 +246,10 @@ bool Character::CheckHitWithWall(bool moveFlag, const HitCheckPolyData& polyData
 			// i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 			poly = polyData.wall[i];
 
+			auto coll = GetCollisionCapsule(nowPos);
+
 			// ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
-			if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_, poly->Position[0], poly->Position[1], poly->Position[2]) == false)
+			if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == false)
 			{
 				continue;
 			}
@@ -264,8 +280,10 @@ bool Character::CheckHitWithWall(bool moveFlag, const HitCheckPolyData& polyData
 				// j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 				poly = polyData.wall[j];
 
+				coll = GetCollisionCapsule(nowPos);
+
 				// 当たっていたらループから抜ける
-				if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_, poly->Position[0], poly->Position[1], poly->Position[2]) == true) break;
+				if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == true) break;
 			}
 
 			// j が KabeNum だった場合はどのポリゴンとも当たらなかったということなので
@@ -287,8 +305,10 @@ bool Character::CheckHitWithWall(bool moveFlag, const HitCheckPolyData& polyData
 			// i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 			poly = polyData.wall[i];
 
+			auto coll = GetCollisionCapsule(nowPos);
+
 			// ポリゴンに当たっていたら当たったフラグを立てた上でループから抜ける
-			if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_, poly->Position[0], poly->Position[1], poly->Position[2]) == true)
+			if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == true)
 			{
 				isHit = true;
 				break;
@@ -487,8 +507,10 @@ void Character::Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos)
 			// i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 			poly = polyData.wall[polyIndex];
 
+			auto coll = GetCollisionCapsule(nowPos);
+
 			// プレイヤーと当たっているかを判定
-			if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_, poly->Position[0], poly->Position[1], poly->Position[2]) == false)
+			if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == false)
 			{
 				continue;
 			}
@@ -499,11 +521,13 @@ void Character::Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos)
 			// 移動した上で壁ポリゴンと接触しているかどうかを判定
 			int wallIndex;
 
+			coll = GetCollisionCapsule(nowPos);
+
 			for (wallIndex = 0; wallIndex < polyData.wallNum; wallIndex++)
 			{
 				// 当たっていたらループを抜ける
 				poly = polyData.wall[wallIndex];
-				if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_, poly->Position[0], poly->Position[1], poly->Position[2]) == true)
+				if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == true)
 				{
 					break;
 				}
@@ -633,6 +657,11 @@ void Character::JumpUpdate(const Input& input)
 	}
 
 	moveVec_.y = jumpPower_;
+}
+
+void Character::DestroyUpdate(const Input& input)
+{
+	isDead_ = true;
 }
 
 void Character::ChangeAnim(ANIM_NAME playAnim)

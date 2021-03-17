@@ -24,8 +24,8 @@ namespace
 	constexpr float BODY_WIDTH = HIT_WIDTH / 3 * 2;
 }
 
-Player::Player(const Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
-	Character(L"Models/sotai/‘f‘ÌA.pmx", L"Models/Sotai/Animations/Sotai", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ),
+Player::Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
+	Character(scene, L"Models/sotai/‘f‘ÌA.pmx", L"Models/Sotai/Animations/Sotai", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ),
 	camera_(camera),
 	ghost_(ghost)
 {
@@ -48,6 +48,8 @@ Player::Player(const Camera& camera, Ghost& ghost, const Stage& stage, const flo
 
 		MV1SetMaterialOutLineDotWidth(modelHandle_, i, dotWidth / 25.0f);
 	}
+
+	tag_ = L"Player";
 }
 
 Player::~Player()

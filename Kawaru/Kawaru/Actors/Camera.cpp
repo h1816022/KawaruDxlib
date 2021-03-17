@@ -25,8 +25,8 @@ namespace
 
 }
 
-Camera::Camera(const Stage& stage, const float posX, const float posY, const float posZ) :
-	Actor(posX, posY, posZ),
+Camera::Camera(Scene& scene, const Stage& stage, const float posX, const float posY, const float posZ) :
+	Actor(scene, posX, posY, posZ),
 	stage_(stage),
 	targetHeightOffset_(TARGET_HEIGHT_OFFSET_THIRD),
 	armLength_(CAMERA_ARM_LENGTH_THIRD),
@@ -49,8 +49,6 @@ Camera::~Camera()
 void Camera::Update(const Input& input)
 {
 	UpdatePos();
-
-	//UpdateAngle(input);
 
 	(this->*updaterByMode_)();
 
@@ -115,13 +113,6 @@ void Camera::UpdatePos()
 {
 	const MATRIX rotY = MGetRotY(angle_.horizontal);
 	const MATRIX rotZ = MGetRotZ(angle_.vertical);
-
-	// ƒJƒƒ‰‚ÌÀ•W‚ðŽZo
-	//pos_ = VAdd(VTransform(VTransform(VGet(-armLength_, 0.0f, 0.0f), rotZ), rotY), targetPos_);
-
-	//pos_ = targetActor_->GetPos();
-
-	//UpdateArmLength(rotY, rotZ);
 }
 
 void Camera::ClampAngle()
@@ -177,7 +168,6 @@ Angle Camera::CalcAngle(const VECTOR& nowVec, const VECTOR& targetVec)
 	if (size != 0.0f)
 	{
 		newAngleV = acosf(VDot(toPlayerXY, toFrontXY) / size);
-		//newAngleV = (newAngleV > (DX_PI_F / 2)) ? DX_PI_F - newAngleV : newAngleV;
 	}
 
 	ret.horizontal = newAngleH;
@@ -241,37 +231,12 @@ void Camera::UpdatePlayerFollowMode()
 {
 	if (CanSeePlayer())
 	{
-		targetPos_ = VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f));
+		targetPos_ = Lerp(targetPos_, VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f)), 0.1f);
 		followingPlayer_ = true;
 	}
 	else
 	{
-		const MATRIX rotY = MGetRotY(angle_.horizontal);
-		const MATRIX rotZ = MGetRotZ(angle_.vertical);
-
-		if (followingPlayer_)
-		{
-			followingPlayer_ = false;
-			VECTOR tmpTargetPos = VGet(1.0f, 0.0f, 0.0f);
-
-			VECTOR toPlayerVec = VNorm(VSub(targetPos_, pos_));
-			VECTOR toTmpTargetVec = VNorm(VSub(tmpTargetPos, pos_));
-
-			VECTOR toPlayerXZ = VGet(toPlayerVec.x, 0.0f, toPlayerVec.z);
-			VECTOR toTmpTargetXZ = VGet(toTmpTargetVec.x, 0.0f, toTmpTargetVec.z);
-
-			auto newAngleH = acosf(VDot(toPlayerXZ, toTmpTargetXZ) / (GetLength(toPlayerXZ) * GetLength(toTmpTargetXZ)));
-			angle_.horizontal = (newAngleH > 0.0f) ? -newAngleH : newAngleH;
-
-			VECTOR toPlayerXY = VGet(toPlayerVec.x, toPlayerVec.y, 0.0f);
-			VECTOR toTmpTargetXY = VGet(toTmpTargetVec.x, toTmpTargetVec.y, 0.0f);
-
-			auto newAngleV = acosf(VDot(toPlayerXY, toTmpTargetXY) / (GetLength(toPlayerXY) * GetLength(toTmpTargetXY)));
-			newAngleV = (newAngleH > DX_PI_F / 2) ? newAngleV - DX_PI_F : newAngleV;
-			angle_.vertical = newAngleV;
-		}
-
-		//targetPos_ = VAdd(VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY), pos_);
+		followingPlayer_ = false;
 	}
 
 	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));

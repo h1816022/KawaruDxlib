@@ -22,8 +22,8 @@ namespace
 	constexpr float GOAL_REACH_RADIUS = 305.0f;
 }
 
-Enemy::Enemy(const Stage& stage, const float posX, const float posY, const float posZ):
-	Character(L"Models/DxChara.x", L"Models/Hatune/Hatune", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ)
+Enemy::Enemy(Scene& scene, const Stage& stage, const float posX, const float posY, const float posZ):
+	Character(scene, L"Models/DxChara.x", L"Models/Hatune/Hatune", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ)
 {
 	navMeshMoveComponent_ = std::make_unique<NavMeshMoveComponent>(*this, stage_, NAV_TYPE::Grounded);
 }

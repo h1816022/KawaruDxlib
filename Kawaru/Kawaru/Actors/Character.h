@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include "../Geometry.h"
 #include "Actor.h"
 
 class Input;
@@ -29,16 +30,17 @@ enum class UPDATE_TYPE
 {
     Idle,
     Run,
-    Jump
+    Jump,
+    Destroy
 };
 
 class Character :
     public Actor
 {
 public:
-    Character(const Stage& stage, const float hitWidth, const float hitHeight,const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    Character(Scene& scene, const Stage& stage, const float hitWidth, const float hitHeight,const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
 
-    Character(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, 
+    Character(Scene& scene, const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, 
         const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     virtual ~Character();
 
@@ -46,6 +48,10 @@ public:
     virtual void Draw() = 0;
 
     void ChangeUpadater(UPDATE_TYPE type);
+
+    Capsule3D GetCollisionCapsule(const VECTOR& pos)override;
+
+    virtual void Destroy()override;
 
 protected:
     void UpdatePos(const VECTOR& moveVector);
@@ -88,6 +94,7 @@ protected:
     virtual void IdleUpdate(const Input& input);
     virtual void RunUpdate(const Input& input);
     virtual void JumpUpdate(const Input& input);
+    virtual void DestroyUpdate(const Input& input);
 
     void UpdateAngle();
 

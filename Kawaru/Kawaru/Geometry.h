@@ -310,6 +310,18 @@ struct Capsule
 	float radius;
 };
 
+struct Capsule3D
+{
+	Capsule3D() {}
+
+	Capsule3D(const VECTOR& p1, const VECTOR& p2, float r) :
+		pos1(p1), pos2(p2), radius(r) {}
+
+	VECTOR pos1;
+	VECTOR pos2;
+	float radius;
+};
+
 struct Matrix {
 	float m[3][3];
 };

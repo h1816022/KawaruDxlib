@@ -1,8 +1,8 @@
 #include "Stage.h"
 #include "../Systems/Input.h"
 
-Stage::Stage(NavMesh& navMesh):
-	Actor(L"Models/t4.mqo"), navMesh_(navMesh)
+Stage::Stage(Scene& scene, NavMesh& navMesh):
+	Actor(scene, L"Models/t4.mqo"), navMesh_(navMesh)
 {
 }
 

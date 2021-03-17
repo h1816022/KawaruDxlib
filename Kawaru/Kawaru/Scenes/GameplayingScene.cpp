@@ -6,11 +6,11 @@
 #include "../Systems/Input.h"
 #include "../Actors/Players/Player.h"
 #include "../Actors/Camera.h"
-#include "../Actors/Plane.h"
 #include "../Actors/Stage.h"
 #include "../NavMesh/NavMesh.h"
 #include "../Actors/Enemy.h"
 #include "../Actors/Ghost.h"
+#include "../Actors/Needle.h"
 #include "PauseScene.h"
 
 GameplayingScene::GameplayingScene(SceneController& controller) :
@@ -21,22 +21,25 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 {
 	StartFade(FADE_MODE::In);
 
-	auto navMesh = std::make_shared<NavMesh>();
+	auto navMesh = std::make_shared<NavMesh>(*this);
 	AddActors(navMesh);
 
-	auto stage = std::make_shared<Stage>(*navMesh);
+	auto stage = std::make_shared<Stage>(*this, *navMesh);
 	AddActors(stage);
 
-	auto camera = std::make_shared<Camera>(*stage, 0.0f, 500.0f, -4000.0f);
+	auto needle = std::make_shared<Needle>(*this);
+	AddActors(needle);
+
+	auto camera = std::make_shared<Camera>(*this, *stage, 0.0f, 500.0f, -4000.0f);
 	AddActors(camera);
 
 	//auto enemy = std::make_shared<Enemy>(*stage, 500.0f, 0.0f, 0.0f);
 	//AddActors(enemy);
 
-	auto ghost = std::make_shared<Ghost>(*camera, *stage, -5000.0f, 500.0f, 0.0f);
+	auto ghost = std::make_shared<Ghost>(*this, *camera, *stage, -5000.0f, 500.0f, 0.0f);
 	AddActors(ghost);
 
-	auto player = std::make_shared<Player>(*camera, *ghost, *stage, 0.0f, 0.0f, 0.0f);
+	auto player = std::make_shared<Player>(*this, *camera, *ghost, *stage, 0.0f, 0.0f, 0.0f);
 	AddActors(player);
 
 	camera->SetTargetActor(player);

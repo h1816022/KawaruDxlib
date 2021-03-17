@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include "../Systems/Input.h"
 #include "../Application.h"
-#include "../Geometry.h"
 #include "SceneController.h"
 #include "../Actors/Actor.h"
 
@@ -11,6 +10,34 @@ void Scene::AddActors(std::shared_ptr<Actor> actor)
 {
 	actors_.emplace_back(actor);
 }
+
+std::vector<std::shared_ptr<Actor>> Scene::GetActors(const std::wstring& tag)
+{
+	std::vector<std::shared_ptr<Actor>> ret;
+
+	for (auto actor : actors_)
+	{
+		if (actor->GetTag() == tag)
+		{
+			ret.emplace_back(actor);
+		}
+	}
+
+	return ret;
+}
+
+//void Scene::DestroyActor(std::shared_ptr<Actor> actor)
+//{
+//	auto targetItr = find_if(actors_.begin(), actors_.end(), [actor](std::shared_ptr<Actor> a)
+//		{
+//			return a == actor;
+//		});
+//
+//	if (targetItr != actors_.end())
+//	{
+//		actors_.erase(targetItr);
+//	}
+//}
 
 Scene::Scene(SceneController& controller) :
 	controller_(controller)
@@ -61,6 +88,13 @@ void Scene::UpdateActors(const Input& input)
 	{
 		actor->Update(input);
 	}
+
+	auto itr = std::remove_if(actors_.begin(), actors_.end(), [](std::shared_ptr<Actor> actor)
+		{
+			return actor->CheckIsDead();
+		});
+
+	actors_.erase(itr, actors_.end());
 }
 
 void Scene::DrawActors()

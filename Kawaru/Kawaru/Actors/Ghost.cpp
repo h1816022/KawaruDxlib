@@ -25,8 +25,8 @@ namespace
 	constexpr float FLOAT_LENGTH = 15.0f;
 }
 
-Ghost::Ghost(Camera& camera, const Stage& stage, const float posX, const float posY, const float posZ):
-	Character(stage, HIT_WIDTH * 4, HIT_WIDTH * 2, posX, posY, posZ), camera_(camera),
+Ghost::Ghost(Scene& scene, Camera& camera, const Stage& stage, const float posX, const float posY, const float posZ):
+	Character(scene, stage, HIT_WIDTH * 4, HIT_WIDTH * 2, posX, posY, posZ), camera_(camera),
 	floatingOffset_(FLOATING_OFFSET),
 	moveSpeed_(0.0f)
 {

@@ -87,13 +87,7 @@
     <ClCompile Include="Actors\Camera.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="Actors\Plane.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
     <ClCompile Include="Actors\Stage.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
-    <ClCompile Include="Actors\Cube.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Scenes\MenuSceneBase.cpp">
@@ -122,6 +116,15 @@
     </ClCompile>
     <ClCompile Include="NavMesh\NavMeshPath.cpp">
       <Filter>Source Files\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Gimmick.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Needle.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,13 +161,7 @@
     <ClInclude Include="Actors\Camera.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Actors\Plane.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
     <ClInclude Include="Actors\Stage.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
-    <ClInclude Include="Actors\Cube.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
     <ClInclude Include="Scenes\MenuSceneBase.h">
@@ -193,6 +190,15 @@
     </ClInclude>
     <ClInclude Include="NavMesh\NavMeshMoveComponent.h">
       <Filter>Header Files\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Gimmick.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Needle.h">
+      <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,21 +1,25 @@
 #include "Actor.h"
+#include "../Scenes/Scene.h"
 
-Actor::Actor(const float posX, const float posY, const float posZ)
+Actor::Actor(Scene& scene, const float posX, const float posY, const float posZ):
+	scene_(scene)
 {
-	Init(posX, posY, posZ);
+	Init(L"", L"", posX, posY, posZ);
 }
 
-Actor::Actor(const wchar_t* modelFilePath, const float posX, const float posY, const float posZ)
+Actor::Actor(Scene& scene, const wchar_t* modelFilePath, const float posX, const float posY, const float posZ):
+	scene_(scene)
 {
 	modelHandle_ = MV1LoadModel(modelFilePath);
-	Init(posX, posY, posZ);
+	Init(modelFilePath, L"", posX, posY, posZ);
 }
 
-Actor::Actor(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX, const float posY, const float posZ)
+Actor::Actor(Scene& scene, const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX, const float posY, const float posZ):
+	scene_(scene)
 {
 	MV1SetLoadModelAnimFilePath(motionFilePath);
 	modelHandle_ = MV1LoadModel(modelFilePath);
-	Init(posX, posY, posZ);
+	Init(modelFilePath, motionFilePath, posX, posY, posZ);
 }
 
 Actor::~Actor()
@@ -23,10 +27,13 @@ Actor::~Actor()
 	MV1DeleteModel(modelHandle_);
 }
 
-void Actor::Init(const float posX, const float posY, const float posZ)
+void Actor::Init(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX, const float posY, const float posZ)
 {
 	pos_ = VGet(posX, posY, posZ);
 	scale_ = VGet(1.0f, 1.0f, 1.0f);
+
+	MV1SetLoadModelAnimFilePath(motionFilePath);
+	modelHandle_ = MV1LoadModel(modelFilePath);
 }
 
 void Actor::Draw()
@@ -51,4 +58,29 @@ DxLib::MV1_COLL_RESULT_POLY_DIM Actor::CheckHitSphere(const VECTOR& center, floa
 DxLib::MV1_COLL_RESULT_POLY_DIM Actor::CheckHitCapsule(const VECTOR& pos1, const VECTOR& pos2, float radius) const
 {
 	return MV1CollCheck_Capsule(modelHandle_, -1, pos1, pos2, radius);
+}
+
+const std::wstring& Actor::GetTag() const
+{
+	return tag_;
+}
+
+Capsule3D Actor::GetCollisionCapsule(const VECTOR& pos)
+{
+	return Capsule3D();
+}
+
+void Actor::Destroy()
+{
+	if (isDead_)
+	{
+		return;
+	}
+
+	isDead_ = true;
+}
+
+bool Actor::CheckIsDead() const
+{
+	return isDead_;
 }

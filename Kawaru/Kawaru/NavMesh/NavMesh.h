@@ -35,7 +35,7 @@ class NavMesh :
     public Actor
 {
 public:
-    NavMesh();
+    NavMesh(Scene& scene);
     ~NavMesh();
 
     void Update(const Input& input)override final;

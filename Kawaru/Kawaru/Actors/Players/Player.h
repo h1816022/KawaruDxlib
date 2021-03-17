@@ -10,7 +10,7 @@ class Player :
     public Character
 {
 public:
-    Player(const Camera& camera, Ghost& ghost, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Player();
 
     void Update(const Input& input)override final;

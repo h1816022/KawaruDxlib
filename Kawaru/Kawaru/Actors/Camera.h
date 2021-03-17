@@ -22,7 +22,7 @@ class Camera :
     public Actor
 {
 public:
-    Camera(const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    Camera(Scene& scene, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Camera();
 
     void Update(const Input& input)override final;

@@ -117,7 +117,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -134,7 +134,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,12 +146,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actors\Actor.cpp" />
-    <ClCompile Include="Actors\Cube.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Actors\Players\Player.cpp" />
     <ClCompile Include="Actors\Camera.cpp" />
-    <ClCompile Include="Actors\Plane.cpp" />
     <ClCompile Include="Actors\Stage.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Actors\Gimmick.cpp" />
     <ClCompile Include="NavMesh\NavMesh.cpp" />
     <ClCompile Include="Actors\Character.cpp" />
     <ClCompile Include="Actors\Enemy.cpp" />
@@ -159,6 +159,7 @@
     <ClCompile Include="NavMesh\NavMeshCells.cpp" />
     <ClCompile Include="NavMesh\NavMeshMoveComponent.cpp" />
     <ClCompile Include="NavMesh\NavMeshPath.cpp" />
+    <ClCompile Include="Actors\Needle.cpp" />
     <ClCompile Include="Scenes\PauseScene.cpp" />
     <ClCompile Include="Scenes\MenuSceneBase.cpp" />
     <ClCompile Include="Systems\Input.cpp" />
@@ -171,12 +172,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actors\Actor.h" />
-    <ClInclude Include="Actors\Cube.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Actors\Players\Player.h" />
     <ClInclude Include="Actors\Camera.h" />
-    <ClInclude Include="Actors\Plane.h" />
     <ClInclude Include="Actors\Stage.h" />
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="Actors\Gimmick.h" />
     <ClInclude Include="NavMesh\NavMesh.h" />
     <ClInclude Include="Actors\Character.h" />
     <ClInclude Include="Actors\Enemy.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="NavMesh\NavMeshCells.h" />
     <ClInclude Include="NavMesh\NavMeshMoveComponent.h" />
     <ClInclude Include="NavMesh\NavMeshPath.h" />
+    <ClInclude Include="Actors\Needle.h" />
     <ClInclude Include="Scenes\PauseScene.h" />
     <ClInclude Include="Scenes\MenuSceneBase.h" />
     <ClInclude Include="Tools\Arithmetic.h" />

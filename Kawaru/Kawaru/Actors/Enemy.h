@@ -10,7 +10,7 @@ class Enemy :
     public Character
 {
 public:
-    Enemy(const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    Enemy(Scene& scene, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Enemy();
 
     void Update(const Input& input)override final;

@@ -8,8 +8,8 @@ namespace
 	constexpr float CLIMB_HEURISTIC_RATE = 5.0f;
 }
 
-NavMesh::NavMesh():
-	Actor(L"Models/t5.mqo")
+NavMesh::NavMesh(Scene& scene):
+	Actor(scene, L"Models/t5.mqo")
 {
 	MV1SetupReferenceMesh(modelHandle_, -1, true);
 	auto result = MV1GetReferenceMesh(modelHandle_, -1, true);

@@ -7,7 +7,7 @@ class Stage:
 	public Actor
 {
 public:
-	Stage(NavMesh& navMesh);
+	Stage(Scene& scene, NavMesh& navMesh);
 	~Stage();
 
 	void Update(const Input& input)override final;

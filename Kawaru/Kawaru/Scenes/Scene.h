@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <memory>
+#include <string>
 #include "../Geometry.h"
 
 class SceneController;
@@ -36,9 +37,9 @@ class Scene
 public:
 	virtual ~Scene();
 
-	virtual void Update(const Input& input) = 0;
+	virtual void Update(const Input& input) {};
 	
-	virtual void Draw() = 0;
+	virtual void Draw() {};
 
 	Scene(const Scene& scene) = default;
 
@@ -53,6 +54,10 @@ public:
 	virtual void EndFadeOut() {};
 
 	void AddActors(std::shared_ptr<Actor> actor);
+
+	std::vector<std::shared_ptr<Actor>> GetActors(const std::wstring& tag);
+
+	//void DestroyActor(std::shared_ptr<Actor> actor);
 
 protected:
 	Scene(SceneController& controller);
