@@ -2,6 +2,7 @@
 #include <array>
 #include "Character.h"
 #include "Stage.h"
+#include "../AnimationComponent.h"
 
 namespace
 {
@@ -22,15 +23,6 @@ namespace
 
 	// 押し出し処理でスライドさせる距離
 	constexpr float HIT_SLIDE_LENGTH = 5.0f;
-
-	// アニメーションの再生速度
-	constexpr float ANIM_PLAY_SPEED = 1.0f;
-
-	// アニメーションのブレンド速度
-	constexpr float ANIM_BLEND_SPEED = 0.1f;
-
-	// アニメーションアタッチ番号の、アタッチなしのときの値
-	constexpr int ANIM_ATTACH_NUM_INVALID = -1;
 
 	// ジャンプ力
 	constexpr float JUMP_POWER = 100.0f;
@@ -59,18 +51,18 @@ Character::Character(Scene& scene, const Stage& stage, const float hitWidth, con
 	Actor(scene, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
 	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight),
-	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f))
+	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f)),
+	animationComponent_(std::make_unique<AnimationComponent>(modelHandle_))
 {
-	InitAnimData();
 }
 
 Character::Character(Scene& scene, const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
 	Actor(scene, modelFilePath, motionFilePath, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
 	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight), 
-	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f))
+	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f)),
+	animationComponent_(std::make_unique<AnimationComponent>(modelHandle_))
 {
-	InitAnimData();
 }
 
 Character::~Character()
@@ -90,6 +82,8 @@ void Character::Update(const Input& input)
 	MV1SetFrameUserLocalMatrix(modelHandle_, 2, localMatrix);
 
 	UpdateMoveStopTime();
+
+	animationComponent_->Update();
 }
 
 void Character::ChangeUpadater(UPDATE_TYPE type)
@@ -444,18 +438,18 @@ void Character::CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyDat
 				if (moveFlag)
 				{
 					// 移動している場合は走り状態に
-					ChangeAnim(ANIM_NAME::Walk);
+					animationComponent_->ChangeAnim(ANIM_NAME::Walk);
 					ChangeUpadater(UPDATE_TYPE::Run);
 				}
 				else
 				{
 					// 移動していない場合は立ち止り状態に
-					ChangeAnim(ANIM_NAME::Idle);
+					animationComponent_->ChangeAnim(ANIM_NAME::Idle);
 					ChangeUpadater(UPDATE_TYPE::Idle);
 				}
 
 				// 着地時はアニメーションのブレンドは行わない
-				animBlendRate_ = 1.0f;
+				animationComponent_->ForceBlend();
 			}
 		}
 		else
@@ -470,7 +464,7 @@ void Character::CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyDat
 				jumpPower_ = FALL_UP_POWER;
 
 				// アニメーションは落下中のものにする
-				ChangeAnim(ANIM_NAME::Fall);
+				animationComponent_->ChangeAnim(ANIM_NAME::Fall);
 			}
 		}
 	}
@@ -484,13 +478,9 @@ void Character::Jump()
 
 	moveVec_.y = jumpPower_;
 
-	ChangeAnim(ANIM_NAME::Jump);
+	animationComponent_->ChangeAnim(ANIM_NAME::Jump);
 }
 
-int Character::GetNowAnimTotalTime()
-{
-	return GetAnimData(animAttachNum1_).totalTime;
-}
 
 void Character::Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos)
 {
@@ -651,9 +641,9 @@ void Character::JumpUpdate(const Input& input)
 {
 	jumpPower_ -= GRAVITY;
 
-	if (jumpPower_ < 0.0f && CheckNowAnim(animAttachNum1_, ANIM_NAME::Jump))
+	if (jumpPower_ < 0.0f && animationComponent_->CheckNowAnim(ANIM_NAME::Jump))
 	{
-		ChangeAnim(ANIM_NAME::Fall);
+		animationComponent_->ChangeAnim(ANIM_NAME::Fall);
 	}
 
 	moveVec_.y = jumpPower_;
@@ -662,55 +652,6 @@ void Character::JumpUpdate(const Input& input)
 void Character::DestroyUpdate(const Input& input)
 {
 	isDead_ = true;
-}
-
-void Character::ChangeAnim(ANIM_NAME playAnim)
-{
-	// 再生中のモーション２が有効だったらデタッチする
-	if (animAttachNum2_ != ANIM_ATTACH_NUM_INVALID)
-	{
-		DetachAnim(animAttachNum2_);
-	}
-
-	// 今まで再生中のモーション１だったものの情報を２に移動する
-	animAttachNum2_ = animAttachNum1_;
-	animPlayCount2_ = animPlayCount1_;
-
-	// 新たに指定のモーションをモデルにアタッチして、アタッチ番号を保存する
-	animAttachNum1_ = AttachAnim(playAnim);
-	animPlayCount1_ = 0.0f;
-
-	// ブレンド率は再生中のモーション２が有効ではない場合は１．０ｆ( 再生中のモーション１が１００％の状態 )にする
-	animBlendRate_ = (animAttachNum2_ == ANIM_ATTACH_NUM_INVALID) ? 1.0f : 0.0f;
-}
-
-void Character::UpdateAnim()
-{
-	UpdateAnimBlendRate();
-
-	// 再生しているアニメーション１の処理
-	if (animAttachNum1_ != ANIM_ATTACH_NUM_INVALID)
-	{
-		UpdateAnimCount(animAttachNum1_, animPlayCount1_);
-
-		// 変更した再生時間をモデルに反映させる
-		SetAnimTime(animAttachNum1_, animPlayCount1_);
-
-		// アニメーション１のモデルに対する反映率をセット
-		SetAnimBlendRate(animAttachNum1_, animBlendRate_);
-	}
-
-	// 再生しているアニメーション２の処理
-	if (animAttachNum2_ != ANIM_ATTACH_NUM_INVALID)
-	{
-		UpdateAnimCount(animAttachNum2_, animPlayCount2_);
-
-		// 変更した再生時間をモデルに反映させる
-		SetAnimTime(animAttachNum2_, animPlayCount2_);
-
-		// アニメーション２のモデルに対する反映率をセット
-		SetAnimBlendRate(animAttachNum2_, 1.0f - animBlendRate_);
-	}
 }
 
 void Character::UpdateAngle()
@@ -747,80 +688,6 @@ void Character::UpdateAngle()
 	// モデルの角度を更新
 	angle_ = targetAngle - diffAngle;
 	MV1SetRotationXYZ(modelHandle_, VGet(0.0f, angle_ + DX_PI_F, 0.0f));
-}
-
-void Character::InitAnimData()
-{
-	animData_[ANIM_NAME::Idle].isLoop = true;
-	animData_[ANIM_NAME::Walk].isLoop = true;
-	animData_[ANIM_NAME::Jump].isLoop = false;
-	animData_[ANIM_NAME::Fall].isLoop = true;
-	animData_[ANIM_NAME::Dead].isLoop = false;
-	animData_[ANIM_NAME::Call].isLoop = false;
-
-	for (int i = 0; i < static_cast<int>(ANIM_NAME::Max); ++i)
-	{
-		animData_[static_cast<ANIM_NAME>(i)].totalTime = MV1GetAnimTotalTime(modelHandle_, i);
-	}
-}
-
-void Character::UpdateAnimBlendRate()
-{
-	if (animBlendRate_ >= 1.0f)
-	{
-		return;
-	}
-
-	animBlendRate_ = min(animBlendRate_ + ANIM_BLEND_SPEED, 1.0f);
-}
-
-bool Character::CheckNowAnim(int animAttachNum, ANIM_NAME target) const
-{
-	return MV1GetAttachAnim(modelHandle_, animAttachNum) == static_cast<int>(target);
-}
-
-int Character::AttachAnim(ANIM_NAME animName)
-{
-	return MV1AttachAnim(modelHandle_, static_cast<int>(animName));
-}
-
-void Character::DetachAnim(int animAttachNum)
-{
-	MV1DetachAnim(modelHandle_, animAttachNum);
-}
-
-float Character::GetAnimTotalTime(int animAttachNum)
-{
-	return MV1GetAttachAnimTotalTime(modelHandle_, animAttachNum);
-}
-
-void Character::SetAnimTime(int animAttachNum, int count)
-{
-	MV1SetAttachAnimTime(modelHandle_, animAttachNum, count);
-}
-
-void Character::SetAnimBlendRate(int animAttachNum, float rate)
-{
-	MV1SetAttachAnimBlendRate(modelHandle_, animAttachNum, rate);
-}
-
-AnimData Character::GetAnimData(int animAttachNum)
-{
-	return animData_[static_cast<ANIM_NAME>(MV1GetAttachAnim(modelHandle_, animAttachNum))];
-}
-
-void Character::UpdateAnimCount(int animAttachNum, float& animCount)
-{
-	auto data = GetAnimData(animAttachNum);
-
-	const float TOTAL_TIME = data.totalTime;
-
-	animCount += ANIM_PLAY_SPEED;
-
-	if (animCount >= TOTAL_TIME)
-	{
-		animCount = (data.isLoop) ? fmod(animCount, TOTAL_TIME) : TOTAL_TIME;
-	}
 }
 
 float Character::CalcAngleDiff(float target)const

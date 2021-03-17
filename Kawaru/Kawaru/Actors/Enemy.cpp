@@ -50,7 +50,6 @@ void Enemy::Update(const Input& input)
 
 	UpdatePos(moveVec_);
 	UpdateAngle();
-	UpdateAnim();
 
 	navMeshMoveComponent_->Update(GOAL_REACH_RADIUS);
 }

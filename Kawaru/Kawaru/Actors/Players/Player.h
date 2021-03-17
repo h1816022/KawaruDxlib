@@ -22,10 +22,14 @@ public:
 private:
     void IdleUpdate(const Input& input)override final;
     void RunUpdate(const Input& input)override final;
+    void JumpUpdate(const Input& input)override final;
+    void DestroyUpdate(const Input& input)override final;
 
     void CalcUnitMoveVector(VECTOR& upMoveVec, VECTOR& leftMoveVec);
 
     bool CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECTOR& leftMoveVec, const Input& input);
+
+    void UpdateMove(const Input& input);
 
     bool CallGhost();
 

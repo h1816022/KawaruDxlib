@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actors\Actor.cpp" />
+    <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Actors\Players\Player.cpp" />
     <ClCompile Include="Actors\Camera.cpp" />
@@ -172,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actors\Actor.h" />
+    <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Actors\Players\Player.h" />
     <ClInclude Include="Actors\Camera.h" />

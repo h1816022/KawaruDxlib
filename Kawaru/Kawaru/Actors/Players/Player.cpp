@@ -8,6 +8,7 @@
 #include "../../NavMesh/NavMesh.h"
 #include "../../NavMesh/NavMeshPath.h"
 #include "../../Systems/Input.h"
+#include "../../AnimationComponent.h"
 
 namespace
 {
@@ -60,26 +61,8 @@ void Player::Update(const Input& input)
 {
 	Character::Update(input);
 
-	VECTOR upMoveVec;
-	VECTOR leftMoveVec;
-
 	if (canMove_)
 	{
-		// プレイヤーの移動方向のベクトルを算出
-		CalcUnitMoveVector(upMoveVec, leftMoveVec);
-
-		// 各成分のベクトルより、移動ベクトルを算出
-		moveFlag_ = CalcMoveVector(moveVec_, upMoveVec, leftMoveVec, input);
-
-		if (moveFlag_)
-		{
-			moveDirection_ = VNorm(moveVec_);
-
-			const float MOVE_SPEED_RATE = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left).Length();
-
-			moveVec_ = VScale(moveDirection_, MAX_MOVE_SPEED * MOVE_SPEED_RATE);
-		}
-
 		(this->*updater_)(input);
 
 		UpdateAngle();
@@ -90,8 +73,6 @@ void Player::Update(const Input& input)
 	{
 		moveVec_ = VGet(0.0f, 0.0f, 0.0f);
 	}
-
-	UpdateAnim();
 }
 
 void Player::Draw()
@@ -108,6 +89,8 @@ const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const
 
 void Player::IdleUpdate(const Input& input)
 {
+	UpdateMove(input);
+
 	if (input.IsTriggered("Jump"))
 	{
 		Jump();
@@ -124,13 +107,15 @@ void Player::IdleUpdate(const Input& input)
 
 	if (moveFlag_)
 	{
-		ChangeAnim(ANIM_NAME::Walk);
+		animationComponent_->ChangeAnim(ANIM_NAME::Walk);
 		ChangeUpadater(UPDATE_TYPE::Run);
 	}
 }
 
 void Player::RunUpdate(const Input& input)
 {
+	UpdateMove(input);
+
 	if (input.IsTriggered("Jump"))
 	{
 		Jump();
@@ -147,8 +132,35 @@ void Player::RunUpdate(const Input& input)
 
 	if (!moveFlag_)
 	{
-		ChangeAnim(ANIM_NAME::Idle);
+		animationComponent_->ChangeAnim(ANIM_NAME::Idle);
 		ChangeUpadater(UPDATE_TYPE::Idle);
+	}
+}
+
+void Player::JumpUpdate(const Input& input)
+{
+	UpdateMove(input);
+
+	Character::JumpUpdate(input);
+}
+
+void Player::DestroyUpdate(const Input& input)
+{
+	if (isDead_)
+	{
+		return;
+	}
+
+	if (!animationComponent_->CheckNowAnim(ANIM_NAME::Dead))
+	{
+		animationComponent_->ChangeAnim(ANIM_NAME::Dead);
+
+		moveVec_ = VGet(0.0f, 0.0f, 0.0f);
+	}
+
+	if (animationComponent_->EndAnim())
+	{
+		isDead_ = true;
 	}
 }
 
@@ -193,6 +205,27 @@ bool Player::CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECT
 	return moveFlag;
 }
 
+void Player::UpdateMove(const Input& input)
+{
+	VECTOR upMoveVec;
+	VECTOR leftMoveVec;
+
+	// プレイヤーの移動方向のベクトルを算出
+	CalcUnitMoveVector(upMoveVec, leftMoveVec);
+
+	// 各成分のベクトルより、移動ベクトルを算出
+	moveFlag_ = CalcMoveVector(moveVec_, upMoveVec, leftMoveVec, input);
+
+	if (moveFlag_)
+	{
+		moveDirection_ = VNorm(moveVec_);
+
+		const float MOVE_SPEED_RATE = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left).Length();
+
+		moveVec_ = VScale(moveDirection_, MAX_MOVE_SPEED * MOVE_SPEED_RATE);
+	}
+}
+
 bool Player::CallGhost()
 {
 	if (!ghost_.Call())
@@ -200,9 +233,9 @@ bool Player::CallGhost()
 		return false;
 	}
 
-	ChangeAnim(ANIM_NAME::Call);
+	animationComponent_->ChangeAnim(ANIM_NAME::Call);
 
-	StopMove(GetNowAnimTotalTime());
+	StopMove(animationComponent_->GetNowAnimTotalTime());
 
 	ChangeUpadater(UPDATE_TYPE::Idle);
 

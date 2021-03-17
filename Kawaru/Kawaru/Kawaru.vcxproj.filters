@@ -126,6 +126,9 @@
     <ClCompile Include="Actors\Needle.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -199,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="Actors\Needle.h">
       <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

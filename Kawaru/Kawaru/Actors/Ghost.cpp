@@ -60,7 +60,6 @@ void Ghost::Update(const Input& input)
 
 	UpdatePos(moveVec_);
 	UpdateAngle();
-	UpdateAnim();
 
 	navMeshMoveComponent_->Update(FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET + HIT_WIDTH);
 
