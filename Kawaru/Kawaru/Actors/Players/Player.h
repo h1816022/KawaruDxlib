@@ -19,6 +19,8 @@ public:
 
     const std::vector<VECTOR>& GetLineTraceSamplingOffsets()const;
 
+    bool Destroy()override final;
+
 private:
     void IdleUpdate(const Input& input)override final;
     void RunUpdate(const Input& input)override final;
@@ -38,4 +40,6 @@ private:
 
     // トーレスを行う際に終端とするサンプリング座標の、自身の座標からのオフセット値
     std::vector<VECTOR> lineTraceSamplingOffsets_;
+
+    int fingerSnapSE_ = -1;
 };

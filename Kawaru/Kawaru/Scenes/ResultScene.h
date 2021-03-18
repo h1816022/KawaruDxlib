@@ -1,19 +1,17 @@
 #pragma once
 #include "Scene.h"
 
+class SceneController;
 class GameplayingScene;
-class ResultScene;
-class PauseScene;
 
-class TitleScene :
+class ResultScene :
 	public Scene
 {
 	friend SceneController;
-	friend ResultScene;
-	friend PauseScene;
+	friend GameplayingScene;
 
 public:
-	~TitleScene();
+	~ResultScene();
 
 	void Update(const Input& input)override final;
 	void Draw()override final;
@@ -29,7 +27,7 @@ public:
 	void EndFadeOut()override final;
 
 private:
-	TitleScene(SceneController& controller);
+	ResultScene(SceneController& controller);
 
 	/// <summary>
 	/// 通常時の更新処理
@@ -49,13 +47,15 @@ private:
 	/// <param name="input">入力情報</param>
 	void FadeoutUpdate(const Input& input);
 
-	using UpdateFunc = void (TitleScene::*)(const Input& input);
+	using UpdateFunc = void (ResultScene::*)(const Input& input);
 	UpdateFunc updater_;
 
 	/// <summary>
 	/// 通常時の描画処理
 	/// </summary>
 	void NormalDraw();
+
+	void DrawResultElement(int blinkInterval);
 
 	/// <summary>
 	/// フェードイン時の描画処理
@@ -67,14 +67,16 @@ private:
 	/// </summary>
 	void FadeOutDraw();
 
-	using DrawFunc = void (TitleScene::*)();
+	using DrawFunc = void (ResultScene::*)();
 	DrawFunc drawer_;
 
 	int blinkCount_;
 
 	uint32_t fadeTime_;
 
-	int titleImage_ = -1;
+	Vector2f logoPos;
+
+	int resultImage_ = -1;
 	int pressStartImage_ = -1;
 
 	int okSE_ = -1;

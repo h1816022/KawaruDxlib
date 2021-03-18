@@ -18,7 +18,7 @@ namespace
 	constexpr float GOAL_REACH_RADIUS_OFFSET = 150.0f;
 
 	// ‹ß‚Ã‚¯‚½‚Æ‚·‚é‹——£
-	constexpr float APPROACH_DISTANCE = 2000.0f;
+	constexpr float APPROACH_DISTANCE = 1800.0f;
 
 	constexpr float FLOATING_OFFSET = 500.0f;
 
@@ -43,11 +43,9 @@ void Ghost::Update(const Input& input)
 {
 	if (navMeshMoveComponent_->CheckPathExists())
 	{
-		auto paths = navMeshMoveComponent_->GetPaths();
-
 		oldMoveDirection_ = moveDirection_;
 		moveDirection_ = VNorm(VSub(VAdd(navMeshMoveComponent_->GetNextTargetPos(), VGet(0.0f, FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET, 0.0f)), pos_));
-		moveDirection_ = Lerp(oldMoveDirection_, moveDirection_, 0.05f);
+		moveDirection_ = Lerp(oldMoveDirection_, moveDirection_, 0.1f);
 		moveSpeed_ = Lerp(moveSpeed_, MAX_MOVE_SPEED, 0.005f);
 		moveVec_ = VScale(moveDirection_, moveSpeed_);
 	}
@@ -74,8 +72,6 @@ void Ghost::Draw()
 	DrawShadow();
 
 	navMeshMoveComponent_->Draw();
-
-	//DrawFormatString(0, 0, 0xffffff, L"%f", abs(f / FLOAT_LENGTH * 2.0f - 1.0f));
 }
 
 bool Ghost::Call()
@@ -88,6 +84,11 @@ bool Ghost::Call()
 	ApproachPlayer();
 
 	return true;
+}
+
+float Ghost::GetFloatingOffset()const
+{
+	return FLOATING_OFFSET;
 }
 
 bool Ghost::ApproachPlayer()

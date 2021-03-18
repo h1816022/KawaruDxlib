@@ -12,7 +12,7 @@ public:
 	NavMeshMoveComponent(const Actor& owner, const Stage& stage, NAV_TYPE type);
 	~NavMeshMoveComponent();
 
-	bool CalcPath(const VECTOR& startPos, const VECTOR& goalPos);
+	bool CalcPath(const VECTOR& startPos, const VECTOR& goalPos, float minYOffset = 0.0f, float maxYOffset = 0.0f);
 
 	const std::vector<VECTOR> GetPaths()const;
 

@@ -20,6 +20,8 @@ public:
 
     bool Call();
 
+    float GetFloatingOffset()const override final;
+
 private:
     bool ApproachPlayer();
 

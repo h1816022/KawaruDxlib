@@ -2,6 +2,7 @@
 #include "SceneController.h"
 #include "Scene.h"
 #include "TitleScene.h"
+#include "ResultScene.h"
 #include "GameplayingScene.h"
 
 SceneController::SceneController()

@@ -15,4 +15,7 @@ public:
 
 protected:
     void Hit(std::shared_ptr<Actor> hitActor)override final;
+
+private:
+    int hitSE_;
 };

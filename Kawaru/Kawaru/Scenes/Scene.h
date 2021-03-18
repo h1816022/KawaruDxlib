@@ -57,8 +57,6 @@ public:
 
 	std::vector<std::shared_ptr<Actor>> GetActors(const std::wstring& tag);
 
-	//void DestroyActor(std::shared_ptr<Actor> actor);
-
 protected:
 	Scene(SceneController& controller);
 

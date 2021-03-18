@@ -48,9 +48,11 @@ public:
 
 	virtual Capsule3D GetCollisionCapsule(const VECTOR& pos);
 
-	virtual void Destroy();
+	virtual bool Destroy();
 
 	bool CheckIsDead()const;
+
+	virtual float GetFloatingOffset()const;
 
 protected:
 	int modelHandle_ = -1;

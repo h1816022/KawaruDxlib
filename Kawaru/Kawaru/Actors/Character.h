@@ -30,13 +30,15 @@ public:
     virtual void Update(const Input& input) = 0;
     virtual void Draw() = 0;
 
-    void ChangeUpadater(UPDATE_TYPE type);
-
     Capsule3D GetCollisionCapsule(const VECTOR& pos)override;
 
-    virtual void Destroy()override;
+    virtual bool Destroy()override;
+
+    const UPDATE_TYPE& GetNowUpdateType()const;
 
 protected:
+    void ChangeUpadater(UPDATE_TYPE type);
+
     void UpdatePos(const VECTOR& moveVector);
 
     void GetWallPolyAndFloorPoly(HitCheckPolyData& outPolyData, const MV1_COLL_RESULT_POLY_DIM& HitData);
@@ -46,7 +48,6 @@ protected:
     void CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyData, VECTOR& nowPos);
 
     void Jump();
-
 
     /// <summary>
     /// âüÇµèoÇµ
@@ -100,4 +101,6 @@ private:
 
     int nowMoveStopTime_ = 0;
     int moveStopTime_ = 0;
+
+    int jumpSE_ = -1;
 };

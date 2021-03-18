@@ -9,6 +9,10 @@
 #include "../../NavMesh/NavMeshPath.h"
 #include "../../Systems/Input.h"
 #include "../../AnimationComponent.h"
+#include "../../File.h"
+#include "../../FileManager.h"
+#include "../../Scenes/Scene.h"
+#include "../../Application.h"
 
 namespace
 {
@@ -26,7 +30,7 @@ namespace
 }
 
 Player::Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
-	Character(scene, L"Models/sotai/‘f‘ÌA.pmx", L"Models/Sotai/Animations/Sotai", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ),
+	Character(scene, L"Resources/Models/sotai/‘f‘ÌA.pmx", L"Resources/Models/Sotai/Animations/Sotai", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ),
 	camera_(camera),
 	ghost_(ghost)
 {
@@ -43,12 +47,16 @@ Player::Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& st
 
 	int materialNum = MV1GetMaterialNum(modelHandle_);
 
-	for (int i = 0; i < materialNum; ++i)
-	{
-		float dotWidth = MV1GetMaterialOutLineDotWidth(modelHandle_, i);
+	//for (int i = 0; i < materialNum; ++i)
+	//{
+	//	float dotWidth = MV1GetMaterialOutLineDotWidth(modelHandle_, i);
 
-		MV1SetMaterialOutLineDotWidth(modelHandle_, i, dotWidth / 25.0f);
-	}
+	//	MV1SetMaterialOutLineDotWidth(modelHandle_, i, dotWidth / 25.0f);
+	//}
+
+	auto& fileManager = FileManager::Instance();
+
+	fingerSnapSE_ = fileManager.Load(L"Resources/Sounds/FingerSnap.mp3")->GetHandle();
 
 	tag_ = L"Player";
 }
@@ -85,6 +93,19 @@ void Player::Draw()
 const std::vector<VECTOR>& Player::GetLineTraceSamplingOffsets()const
 {
 	return lineTraceSamplingOffsets_;
+}
+
+bool Player::Destroy()
+{
+	if (GetNowUpdateType() != UPDATE_TYPE::Idle &&
+		GetNowUpdateType() != UPDATE_TYPE::Run)
+	{
+		return false;
+	}
+
+	ChangeUpadater(UPDATE_TYPE::Destroy);
+
+	return true;
 }
 
 void Player::IdleUpdate(const Input& input)
@@ -151,6 +172,11 @@ void Player::DestroyUpdate(const Input& input)
 		return;
 	}
 
+	if (GetNowUpdateType() == UPDATE_TYPE::Jump)
+	{
+		return;
+	}
+
 	if (!animationComponent_->CheckNowAnim(ANIM_NAME::Dead))
 	{
 		animationComponent_->ChangeAnim(ANIM_NAME::Dead);
@@ -161,6 +187,8 @@ void Player::DestroyUpdate(const Input& input)
 	if (animationComponent_->EndAnim())
 	{
 		isDead_ = true;
+
+		Application::Instance().SetIsGameOver();
 	}
 }
 
@@ -235,9 +263,14 @@ bool Player::CallGhost()
 
 	animationComponent_->ChangeAnim(ANIM_NAME::Call);
 
-	StopMove(animationComponent_->GetNowAnimTotalTime());
+	const int CALL_ANIM_TOTAL_TIME = animationComponent_->GetNowAnimTotalTime();
+	const int CALL_SE_TIME = CALL_ANIM_TOTAL_TIME - 10;
+
+	StopMove(CALL_ANIM_TOTAL_TIME);
 
 	ChangeUpadater(UPDATE_TYPE::Idle);
+
+	FileManager::Instance().DelayPlaySound(fingerSnapSE_, CALL_SE_TIME);
 
 	return true;
 }

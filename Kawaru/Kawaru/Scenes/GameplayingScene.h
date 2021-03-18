@@ -26,8 +26,6 @@ public:
 
 	void Draw()override final;
 
-	void StageClear();
-
 private:
 	GameplayingScene(SceneController& controller);
 
@@ -36,6 +34,12 @@ private:
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	void NormalUpdate(const Input& input);
+
+	/// <summary>
+	/// フェードイン中の更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	void FadeInUpdate(const Input& input);
 
 	/// <summary>
 	/// このシーンから他シーンへ切り替わる時の更新処理

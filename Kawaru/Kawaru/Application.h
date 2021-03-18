@@ -2,6 +2,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Geometry.h"
+#include "ResultData.h"
 
 class SceneController;
 struct Size;
@@ -54,6 +55,17 @@ public:
 	const wchar_t* GetVKeyName(int index);
 	const std::unordered_map<int, const wchar_t*>& GetAllVKeyName()const;
 
+	void StartRecording();
+	void StopRecording();
+
+	const ResultData& GetResultData()const;
+
+	bool SetIsGameClear();
+	bool SetIsGameOver();
+
+	bool CheckIsGameClear()const;
+	bool CheckIsGameOver()const;
+
 private:
 	Application();
 
@@ -67,7 +79,9 @@ private:
 	// アプリケーション終了フラグ
 	bool isExit = false;
 
-	uint32_t nowCount_ = 0;
-
 	std::unordered_map<int, const wchar_t*> vKeyName_;
+
+	bool countTime_ = false;
+
+	ResultData resultData_;
 };

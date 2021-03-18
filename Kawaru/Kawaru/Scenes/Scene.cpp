@@ -26,19 +26,6 @@ std::vector<std::shared_ptr<Actor>> Scene::GetActors(const std::wstring& tag)
 	return ret;
 }
 
-//void Scene::DestroyActor(std::shared_ptr<Actor> actor)
-//{
-//	auto targetItr = find_if(actors_.begin(), actors_.end(), [actor](std::shared_ptr<Actor> a)
-//		{
-//			return a == actor;
-//		});
-//
-//	if (targetItr != actors_.end())
-//	{
-//		actors_.erase(targetItr);
-//	}
-//}
-
 Scene::Scene(SceneController& controller) :
 	controller_(controller)
 {

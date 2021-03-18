@@ -3,6 +3,8 @@
 #include "Character.h"
 #include "Stage.h"
 #include "../AnimationComponent.h"
+#include "../File.h"
+#include "../FileManager.h"
 
 namespace
 {
@@ -50,19 +52,21 @@ struct HitCheckPolyData
 Character::Character(Scene& scene, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
 	Actor(scene, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
-	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight),
+	shadowHandle_(LoadGraph(L"Resources/Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight),
 	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f)),
 	animationComponent_(std::make_unique<AnimationComponent>(modelHandle_))
 {
+	jumpSE_ = FileManager::Instance().Load(L"Resources/Sounds/Jump.mp3")->GetHandle();
 }
 
 Character::Character(Scene& scene, const wchar_t* modelFilePath, const wchar_t* motionFilePath, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
 	Actor(scene, modelFilePath, motionFilePath, posX, posY, posZ), stage_(stage),
 	updater_(&Character::IdleUpdate),
-	shadowHandle_(LoadGraph(L"Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight), 
+	shadowHandle_(LoadGraph(L"Resources/Images/Shadow.tga")), hitWidth_(hitWidth), hitHeight_(hitHeight), 
 	moveDirection_(VGet(1.0f, 0.0f, 0.0f)), moveVec_(VGet(0.0f, 0.0f, 0.0f)),
 	animationComponent_(std::make_unique<AnimationComponent>(modelHandle_))
 {
+	jumpSE_ = FileManager::Instance().Load(L"Resources/Sounds/Jump.mp3")->GetHandle();
 }
 
 Character::~Character()
@@ -123,9 +127,11 @@ Capsule3D Character::GetCollisionCapsule(const VECTOR& pos)
 	return Capsule3D(pos, VAdd(pos, VGet(0.0f, hitHeight_, 0.0f)), hitWidth_);
 }
 
-void Character::Destroy()
+bool Character::Destroy()
 {
 	ChangeUpadater(UPDATE_TYPE::Destroy);
+
+	return true;
 }
 
 void Character::UpdatePos(const VECTOR& moveVector)
@@ -479,6 +485,8 @@ void Character::Jump()
 	moveVec_.y = jumpPower_;
 
 	animationComponent_->ChangeAnim(ANIM_NAME::Jump);
+
+	PlaySoundMem(jumpSE_, DX_PLAYTYPE_BACK);
 }
 
 
@@ -688,6 +696,11 @@ void Character::UpdateAngle()
 	// モデルの角度を更新
 	angle_ = targetAngle - diffAngle;
 	MV1SetRotationXYZ(modelHandle_, VGet(0.0f, angle_ + DX_PI_F, 0.0f));
+}
+
+const UPDATE_TYPE& Character::GetNowUpdateType() const
+{
+	return nowUpdateType_;
 }
 
 float Character::CalcAngleDiff(float target)const

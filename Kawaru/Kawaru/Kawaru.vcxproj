@@ -153,6 +153,8 @@
     <ClCompile Include="Actors\Stage.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Actors\Gimmick.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="NavMesh\NavMesh.cpp" />
     <ClCompile Include="Actors\Character.cpp" />
     <ClCompile Include="Actors\Enemy.cpp" />
@@ -161,6 +163,8 @@
     <ClCompile Include="NavMesh\NavMeshMoveComponent.cpp" />
     <ClCompile Include="NavMesh\NavMeshPath.cpp" />
     <ClCompile Include="Actors\Needle.cpp" />
+    <ClCompile Include="ResultData.cpp" />
+    <ClCompile Include="Scenes\ResultScene.cpp" />
     <ClCompile Include="Scenes\PauseScene.cpp" />
     <ClCompile Include="Scenes\MenuSceneBase.cpp" />
     <ClCompile Include="Systems\Input.cpp" />
@@ -180,6 +184,8 @@
     <ClInclude Include="Actors\Stage.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Actors\Gimmick.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="NavMesh\NavMesh.h" />
     <ClInclude Include="Actors\Character.h" />
     <ClInclude Include="Actors\Enemy.h" />
@@ -188,6 +194,8 @@
     <ClInclude Include="NavMesh\NavMeshMoveComponent.h" />
     <ClInclude Include="NavMesh\NavMeshPath.h" />
     <ClInclude Include="Actors\Needle.h" />
+    <ClInclude Include="ResultData.h" />
+    <ClInclude Include="Scenes\ResultScene.h" />
     <ClInclude Include="Scenes\PauseScene.h" />
     <ClInclude Include="Scenes\MenuSceneBase.h" />
     <ClInclude Include="Tools\Arithmetic.h" />

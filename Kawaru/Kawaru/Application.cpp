@@ -3,6 +3,7 @@
 #include "Scenes/SceneController.h"
 #include "Geometry.h"
 #include "Systems/Input.h"
+#include "FileManager.h"
 
 namespace
 {
@@ -62,6 +63,8 @@ void Application::Run()
 			return;
 		}
 
+		FileManager::Instance().Update();
+
 		sceneController_->Update(input);
 		
 		ClearDrawScreen();
@@ -69,6 +72,11 @@ void Application::Run()
 		sceneController_->Draw();
 
 		ScreenFlip();
+
+		if (countTime_)
+		{
+			resultData_.playTime += 1;
+		}
 	}
 }
 
@@ -159,4 +167,53 @@ const wchar_t* Application::GetVKeyName(int index)
 const std::unordered_map<int, const wchar_t*>& Application::GetAllVKeyName() const
 {
 	return vKeyName_;
+}
+
+void Application::StartRecording()
+{
+	resultData_.Reset();
+
+	countTime_ = true;
+}
+
+void Application::StopRecording()
+{
+	countTime_ = false;
+}
+
+const ResultData& Application::GetResultData() const
+{
+	return resultData_;
+}
+
+bool Application::SetIsGameClear()
+{
+	if (!resultData_.gameClear && !resultData_.gameOver)
+	{
+		resultData_.gameClear = true;
+		return true;
+	}
+
+	return false;
+}
+
+bool Application::SetIsGameOver()
+{
+	if (!resultData_.gameClear && !resultData_.gameOver)
+	{
+		resultData_.gameOver = true;
+		return true;
+	}
+
+	return false;
+}
+
+bool Application::CheckIsGameClear() const
+{
+	return resultData_.gameClear;
+}
+
+bool Application::CheckIsGameOver() const
+{
+	return resultData_.gameOver;
 }

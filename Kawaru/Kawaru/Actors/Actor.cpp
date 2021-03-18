@@ -70,17 +70,24 @@ Capsule3D Actor::GetCollisionCapsule(const VECTOR& pos)
 	return Capsule3D();
 }
 
-void Actor::Destroy()
+bool Actor::Destroy()
 {
 	if (isDead_)
 	{
-		return;
+		return false;
 	}
 
 	isDead_ = true;
+
+	return true;
 }
 
 bool Actor::CheckIsDead() const
 {
 	return isDead_;
+}
+
+float Actor::GetFloatingOffset()const
+{
+	return 0.0f;
 }

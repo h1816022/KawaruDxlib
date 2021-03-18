@@ -13,7 +13,7 @@ NavMeshMoveComponent::~NavMeshMoveComponent()
 {
 }
 
-bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPos)
+bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPos, float minYOffset, float maxYOffset)
 {
 	NavMesh& navMesh = stage_.GetNavMesh();
 
@@ -33,6 +33,16 @@ bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPo
 	}
 
 	paths_ = path.GetStraightPath(0.5f);
+
+	for (auto& path : paths_)
+	{
+		path.y = Lerp(minYOffset, maxYOffset, static_cast<float>(GetRand(100)) / 100.0f);
+	}
+
+	for (int i = 1; i < paths_.size() - 1; ++i)
+	{
+		paths_[i].y = max(paths_[i].y, paths_[i + 1].y);
+	}
 
 	return true;
 }
@@ -93,27 +103,30 @@ void NavMeshMoveComponent::Update(float goalReachradius)
 		return;
 	}
 
-	auto result = stage_.CheckHitLine(VAdd(paths_[1], VGet(0.0f, 1.0f, 0.0f)), VAdd(owner_.GetPos(), VGet(0.0f, 1.0f, 0.0f)));
-	if (!result.HitFlag)
+	if (owner_.GetPos().y < paths_[1].y + owner_.GetFloatingOffset() + 10.0f)
 	{
-		return;
-	}
-
-	VECTOR highestPos = result.Position[0];
-	for (int index = 1; index < 3; ++index)
-	{
-		if (highestPos.y < result.Position[index].y)
+		auto result = stage_.CheckHitLine(VAdd(paths_[1], VGet(0.0f, 1.0f, 0.0f)), VAdd(owner_.GetPos(), VGet(0.0f, 1.0f, 0.0f)));
+		if (!result.HitFlag)
 		{
-			highestPos = result.Position[index];
+			return;
 		}
-	}
 
-	if (paths_.size() == 2)
-	{
-		paths_.emplace(paths_.begin() + 1, highestPos);
-	}
-	else
-	{
-		paths_[1] = highestPos;
+		VECTOR highestPos = result.Position[0];
+		for (int index = 1; index < 3; ++index)
+		{
+			if (highestPos.y < result.Position[index].y)
+			{
+				highestPos = result.Position[index];
+			}
+		}
+
+		if (paths_.size() == 2)
+		{
+			paths_.emplace(paths_.begin() + 1, highestPos);
+		}
+		else
+		{
+			paths_[1] = highestPos;
+		}
 	}
 }

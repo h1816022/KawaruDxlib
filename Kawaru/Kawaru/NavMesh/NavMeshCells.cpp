@@ -22,17 +22,21 @@ const std::array<VECTOR, 3>& NavMeshCells::GetPositions() const
 
 void NavMeshCells::SetNeighbor(NAV_TYPE type, std::shared_ptr<NavMeshCells> other, int index1, int index2)
 {
-	if (index1 == 0 && index2 == 1)
+	if ((index1 == 0 && index2 == 1) || (index1 == 1 && index2 == 0))
 	{
 		GetNeighbors(type)[0] = other;
 	}
-	else if (index1 == 1 && index2 == 2)
+	else if ((index1 == 1 && index2 == 2) || (index1 == 2 && index2 == 1))
 	{
 		GetNeighbors(type)[1] = other;
 	}
-	else
+	else if((index1 == 2 && index2 == 0) || (index1 == 0 && index2 == 2))
 	{
 		GetNeighbors(type)[2] = other;
+	}
+	else
+	{
+		int a = 0;
 	}
 }
 

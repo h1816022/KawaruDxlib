@@ -6,8 +6,8 @@
 #include "../Systems/Input.h"
 #include "../Application.h"
 #include "../Geometry.h"
-//#include "../Systems/FileManager.h"
-//#include "../Systems/File.h"
+#include "../FileManager.h"
+#include "../File.h"
 
 namespace
 {
@@ -15,13 +15,13 @@ namespace
 	constexpr uint32_t FADE_DELAY = 40;
 
 	// 基本の点滅のインターバル
-	constexpr uint32_t BLINK_INTERVAL_DEFAULT = 120;
+	constexpr uint32_t BLINK_INTERVAL_DEFAULT = 60;
 
 	// 早くするときの点滅のインターバル
-	constexpr uint32_t BLINK_INTERVAL_FAST = 10;
+	constexpr uint32_t BLINK_INTERVAL_FAST = 3;
 
 	// 点滅で消えてから点くまでの時間
-	constexpr uint32_t BLINK_TIME = 5;
+	constexpr uint32_t BLINK_TIME = 3;
 
 	constexpr uint32_t EMISSIVE_TIME = 30;
 }
@@ -32,7 +32,14 @@ TitleScene::TitleScene(SceneController& controller) :
 	updater_ = &TitleScene::NormalUpdate;
 	drawer_ = &TitleScene::FadeInDraw;
 
-	count_ = 0;
+	blinkCount_ = 0;
+
+	auto& fileManager = FileManager::Instance();
+
+	titleImage_ = fileManager.Load(L"Resources/Images/TitleLogo.png")->GetHandle();
+	pressStartImage_ = fileManager.Load(L"Resources/Images/PressStart.png")->GetHandle();
+
+	okSE_ = fileManager.Load(L"Resources/Sounds/OK.mp3")->GetHandle();
 
 	StartFade(FADE_MODE::In);
 }
@@ -41,7 +48,13 @@ void TitleScene::NormalUpdate(const Input& input)
 {
 	if (input.IsTriggered("OK"))
 	{
-		controller_.ChangeScene(new GameplayingScene(controller_));
+		StartFade(FADE_MODE::Out);
+
+		updater_ = &TitleScene::FadeoutUpdate;
+		drawer_ = &TitleScene::FadeOutDraw;
+
+		PlaySoundMem(okSE_, DX_PLAYTYPE_BACK);
+
 		return;
 	}
 }
@@ -56,16 +69,40 @@ void TitleScene::FadeoutUpdate(const Input&)
 
 void TitleScene::NormalDraw()
 {
-	DrawString(0, 0, L"Title", 0xffffffff);
+	auto wSize = Application::Instance().GetViewport().GetSize();
+	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+
+	if (blinkCount_ < BLINK_INTERVAL_DEFAULT)
+	{
+		DrawRotaGraph(wSize.w / 2.0f, wSize.h / 7.0f * 5.0f, 0.7, 0.0, pressStartImage_, true);
+	}
+
+	if (blinkCount_ > BLINK_INTERVAL_DEFAULT + BLINK_TIME)
+	{
+		blinkCount_ = 0;
+	}
 }
 
 void TitleScene::FadeInDraw()
 {
-
+	auto wSize = Application::Instance().GetViewport().GetSize();
+	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
 }
 
 void TitleScene::FadeOutDraw()
 {
+	auto wSize = Application::Instance().GetViewport().GetSize();
+	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+
+	if (blinkCount_ < BLINK_INTERVAL_FAST)
+	{
+		DrawRotaGraph(wSize.w / 2.0f, wSize.h / 7.0f * 5.0f, 0.7, 0.0, pressStartImage_, true);
+	}
+
+	if (blinkCount_ > BLINK_INTERVAL_FAST + BLINK_TIME)
+	{
+		blinkCount_ = 0;
+	}
 }
 
 TitleScene::~TitleScene()
@@ -74,7 +111,7 @@ TitleScene::~TitleScene()
 
 void TitleScene::Update(const Input& input)
 {
-	count_++;
+	blinkCount_++;
 	(this->*updater_)(input);
 	Scene::UpdateFade(input);
 }

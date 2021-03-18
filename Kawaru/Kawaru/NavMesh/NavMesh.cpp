@@ -5,15 +5,18 @@
 
 namespace
 {
-	constexpr float CLIMB_HEURISTIC_RATE = 5.0f;
+	// ÉXÉRÉAåvéZéûÇÃÅAyé≤è„ÇÃà⁄ìÆó Ç…ä|Ç©ÇÈî{ó¶
+	constexpr float CLIMB_HEURISTIC_RATE = 10.0f;
 }
 
 NavMesh::NavMesh(Scene& scene):
-	Actor(scene, L"Models/t5.mqo")
+	Actor(scene, L"Resources/Models/TestNavMesh.mqo")
 {
 	MV1SetupReferenceMesh(modelHandle_, -1, true);
 	auto result = MV1GetReferenceMesh(modelHandle_, -1, true);
 	
+	cells_.reserve(result.PolygonNum);
+
 	for (int index = 0; index < result.PolygonNum; ++index)
 	{
 		auto poly = result.Polygons[index];
@@ -21,8 +24,8 @@ NavMesh::NavMesh(Scene& scene):
 		cells_.emplace_back(std::make_shared<NavMeshCells>(vert[poly.VIndex[0]].Position, vert[poly.VIndex[1]].Position, vert[poly.VIndex[2]].Position, index));
 	}
 
-	CalcNeighbor(NAV_TYPE::Grounded);
-	CalcNeighbor(NAV_TYPE::Floated);
+	//CalcNeighbor(NAV_TYPE::Grounded);
+	//CalcNeighbor(NAV_TYPE::Floated);
 }
 
 NavMesh::~NavMesh()
@@ -37,11 +40,6 @@ void NavMesh::Draw()
 {
 
 }
-
-//const std::array<std::shared_ptr<NavMeshCells>, 3>& NavMesh::GetNeighbors(int index) const
-//{
-//	return cells_[index]->GetNeighbors();
-//}
 
 bool NavMesh::FindPath(NavMeshPath& path, NAV_TYPE type, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos)
 {
@@ -221,6 +219,7 @@ void NavMesh::CalcNeighbor(NAV_TYPE type)
 			}
 
 			currentCell->SetNeighbor(type, otherCell, matchIndices[0], matchIndices[2]);
+			otherCell->SetNeighbor(type, currentCell, matchIndices[1], matchIndices[3]);
 		}
 	}
 }
