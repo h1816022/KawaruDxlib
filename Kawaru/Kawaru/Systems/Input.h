@@ -13,18 +13,21 @@ enum class PERIPHERAL_TYPE
 	Gamepad
 };
 
+// 入力デバイスのデータ
 struct PeripheralInfo
 {
 	PERIPHERAL_TYPE type;
 	int index;
 };
 
+// アナログ入力の種類
 enum class ANALOG_INPUT_TYPE
 {
 	Left,
 	Right
 };
 
+// アナログ入力の入力値データ
 struct AnalogInputData
 {
 	AnalogInputData():
@@ -45,6 +48,9 @@ struct AnalogInputData
 class KeyConfigScene;
 class GameplayingScene;
 
+/// <summary>
+/// 入力関連のクラス
+/// </summary>
 class Input
 {
 	friend KeyConfigScene;
@@ -52,6 +58,9 @@ class Input
 public:
 	Input();
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
 
 	/// <summary>
@@ -84,6 +93,11 @@ public:
 	/// <returns>true : このフレームに離された</returns>
 	bool IsReleased(const char* cmd)const;
 
+	/// <summary>
+	/// アナログ入力の入力値を取得
+	/// </summary>
+	/// <param name="type">どちらのスティックの入力か</param>
+	/// <returns>入力値データ</returns>
 	AnalogInputData GetAnalogInput(ANALOG_INPUT_TYPE type)const;
 
 private:

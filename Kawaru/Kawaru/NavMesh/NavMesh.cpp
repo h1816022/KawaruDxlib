@@ -24,8 +24,7 @@ NavMesh::NavMesh(Scene& scene):
 		cells_.emplace_back(std::make_shared<NavMeshCells>(vert[poly.VIndex[0]].Position, vert[poly.VIndex[1]].Position, vert[poly.VIndex[2]].Position, index));
 	}
 
-	//CalcNeighbor(NAV_TYPE::Grounded);
-	//CalcNeighbor(NAV_TYPE::Floated);
+	CalcNeighbor();
 }
 
 NavMesh::~NavMesh()
@@ -188,38 +187,47 @@ float NavMesh::CalcHeuristic(const VECTOR& v1, const VECTOR& v2) const
 	return sqrtf((diff.x * diff.x) + (diff.y * diff.y) * CLIMB_HEURISTIC_RATE + (diff.z * diff.z));
 }
 
-void NavMesh::CalcNeighbor(NAV_TYPE type)
+void NavMesh::CalcNeighbor()
 {
-	for (auto currentCell : cells_)
+	for (auto& currentCell : cells_)
 	{
-		for (auto otherCell : cells_)
+		for (auto& otherCell : cells_)
 		{
 			if (currentCell == otherCell)
 			{
 				continue;
 			}
 
-			if (currentCell->CheckAlreadyLink(type, otherCell))
+			if (currentCell->CheckAlreadyLink(otherCell))
 			{
 				continue;
 			}
 
-			if (currentCell->CheckAllLinked(type))
+			if (currentCell->CheckAllLinked())
 			{
 				continue;
 			}
 
-			std::vector<int> matchIndices;
+			SetNeighbor(currentCell, otherCell);
+		}
+	}
+}
 
-			FindMatchingIndices(matchIndices, type, currentCell, otherCell);
+void NavMesh::SetNeighbor(std::shared_ptr<NavMeshCells>& currentCell, std::shared_ptr<NavMeshCells>& otherCell)
+{
+	std::vector<int> matchIndices;
 
-			if (matchIndices.size() != 4)
-			{
-				continue;
-			}
+	FindMatchingIndices(matchIndices, NAV_TYPE::Floated, currentCell, otherCell);
 
-			currentCell->SetNeighbor(type, otherCell, matchIndices[0], matchIndices[2]);
-			otherCell->SetNeighbor(type, currentCell, matchIndices[1], matchIndices[3]);
+	if (matchIndices.size() == 4)
+	{
+		currentCell->SetNeighbor(NAV_TYPE::Floated, otherCell, matchIndices[0], matchIndices[2]);
+		otherCell->SetNeighbor(NAV_TYPE::Floated, currentCell, matchIndices[1], matchIndices[3]);
+
+		if (abs(currentCell->GetPositions()[matchIndices[0]].y) - abs(otherCell->GetPositions()[matchIndices[1]].y) < 0.1f)
+		{
+			currentCell->SetNeighbor(NAV_TYPE::Grounded, otherCell, matchIndices[0], matchIndices[2]);
+			otherCell->SetNeighbor(NAV_TYPE::Grounded, currentCell, matchIndices[1], matchIndices[3]);
 		}
 	}
 }
@@ -236,7 +244,6 @@ void NavMesh::FindMatchingIndices(std::vector<int>& outIndices, NAV_TYPE type, c
 				{
 					outIndices.emplace_back(i);
 					outIndices.emplace_back(j);
-					break;
 				}
 			}
 			else
@@ -245,7 +252,7 @@ void NavMesh::FindMatchingIndices(std::vector<int>& outIndices, NAV_TYPE type, c
 				{
 					outIndices.emplace_back(i);
 					outIndices.emplace_back(j);
-					break;
+
 				}
 			}
 		}

@@ -7,9 +7,7 @@
 class GameplayingScene;
 class PauseScene;
 
-/// <summary>
-/// w’è•b”’x‚ç‚¹‚ÄÀs‚³‚¹‚½‚¢ˆ—‚Ì“o˜^—p
-/// </summary>
+// w’è•b”’x‚ç‚¹‚ÄÀs‚³‚¹‚½‚¢ˆ—‚Ì“o˜^—p
 struct DelayFuncData
 {
 	using Func_t = void (PauseScene::*)();
@@ -21,6 +19,9 @@ struct DelayFuncData
 	uint32_t endCount;
 };
 
+/// <summary>
+/// ƒvƒŒƒC’†‚É’†’f‚µ‚½‚ÌƒV[ƒ“
+/// </summary>
 class PauseScene :
 	public MenuSceneBase
 {
@@ -30,8 +31,15 @@ class PauseScene :
 public:
 	~PauseScene();
 
+	/// <summary>
+	/// XVˆ—
+	/// </summary>
+	/// <param name="input">“ü—Íî•ñ</param>
 	void Update(const Input& input)override final;
 
+	/// <summary>
+	/// •`‰æˆ—
+	/// </summary>
 	void Draw()override final;
 
 private:

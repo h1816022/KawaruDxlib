@@ -1,25 +1,26 @@
 #pragma once
+#include <memory>
 #include "Gimmick.h"
 
-class GameplayingScene;
+class Scene;
+class Actor;
+class Input;
 
 /// <summary>
-/// トゲ
-/// 当たったらやられる
+/// 触れるとクリアとなるアクター
 /// </summary>
-class Needle :
+class Goal :
     public Gimmick
 {
-public:
-    Needle(GameplayingScene& scene);
-    ~Needle();
+    Goal(Scene& scene);
+    ~Goal();
 
     /// <summary>
     /// 更新処理
     /// </summary>
     /// <param name="input">入力情報</param>
     void Update(const Input& input)override final;
-
+    
     /// <summary>
     /// 描画処理
     /// </summary>
@@ -31,7 +32,5 @@ protected:
     /// </summary>
     /// <param name="hitActor">当たったアクター</param>
     void Hit(std::shared_ptr<Actor> hitActor)override final;
-
-private:
-    int hitSE_;
 };
+

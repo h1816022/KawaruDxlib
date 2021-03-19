@@ -5,6 +5,9 @@ class GameplayingScene;
 class ResultScene;
 class PauseScene;
 
+/// <summary>
+/// タイトル画面のシーン
+/// </summary>
 class TitleScene :
 	public Scene
 {
@@ -15,7 +18,15 @@ class TitleScene :
 public:
 	~TitleScene();
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void Update(const Input& input)override final;
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw()override final;
 
 	/// <summary>

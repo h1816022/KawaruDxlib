@@ -120,9 +120,6 @@
     <ClCompile Include="Actors\Gimmick.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="Collision.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Actors\Needle.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
@@ -140,6 +137,9 @@
     </ClCompile>
     <ClCompile Include="ResultData.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Goal.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +209,6 @@
     <ClInclude Include="Actors\Gimmick.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Collision.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Actors\Needle.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
@@ -229,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="ResultData.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Goal.h">
+      <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

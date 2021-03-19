@@ -4,6 +4,9 @@
 class SceneController;
 class GameplayingScene;
 
+/// <summary>
+/// プレイ結果のシーン
+/// </summary>
 class ResultScene :
 	public Scene
 {
@@ -13,7 +16,15 @@ class ResultScene :
 public:
 	~ResultScene();
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void Update(const Input& input)override final;
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw()override final;
 
 	/// <summary>
@@ -55,6 +66,10 @@ private:
 	/// </summary>
 	void NormalDraw();
 
+	/// <summary>
+	/// リザルトの項目の描画
+	/// </summary>
+	/// <param name="blinkInterval"></param>
 	void DrawResultElement(int blinkInterval);
 
 	/// <summary>

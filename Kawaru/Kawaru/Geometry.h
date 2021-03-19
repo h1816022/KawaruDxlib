@@ -2,6 +2,9 @@
 #include <vector>
 #include <DxLib.h>
 
+/// <summary>
+/// 大きさを表す構造体
+/// </summary>
 struct Size
 {
 	int w, h;
@@ -365,7 +368,7 @@ struct Fan
 
 float GetAngle2Vector(const Vector2f& v1, const Vector2f& v2);
 
-// 不変条件 : v1→v2は時計回りであること
+// 不変条件	: v1→v2は時計回りであること
 //			: v1の大きさとv2の大きさは同じであること
 struct SlashShape
 {
@@ -392,13 +395,45 @@ struct SlashShape
 	Vector2f v2;
 };
 
+/// <summary>
+/// 引数のVECTOR同士を比べ、一致するか返す
+/// </summary>
+/// <returns>true : 一致した</returns>
 bool CheckMatch(const VECTOR& v1, const VECTOR& v2);
+
+/// <summary>
+/// 引数のVECTOR同士を比べ、一致するか返す
+/// ただしY軸方向は無視する
+/// </summary>
+/// <returns>true : 一致した</returns>
 bool CheckMatch2D(const VECTOR& v1, const VECTOR& v2);
 
+/// <summary>
+/// VECTORの長さを取得
+/// </summary>
+/// <returns>指定VECTORの長さ</returns>
 float GetLength(const VECTOR& v);
 
+/// <summary>
+/// 引数1から引数2へ、rate分遷移させた値を取得
+/// </summary>
+/// <param name="v1">rateが0.0fの時の値</param>
+/// <param name="v2">rateが1.0fの時の値</param>
+/// <param name="rate">遷移率</param>
+/// <returns>Lerpさせた値</returns>
 VECTOR Lerp(const VECTOR& v1, const VECTOR& v2, float rate);
 
-VECTOR RandomVector();
-
+/// <summary>
+/// 引数1から引数2へ、rate分遷移させた値を取得
+/// </summary>
+/// <param name="f1">rateが0.0fの時の値</param>
+/// <param name="f2">rateが1.0fの時の値</param>
+/// <param name="rate">遷移率</param>
+/// <returns>Lerpさせた値</returns>
 float Lerp(float f1, float f2, float rate);
+
+/// <summary>
+/// ランダム方向の単位ベクトルを取得
+/// </summary>
+/// <returns>ランダムな単位ベクトル</returns>
+VECTOR RandomVector();

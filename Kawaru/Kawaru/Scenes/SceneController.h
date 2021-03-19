@@ -8,6 +8,9 @@ class Scene;
 class Input;
 class Application;
 
+/// <summary>
+/// シーンの管理クラス
+/// </summary>
 class SceneController
 {
 	friend Application;
@@ -41,7 +44,15 @@ public:
 	/// </summary>
 	void ClearScenes();
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void Update(const Input& input);
+
+	/// <summary>
+	/// 描画情報
+	/// </summary>
 	void Draw();
 
 	/// <summary>

@@ -13,7 +13,7 @@ NavMeshMoveComponent::~NavMeshMoveComponent()
 {
 }
 
-bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPos, float minYOffset, float maxYOffset)
+bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPos)
 {
 	NavMesh& navMesh = stage_.GetNavMesh();
 
@@ -33,11 +33,6 @@ bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPo
 	}
 
 	paths_ = path.GetStraightPath(0.5f);
-
-	for (auto& path : paths_)
-	{
-		path.y = Lerp(minYOffset, maxYOffset, static_cast<float>(GetRand(100)) / 100.0f);
-	}
 
 	for (int i = 1; i < paths_.size() - 1; ++i)
 	{
@@ -103,7 +98,7 @@ void NavMeshMoveComponent::Update(float goalReachradius)
 		return;
 	}
 
-	if (owner_.GetPos().y < paths_[1].y + owner_.GetFloatingOffset() + 10.0f)
+	if (paths_[0].y < paths_[1].y)
 	{
 		auto result = stage_.CheckHitLine(VAdd(paths_[1], VGet(0.0f, 1.0f, 0.0f)), VAdd(owner_.GetPos(), VGet(0.0f, 1.0f, 0.0f)));
 		if (!result.HitFlag)

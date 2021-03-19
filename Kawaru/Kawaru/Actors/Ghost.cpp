@@ -12,13 +12,13 @@ namespace
 	constexpr float MAX_MOVE_SPEED = 80.0f;
 
 	// 当たり判定カプセルの半径
-	constexpr float HIT_WIDTH = 15.0f;
+	constexpr float HIT_WIDTH = 3.0f;
 
 	// 目標地点に達したとみなす半径のオフセット
 	constexpr float GOAL_REACH_RADIUS_OFFSET = 150.0f;
 
 	// 近づけたとする距離
-	constexpr float APPROACH_DISTANCE = 1800.0f;
+	constexpr float APPROACH_DISTANCE = 2000.0f;
 
 	constexpr float FLOATING_OFFSET = 500.0f;
 
@@ -86,12 +86,7 @@ bool Ghost::Call()
 	return true;
 }
 
-float Ghost::GetFloatingOffset()const
-{
-	return FLOATING_OFFSET;
-}
-
-bool Ghost::ApproachPlayer()
+void Ghost::ApproachPlayer()
 {
 	VECTOR goalPos;
 	if (camera_.GetVisiblePlayerPos(goalPos))
@@ -101,19 +96,13 @@ bool Ghost::ApproachPlayer()
 		moveFlag_ = true;
 
 		followingPlayer_ = true;
-
-		return true;
 	}
 	else
 	{
 		navMeshMoveComponent_->CalcPath(pos_, CalcApproachPos(camera_.GetTargetPos()));
 		followingPlayer_ = false;
 		moveFlag_ = true;
-
-		return true;
 	}
-
-	return false;
 }
 
 void Ghost::ApproachTarget(const VECTOR& target)

@@ -5,6 +5,7 @@
 
 class Stage;
 
+// カメラの動きのモード
 enum class CAMERA_MODE
 {
     PlayerFollow,   // プレイヤーを映す
@@ -12,12 +13,18 @@ enum class CAMERA_MODE
     Manual          // ターゲットを指定しない
 };
 
+/// <summary>
+/// 角度情報
+/// </summary>
 struct Angle
 {
-    float horizontal;
-    float vertical;
+    float horizontal;   // 水平角度
+    float vertical;     // 垂直角度
 };
 
+/// <summary>
+/// カメラ関連のクラス
+/// </summary>
 class Camera :
     public Actor
 {
@@ -25,10 +32,21 @@ public:
     Camera(Scene& scene, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Camera();
 
+    /// <summary>
+    /// 更新処理
+    /// </summary>
+    /// <param name="input">入力情報</param>
     void Update(const Input& input)override final;
 
+    /// <summary>
+    /// 描画処理
+    /// </summary>
     void Draw()override final;
 
+    /// <summary>
+    /// 座標のセット
+    /// </summary>
+    /// <param name="pos">座標</param>
     void SetPos(const VECTOR& pos);
 
     /// <summary>
@@ -56,8 +74,16 @@ public:
     /// <returns>true : 見えている</returns>
     bool GetVisiblePlayerPos(VECTOR& visiblePos);
 
+    /// <summary>
+    /// モードの変更
+    /// </summary>
+    /// <param name="mode">変更するモード</param>
     void ChangeMode(CAMERA_MODE mode);
 
+    /// <summary>
+    /// プレイヤーを追従しているか
+    /// </summary>
+    /// <returns>true : 追従している</returns>
     bool GetFollowingPlayerFlag();
 
 private:
@@ -77,6 +103,12 @@ private:
     /// </summary>
     void ClampAngle();
 
+    /// <summary>
+    /// 角度を計算して返す
+    /// </summary>
+    /// <param name="nowVec">現在の向きベクトル</param>
+    /// <param name="targetVec">目標の向きベクトル</param>
+    /// <returns>目標への角度</returns>
     Angle CalcAngle(const VECTOR& nowVec, const VECTOR& targetVec);
 
     /// <summary>
@@ -86,12 +118,24 @@ private:
     /// <param name="rotZ">Z回転</param>
     void UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ);
 
+    /// <summary>
+    /// プレイヤーを見失った時の処理
+    /// </summary>
     void LostPlayer();
 
+    /// <summary>
+    /// プレイヤー追従モードのときの更新処理
+    /// </summary>
     void UpdatePlayerFollowMode();
 
+    /// <summary>
+    /// 指定ターゲットアクター追従モードのときの更新処理
+    /// </summary>
     void UpdateTargetFollowMode();
     
+    /// <summary>
+    /// アクターを追従していないモードのときの更新処理
+    /// </summary>
     void UpdateManualMode();
 
     /// <summary>
@@ -103,29 +147,46 @@ private:
     using UpdateFunc = void (Camera::*)();
     UpdateFunc updaterByMode_;
 
+    // 注視点
     VECTOR targetPos_;
 
+    // カメラの角度
     Angle angle_;
 
+    // 注視するアクター
     std::shared_ptr<Actor> targetActor_;
 
     std::shared_ptr<Player> player_;
 
     const Stage& stage_;
 
+    // 暫定の視点座標
     VECTOR setEye_;
+
+    // 暫定の注視点座標
     VECTOR setTarget_;
     
+    /// <summary>
+    /// 注視点の算出時、targetActorの座標から、Y軸方向に足すオフセット値
+    /// </summary>
     float targetHeightOffset_;
 
+    /// <summary>
+    /// カメラアームの長さ
+    /// </summary>
     float armLength_;
-
+    
+    // プレイヤーを追従しているか
     bool followingPlayer_ = false;
 
     CAMERA_MODE mode_ = CAMERA_MODE::PlayerFollow;
 
+    // 現在の手ブレのオフセット値
     VECTOR nowShakeOffset_;
+
+    // 目標の手ブレのオフセット値
     VECTOR targetShakeOffset_;
 
+    // 手ブレ計算用カウント
     int shakeCount_ = 0;
 };

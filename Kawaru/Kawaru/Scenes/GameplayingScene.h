@@ -7,12 +7,9 @@
 class TitleScene;
 class Stage;
 
-struct Cube
-{
-	VECTOR center;
-	VECTOR radius;
-};
-
+/// <summary>
+/// プレイ中のシーン
+/// </summary>
 class GameplayingScene :
 	public Scene
 {
@@ -22,8 +19,15 @@ class GameplayingScene :
 public:
 	~GameplayingScene();
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void Update(const Input& input)override final;
 
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw()override final;
 
 private:
@@ -76,6 +80,4 @@ private:
 	uint32_t nowCount_ = 0;
 
 	const Size vpSize_;
-
-	Cube testCubes[2];
 };

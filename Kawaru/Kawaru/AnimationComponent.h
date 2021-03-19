@@ -14,12 +14,16 @@ enum class ANIM_NAME : int
     Max
 };
 
+// アニメーションごとのデータ
 struct AnimData
 {
     bool isLoop;
     int totalTime;
 };
 
+/// <summary>
+/// アニメーションをするアクターにつけるコンポーネント
+/// </summary>
 class AnimationComponent
 {
 public:
@@ -49,11 +53,22 @@ public:
     /// </summary>
     void ForceBlend();
 
+    /// <summary>
+    /// 現在のアニメーションの全体の再生時間を取得
+    /// </summary>
+    /// <returns>全体の再生時間</returns>
     int GetNowAnimTotalTime();
 
+    /// <summary>
+    /// アニメーションが終了しているか
+    /// </summary>
+    /// <returns>true : 終了している false : 途中か、ループする設定になっている</returns>
     bool EndAnim();
 
 private:
+    /// <summary>
+    /// アニメーションごとのデータを初期化
+    /// </summary>
     void InitAnimData();
 
     /// <summary>
@@ -81,18 +96,39 @@ private:
     /// <returns>総再生時間</returns>
     float GetAnimTotalTime(int animattachNum);
 
+    /// <summary>
+    /// 現在の再生時間をセット
+    /// </summary>
+    /// <param name="animAttachNum">アニメーションアタッチ番号</param>
+    /// <param name="count">再生時間</param>
     void SetAnimTime(int animAttachNum, int count);
 
+    /// <summary>
+    /// ブレンド率をセット
+    /// </summary>
+    /// <param name="animAttachNum">アニメーションアタッチ番号</param>
+    /// <param name="rate">ブレンド率</param>
     void SetAnimBlendRate(int animAttachNum, float rate);
 
+    /// <summary>
+    /// 現在のアニメーションのデータを取得
+    /// </summary>
+    /// <param name="animAttachNum">アニメーションアタッチ番号</param>
+    /// <returns>アニメーション固有のデータ</returns>
     AnimData GetAnimData(int animAttachNum);
 
+    /// <summary>
+    /// アニメーションの再生時間を更新
+    /// </summary>
+    /// <param name="animAttachNum">アニメーションアタッチ番号</param>
+    /// <param name="animCount">現在の再生時間</param>
     void UpdateAnimCount(int animAttachNum, float& animCount);
 
     int animAttachNum1_ = -1;	    // 再生しているアニメーション１のアタッチ番号(-1:何もアニメーションがアタッチされていない)
     float animPlayCount1_ = 0.0f;	// 再生しているアニメーション１の再生時間
     int animAttachNum2_ = -1;	    // 再生しているアニメーション２のアタッチ番号(-1:何もアニメーションがアタッチされていない)
     float animPlayCount2_ = 0.0f;	// 再生しているアニメーション２の再生時間
+
     float animBlendRate_ = 0.0f;	// 再生しているアニメーション１と２のブレンド率
 
     std::unordered_map<ANIM_NAME, AnimData> animData_;

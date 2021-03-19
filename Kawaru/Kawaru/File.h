@@ -4,6 +4,9 @@
 
 class FileManager;
 
+/// <summary>
+/// 外部からロードするデータ
+/// </summary>
 class File
 {
 	friend FileManager;
@@ -18,6 +21,10 @@ public:
 
 	~File();
 
+	/// <summary>
+	/// ハンドルの取得
+	/// </summary>
+	/// <returns>データのハンドル</returns>
 	int GetHandle()const;
 
 private:

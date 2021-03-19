@@ -86,8 +86,3 @@ bool Actor::CheckIsDead() const
 {
 	return isDead_;
 }
-
-float Actor::GetFloatingOffset()const
-{
-	return 0.0f;
-}

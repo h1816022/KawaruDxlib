@@ -8,11 +8,12 @@ class SceneController;
 class Input;
 class Actor;
 
+// フェードの種類
 enum class FADE_MODE
 {
-	Non,
-	In,
-	Out
+	Non,	// フェードなし
+	In,		// だんだん晴れる
+	Out		// だんだん真っ暗に
 };
 
 namespace
@@ -30,6 +31,9 @@ namespace
 	constexpr int MENU_TRANSPARENCY = 200;
 }
 
+/// <summary>
+/// シーン基底クラス
+/// </summary>
 class Scene
 {
 	friend SceneController;
@@ -37,8 +41,15 @@ class Scene
 public:
 	virtual ~Scene();
 
+	/// <summary>
+	///  更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	virtual void Update(const Input& input) {};
 	
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	virtual void Draw() {};
 
 	Scene(const Scene& scene) = default;
@@ -53,13 +64,26 @@ public:
 	/// </summary>
 	virtual void EndFadeOut() {};
 
+	/// <summary>
+	/// アクターの追加登録
+	/// </summary>
+	/// <param name="actor">登録するアクター</param>
 	void AddActors(std::shared_ptr<Actor> actor);
 
+	/// <summary>
+	/// 登録されているアクターから、指定タグに該当するものを全て取得
+	/// </summary>
+	/// <param name="tag">取得したいアクターのタグ</param>
+	/// <returns>指定タグのアクターのリスト</returns>
 	std::vector<std::shared_ptr<Actor>> GetActors(const std::wstring& tag);
 
 protected:
 	Scene(SceneController& controller);
 
+	/// <summary>
+	/// フェード処理の更新
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void UpdateFade(const Input& input);
 
 	/// <summary>
@@ -81,7 +105,15 @@ protected:
 	/// <param name="color">文字色</param>
 	void DrawDropShadowString(const Position2& pos, const wchar_t* text, unsigned int color = 0xffffff);
 
+	/// <summary>
+	/// 登録アクター達の更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void UpdateActors(const Input& input);
+
+	/// <summary>
+	/// 登録アクター達の描画処理
+	/// </summary>
 	void DrawActors();
 
 	SceneController& controller_;

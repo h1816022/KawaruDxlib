@@ -77,7 +77,7 @@ void GameplayingScene::EndFadeIn()
 {
 	updater_ = &GameplayingScene::NormalUpdate;
 	drawer_ = &GameplayingScene::NormalDraw;
-	Application::Instance().StartRecording();
+	Application::Instance().StartRecording(true);
 }
 
 void GameplayingScene::EndFadeOut()

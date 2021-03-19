@@ -13,8 +13,15 @@ public:
     Enemy(Scene& scene, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Enemy();
 
+    /// <summary>
+    /// XVˆ—
+    /// </summary>
+    /// <param name="input">“ü—Íî•ñ</param>
     void Update(const Input& input)override final;
 
+    /// <summary>
+    /// •`‰æˆ—
+    /// </summary>
     void Draw()override final;
 
 private:

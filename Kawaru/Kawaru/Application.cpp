@@ -169,9 +169,12 @@ const std::unordered_map<int, const wchar_t*>& Application::GetAllVKeyName() con
 	return vKeyName_;
 }
 
-void Application::StartRecording()
+void Application::StartRecording(bool reset)
 {
-	resultData_.Reset();
+	if (reset)
+	{
+		resultData_.Reset();
+	}
 
 	countTime_ = true;
 }

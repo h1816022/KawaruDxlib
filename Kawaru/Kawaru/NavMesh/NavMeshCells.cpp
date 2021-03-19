@@ -1,3 +1,4 @@
+#include <cassert>
 #include "NavMeshCells.h"
 #include "NavMesh.h"
 
@@ -36,13 +37,13 @@ void NavMeshCells::SetNeighbor(NAV_TYPE type, std::shared_ptr<NavMeshCells> othe
 	}
 	else
 	{
-		int a = 0;
+		assert(false);
 	}
 }
 
-bool NavMeshCells::CheckAlreadyLink(NAV_TYPE type, std::shared_ptr<NavMeshCells> other) const
+bool NavMeshCells::CheckAlreadyLink(std::shared_ptr<NavMeshCells> other) const
 {
-	for (auto& neighbor : GetNeighbors(type))
+	for (auto& neighbor : GetNeighbors(NAV_TYPE::Grounded))
 	{
 		if (neighbor == other)
 		{
@@ -52,9 +53,9 @@ bool NavMeshCells::CheckAlreadyLink(NAV_TYPE type, std::shared_ptr<NavMeshCells>
 	return false;
 }
 
-bool NavMeshCells::CheckAllLinked(NAV_TYPE type) const
+bool NavMeshCells::CheckAllLinked() const
 {
-	for (auto& neighbor : GetNeighbors(type))
+	for (auto& neighbor : GetNeighbors(NAV_TYPE::Grounded))
 	{
 		if (neighbor == nullptr)
 		{

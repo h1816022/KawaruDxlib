@@ -3,6 +3,7 @@
 #include <functional>
 #include "Scene.h"
 
+// メニュー項目ごとのデータ
 struct MenuItem
 {
 	bool isActive = false;
@@ -42,6 +43,7 @@ namespace
 	constexpr unsigned int CHOICE_MENU_COLOR = 0xff3333;
 }
 
+// メニュー項目の表示オフセット
 struct MenuOffsets
 {
 	MenuOffsets(const int x = DEFAULT_MENU_OFFSET_X, const int startY = DEFAULT_MENU_START_OFFSET_Y, const int intervalY = DEFAULT_MENU_INTERVAL_OFFSET_Y) :
@@ -60,11 +62,22 @@ struct MenuOffsets
 	const int menuIntervalOffsetY;
 };
 
+/// <summary>
+/// メニュー項目を表示させるシーンの基底クラス
+/// </summary>
 class MenuSceneBase :
 	public Scene
 {
 public:
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void Update(const Input& input)override;
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw()override;
 
 protected:

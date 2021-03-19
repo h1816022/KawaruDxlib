@@ -824,6 +824,12 @@ VECTOR Lerp(const VECTOR& v1, const VECTOR& v2, float rate)
 	return VAdd(VScale(v1, (1.0f - rate)), VScale(v2, rate));
 }
 
+float Lerp(float f1, float f2, float rate)
+{
+	rate = std::clamp(rate, 0.0f, 1.0f);
+	return f1 * (1.0f - rate) + f2 * rate;
+}
+
 VECTOR RandomVector()
 {
 	int x, y, z;
@@ -833,12 +839,6 @@ VECTOR RandomVector()
 	z = GetRand(199) + 1;
 
 	return VNorm(VGet(1.0f - static_cast<float>(x) / 100.0f, 1.0f - static_cast<float>(y) / 100.0f, 1.0f - static_cast<float>(z) / 100.0f));
-}
-
-float Lerp(float f1, float f2, float rate)
-{
-	rate = std::clamp(rate, 0.0f, 1.0f);
-	return f1 * (1.0f - rate) + f2 * rate;
 }
 
 SlashShape::SlashShape(const Position2f& inCenter, const Vector2f& inV1, const Vector2f& inV2) :

@@ -151,10 +151,10 @@
     <ClCompile Include="Actors\Players\Player.cpp" />
     <ClCompile Include="Actors\Camera.cpp" />
     <ClCompile Include="Actors\Stage.cpp" />
-    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Actors\Gimmick.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="Actors\Goal.cpp" />
     <ClCompile Include="NavMesh\NavMesh.cpp" />
     <ClCompile Include="Actors\Character.cpp" />
     <ClCompile Include="Actors\Enemy.cpp" />
@@ -182,10 +182,10 @@
     <ClInclude Include="Actors\Players\Player.h" />
     <ClInclude Include="Actors\Camera.h" />
     <ClInclude Include="Actors\Stage.h" />
-    <ClInclude Include="Collision.h" />
     <ClInclude Include="Actors\Gimmick.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="Actors\Goal.h" />
     <ClInclude Include="NavMesh\NavMesh.h" />
     <ClInclude Include="Actors\Character.h" />
     <ClInclude Include="Actors\Enemy.h" />
