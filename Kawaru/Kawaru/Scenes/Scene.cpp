@@ -29,14 +29,16 @@ std::vector<std::shared_ptr<Actor>> Scene::GetActors(const std::wstring& tag)
 Scene::Scene(SceneController& controller) :
 	controller_(controller)
 {
-	fadeCount_ = 0;
+	nowFadeCount_ = 0;
 	fadeMode_ = FADE_MODE::Non;
 }
 
-void Scene::StartFade(const FADE_MODE& mode)
+void Scene::StartFade(const FADE_MODE& mode, int time)
 {
-	fadeCount_ = 0;
+	nowFadeCount_ = 0;
 	fadeMode_ = mode;
+
+	fadeInterval_ = time;
 }
 
 void Scene::PostDraw()
@@ -45,11 +47,11 @@ void Scene::PostDraw()
 	{
 		if (fadeMode_ == FADE_MODE::In)
 		{
-			Fade(1.0f - (fadeCount_ / static_cast<float>(FADE_INTERVAL)));
+			Fade(1.0f - (nowFadeCount_ / static_cast<float>(fadeInterval_)));
 		}
 		else
 		{
-			Fade(fadeCount_ / static_cast<float>(FADE_INTERVAL));
+			Fade(nowFadeCount_ / static_cast<float>(fadeInterval_));
 		}
 	}
 	else
@@ -60,7 +62,7 @@ void Scene::PostDraw()
 		}
 	}
 
-	++fadeCount_;
+	++nowFadeCount_;
 }
 
 void Scene::DrawDropShadowString(const Position2& pos, const wchar_t* text, unsigned int color)
@@ -113,7 +115,7 @@ void Scene::UpdateFade(const Input& input)
 {
 	if (fadeMode_ != FADE_MODE::Non)
 	{
-		if (fadeCount_ > FADE_INTERVAL)
+		if (nowFadeCount_ > fadeInterval_)
 		{
 			if (fadeMode_ == FADE_MODE::In)
 			{

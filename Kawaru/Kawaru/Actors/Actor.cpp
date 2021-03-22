@@ -30,10 +30,13 @@ Actor::~Actor()
 void Actor::Init(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX, const float posY, const float posZ)
 {
 	pos_ = VGet(posX, posY, posZ);
+
 	scale_ = VGet(1.0f, 1.0f, 1.0f);
 
 	MV1SetLoadModelAnimFilePath(motionFilePath);
 	modelHandle_ = MV1LoadModel(modelFilePath);
+
+	MV1SetPosition(modelHandle_, pos_);
 }
 
 void Actor::Draw()

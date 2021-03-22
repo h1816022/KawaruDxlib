@@ -5,6 +5,10 @@
 #include "../NavMesh/NavMesh.h"
 #include "Camera.h"
 #include "../Geometry.h"
+#include "../Scenes/Scene.h"
+#include "../Scenes/GameplayingScene.h"
+#include "../File.h"
+#include "../FileManager.h"
 
 namespace
 {
@@ -20,8 +24,10 @@ namespace
 	// 近づけたとする距離
 	constexpr float APPROACH_DISTANCE = 2000.0f;
 
+	// 浮くためのオフセット値
 	constexpr float FLOATING_OFFSET = 500.0f;
 
+	// ふわふわする距離
 	constexpr float FLOAT_LENGTH = 15.0f;
 }
 
@@ -33,6 +39,10 @@ Ghost::Ghost(Scene& scene, Camera& camera, const Stage& stage, const float posX,
 	navMeshMoveComponent_ = std::make_unique<NavMeshMoveComponent>(*this, stage_, NAV_TYPE::Floated);
 
 	oldMoveDirection_ = VGet(0.0f, 0.0f, 0.0f);
+
+	auto& fileManager = FileManager::Instance();
+
+	moveSE_ = fileManager.Load(L"Resources/Sounds/GhostMove.mp3")->GetHandle();
 }
 
 Ghost::~Ghost()
@@ -41,30 +51,38 @@ Ghost::~Ghost()
 
 void Ghost::Update(const Input& input)
 {
-	if (navMeshMoveComponent_->CheckPathExists())
+	if (gameEnd_)
 	{
-		oldMoveDirection_ = moveDirection_;
-		moveDirection_ = VNorm(VSub(VAdd(navMeshMoveComponent_->GetNextTargetPos(), VGet(0.0f, FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET, 0.0f)), pos_));
-		moveDirection_ = Lerp(oldMoveDirection_, moveDirection_, 0.1f);
-		moveSpeed_ = Lerp(moveSpeed_, MAX_MOVE_SPEED, 0.005f);
-		moveVec_ = VScale(moveDirection_, moveSpeed_);
+		pos_ = Lerp(pos_, goalPos_, 0.01f);
+		camera_.SetPos(VAdd(pos_, VGet(0.0f, floatingOffset_, 0.0f)));
 	}
 	else
 	{
-		EndMove();
+		if (navMeshMoveComponent_->CheckPathExists())
+		{
+			oldMoveDirection_ = moveDirection_;
+			moveDirection_ = VNorm(VSub(VAdd(navMeshMoveComponent_->GetNextTargetPos(), VGet(0.0f, FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET, 0.0f)), pos_));
+			moveDirection_ = Lerp(oldMoveDirection_, moveDirection_, 0.1f);
+			moveSpeed_ = Lerp(moveSpeed_, MAX_MOVE_SPEED, 0.005f);
+			moveVec_ = VScale(moveDirection_, moveSpeed_);
+		}
+		else
+		{
+			EndMove();
 
-		moveVec_ = VGet(0.0f, 0.0f, 0.0f);
+			moveVec_ = VGet(0.0f, 0.0f, 0.0f);
+		}
+
+		UpdatePos(moveVec_);
+		UpdateAngle();
+
+		navMeshMoveComponent_->Update(FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET + HIT_WIDTH);
+
+		camera_.SetPos(VAdd(pos_, VGet(0.0f, floatingOffset_, 0.0f)));
+
+		floatingOffset_ = Lerp(floatingOffset_, FLOATING_OFFSET + FLOAT_LENGTH * ((floatingCount_ < 30) ? 1.0f : -1.0f), static_cast<float>(GetRand(3) + 2) / 100.0f);
+		floatingCount_ = (++floatingCount_ > 60) ? 0 : floatingCount_;
 	}
-
-	UpdatePos(moveVec_);
-	UpdateAngle();
-
-	navMeshMoveComponent_->Update(FLOATING_OFFSET + GOAL_REACH_RADIUS_OFFSET + HIT_WIDTH);
-
-	camera_.SetPos(VAdd(pos_, VGet(0.0f, floatingOffset_, 0.0f)));
-	
-	floatingOffset_ = Lerp(floatingOffset_, FLOATING_OFFSET + FLOAT_LENGTH * ((floatingCount_ < 30) ? 1.0f : -1.0f), static_cast<float>(GetRand(3) + 2) / 100.0f);
-	floatingCount_ = (++floatingCount_ > 60) ? 0 : floatingCount_;
 }
 
 void Ghost::Draw()
@@ -83,7 +101,16 @@ bool Ghost::Call()
 
 	ApproachPlayer();
 
+	PlaySoundMem(moveSE_, DX_PLAYTYPE_BACK);
+
 	return true;
+}
+
+void Ghost::EndGame()
+{
+	gameEnd_ = true;
+
+	goalPos_ = CalcApproachPos(camera_.GetTargetPos());
 }
 
 void Ghost::ApproachPlayer()
@@ -160,4 +187,6 @@ void Ghost::EndMove()
 	moveSpeed_ = 0.0f;
 
 	moveFlag_ = false;
+
+	StopSoundMem(moveSE_);
 }

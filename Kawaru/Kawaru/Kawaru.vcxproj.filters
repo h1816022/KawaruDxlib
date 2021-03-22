@@ -141,6 +141,9 @@
     <ClCompile Include="Actors\Goal.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Actors\Candle.cpp">
+      <Filter>Source Files\Game\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -228,6 +231,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Actors\Goal.h">
+      <Filter>Header Files\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Candle.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
   </ItemGroup>

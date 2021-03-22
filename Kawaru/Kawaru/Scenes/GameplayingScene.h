@@ -1,11 +1,13 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <array>
 #include "Scene.h"
 #include "../Geometry.h"
 
 class TitleScene;
 class Stage;
+class Player;
 
 /// <summary>
 /// プレイ中のシーン
@@ -46,6 +48,12 @@ private:
 	void FadeInUpdate(const Input& input);
 
 	/// <summary>
+	/// フェードアウト中の更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	void FadeOutUpdate(const Input& input);
+
+	/// <summary>
 	/// このシーンから他シーンへ切り替わる時の更新処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
@@ -74,10 +82,32 @@ private:
 	/// </summary>
 	void FadeInDraw();
 
+	/// <summary>
+	/// フェードイン中の描画処理
+	/// </summary>
+	void FadeOutDraw();
+
+	void UpdateVibration();
+
+	void UpdateHUD();
+
+	int vibrationCount_ = 0;
+
 	using DrawFunc = void (GameplayingScene::*)();
 	DrawFunc drawer_;
 
 	uint32_t nowCount_ = 0;
 
 	const Size vpSize_;
+
+	std::shared_ptr<Player> player_;
+
+	std::shared_ptr<Stage> stage_;
+
+	std::array<float, 300> waveform_;
+	int waveformIndex_ = 0;
+	float nowWaveformRate_ = 0.0f;
+
+	int candleHUDHandle_ = -1;
+	float candleHUDAngle_ = 0.0f;
 };

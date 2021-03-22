@@ -18,8 +18,8 @@ enum class FADE_MODE
 
 namespace
 {
-	// フェードにかける時間
-	constexpr uint32_t FADE_INTERVAL = 60;
+	// 基本のフェードにかける時間
+	constexpr uint32_t DEFAULT_FADE_INTERVAL = 60;
 
 	// 画面枠の大きさ
 	constexpr int LETTERBOX_MASK_LENGTH = 50;
@@ -90,7 +90,8 @@ protected:
 	/// フェードを開始する
 	/// </summary>
 	/// <param name="mode">イン / アウトを指定</param>
-	void StartFade(const FADE_MODE& mode);
+	/// <param name="time">フェードに掛ける時間</param>
+	void StartFade(const FADE_MODE& mode, int time = DEFAULT_FADE_INTERVAL);
 
 	/// <summary>
 	/// 様々な描画の後の画面効果(フェードなど)を描画
@@ -127,7 +128,9 @@ private:
 
 	FADE_MODE fadeMode_;
 
-	int fadeCount_;
+	int nowFadeCount_;
+
+	int fadeInterval_;
 
 	float nowFadeRate = 0.0f;
 

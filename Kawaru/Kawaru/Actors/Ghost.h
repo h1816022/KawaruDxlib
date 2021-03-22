@@ -34,6 +34,11 @@ public:
     /// <returns>true : 呼べた false : 呼べないか、既に呼ばれて向かっている</returns>
     bool Call();
 
+    /// <summary>
+    /// ゲームクリア時の処理
+    /// </summary>
+    void EndGame();
+
 private:
     /// <summary>
     /// プレイヤーのもとに向かう
@@ -71,4 +76,10 @@ private:
     float moveSpeed_;
 
     VECTOR oldMoveDirection_;
+
+    bool gameEnd_ = false;
+
+    VECTOR goalPos_;
+
+    int moveSE_ = -1;
 };

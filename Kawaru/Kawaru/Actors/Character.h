@@ -163,13 +163,15 @@ protected:
 
     bool moveFlag_ = false;
 
+    bool canMove_ = true;
+
+    bool collisionEnabled_ = true;
+
     VECTOR moveVec_;
 
     VECTOR moveDirection_;
 
     const Stage& stage_;
-
-    bool canMove_ = true;
 
     std::unique_ptr<AnimationComponent> animationComponent_;
 

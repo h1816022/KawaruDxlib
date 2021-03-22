@@ -152,6 +152,7 @@
     <ClCompile Include="Actors\Camera.cpp" />
     <ClCompile Include="Actors\Stage.cpp" />
     <ClCompile Include="Actors\Gimmick.cpp" />
+    <ClCompile Include="Actors\Candle.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Actors\Goal.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Actors\Camera.h" />
     <ClInclude Include="Actors\Stage.h" />
     <ClInclude Include="Actors\Gimmick.h" />
+    <ClInclude Include="Actors\Candle.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Actors\Goal.h" />

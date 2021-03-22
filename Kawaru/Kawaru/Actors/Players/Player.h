@@ -10,7 +10,7 @@ class Player :
     public Character
 {
 public:
-    Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
+    Player(Scene& scene, Camera& camera, Ghost& ghost, const Stage& stage, const float posX = 0.0f, const float posY = 0.0f, const float posZ = 0.0f);
     ~Player();
 
     /// <summary>
@@ -35,6 +35,18 @@ public:
     /// </summary>
     /// <returns>true : 死亡した false : 既に死亡しているか、倒せない状況にある</returns>
     bool Destroy()override final;
+
+    /// <summary>
+    /// ゲームクリア時の処理
+    /// </summary>
+    void EndGame();
+
+    /// <summary>
+    /// おばけを呼べる回数を増やす
+    /// </summary>
+    void AddCallNum();
+
+    int GetCallNum()const;
 
 private:
     /// <summary>
@@ -85,16 +97,18 @@ private:
     void UpdateMove(const Input& input);
 
     /// <summary>
-    /// ゴーストを呼ぶ
+    /// おばけを呼ぶ
     /// </summary>
     /// <returns>true : 呼べた false : 呼べなかったか、既に呼んでいて向かっている</returns>
     bool CallGhost();
 
-    const Camera& camera_;
+    Camera& camera_;
     Ghost& ghost_;
 
     // トーレスを行う際に終端とするサンプリング座標の、自身の座標からのオフセット値
     std::vector<VECTOR> lineTraceSamplingOffsets_;
 
     int fingerSnapSE_ = -1;
+
+    int callNum_;
 };

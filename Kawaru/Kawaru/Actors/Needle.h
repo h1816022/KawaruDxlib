@@ -1,7 +1,7 @@
 #pragma once
 #include "Gimmick.h"
 
-class GameplayingScene;
+class Scene;
 
 /// <summary>
 /// トゲ
@@ -11,7 +11,7 @@ class Needle :
     public Gimmick
 {
 public:
-    Needle(GameplayingScene& scene);
+    Needle(Scene& scene, float px, float py, float pz);
     ~Needle();
 
     /// <summary>
@@ -30,8 +30,13 @@ protected:
     /// 当たり判定を検知したときの処理
     /// </summary>
     /// <param name="hitActor">当たったアクター</param>
-    void Hit(std::shared_ptr<Actor> hitActor)override final;
+    /// <returns>true : 処理を完遂した</returns>
+    bool Hit(std::shared_ptr<Actor> hitActor)override final;
 
 private:
     int hitSE_;
+
+    int moveCount_ = 0;
+
+    float moveLengthPerFrame_;
 };

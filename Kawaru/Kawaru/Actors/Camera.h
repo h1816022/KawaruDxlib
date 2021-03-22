@@ -10,7 +10,7 @@ enum class CAMERA_MODE
 {
     PlayerFollow,   // プレイヤーを映す
     TargetFollow,   // ターゲットを映す
-    Manual          // ターゲットを指定しない
+    GameEnd         // 1プレイ終了時
 };
 
 /// <summary>
@@ -37,6 +37,8 @@ public:
     /// </summary>
     /// <param name="input">入力情報</param>
     void Update(const Input& input)override final;
+
+    void UpdateCameraShake();
 
     /// <summary>
     /// 描画処理
@@ -86,6 +88,8 @@ public:
     /// <returns>true : 追従している</returns>
     bool GetFollowingPlayerFlag();
 
+    void EndGame();
+
 private:
     /// <summary>
     /// 角度更新
@@ -134,9 +138,9 @@ private:
     void UpdateTargetFollowMode();
     
     /// <summary>
-    /// アクターを追従していないモードのときの更新処理
+    /// ゲームクリアしたときの更新処理
     /// </summary>
-    void UpdateManualMode();
+    void UpdateGameClear();
 
     /// <summary>
     /// プレイヤーが見えているか

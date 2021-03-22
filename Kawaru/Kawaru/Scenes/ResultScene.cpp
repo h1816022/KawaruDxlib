@@ -22,8 +22,6 @@ namespace
 
 	// ì_ñ≈Ç≈è¡Ç¶ÇƒÇ©ÇÁì_Ç≠Ç‹Ç≈ÇÃéûä‘
 	constexpr uint32_t BLINK_TIME = 3;
-
-	constexpr uint32_t EMISSIVE_TIME = 30;
 }
 
 ResultScene::ResultScene(SceneController& controller) :
@@ -56,10 +54,12 @@ void ResultScene::NormalUpdate(const Input& input)
 	{
 		StartFade(FADE_MODE::Out);
 
-		updater_ = &ResultScene::FadeoutUpdate;
+		updater_ = &ResultScene::FadeOutUpdate;
 		drawer_ = &ResultScene::FadeOutDraw;
 
 		PlaySoundMem(okSE_, DX_PLAYTYPE_BACK);
+
+		StartJoypadVibration(DX_INPUT_PAD1, 500, 100);
 
 		return;
 	}
@@ -69,7 +69,7 @@ void ResultScene::FadeinUpdate(const Input&)
 {
 }
 
-void ResultScene::FadeoutUpdate(const Input&)
+void ResultScene::FadeOutUpdate(const Input&)
 {
 }
 

@@ -55,6 +55,8 @@ void TitleScene::NormalUpdate(const Input& input)
 
 		PlaySoundMem(okSE_, DX_PLAYTYPE_BACK);
 
+		StartJoypadVibration(DX_INPUT_PAD1, 500, 100);
+
 		return;
 	}
 }

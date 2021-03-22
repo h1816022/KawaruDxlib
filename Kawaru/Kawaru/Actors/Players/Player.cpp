@@ -17,7 +17,7 @@
 namespace
 {
 	// 移動速度
-	constexpr float MAX_MOVE_SPEED = 30.0f;
+	constexpr float MAX_MOVE_SPEED = 40.0f;
 		
 	// 当たり判定カプセルの半径
 	constexpr float HIT_WIDTH = 150.0f;
@@ -27,9 +27,12 @@ namespace
 
 	// 体の幅
 	constexpr float BODY_WIDTH = HIT_WIDTH / 3 * 2;
+
+	// 開始時、おばけを呼べる回数
+	constexpr int INIT_CALL_NUM = 10;
 }
 
-Player::Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
+Player::Player(Scene& scene, Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
 	Character(scene, L"Resources/Models/sotai/素体A.pmx", L"Resources/Models/Sotai/Animations/Sotai", stage, HIT_WIDTH, HIT_HEIGHT, posX, posY, posZ),
 	camera_(camera),
 	ghost_(ghost)
@@ -59,6 +62,8 @@ Player::Player(Scene& scene, const Camera& camera, Ghost& ghost, const Stage& st
 	fingerSnapSE_ = fileManager.Load(L"Resources/Sounds/FingerSnap.mp3")->GetHandle();
 
 	tag_ = L"Player";
+
+	callNum_ = INIT_CALL_NUM;
 }
 
 Player::~Player()
@@ -67,6 +72,11 @@ Player::~Player()
 
 void Player::Update(const Input& input)
 {
+	if (Application::Instance().CheckIsGameClear())
+	{
+		return;
+	}
+
 	Character::Update(input);
 
 	if (canMove_)
@@ -105,7 +115,25 @@ bool Player::Destroy()
 
 	ChangeUpadater(UPDATE_TYPE::Destroy);
 
+	EndGame();
+
 	return true;
+}
+
+void Player::EndGame()
+{
+	camera_.EndGame();
+	ghost_.EndGame();
+}
+
+void Player::AddCallNum()
+{
+	++callNum_;
+}
+
+int Player::GetCallNum() const
+{
+	return callNum_;
 }
 
 void Player::IdleUpdate(const Input& input)
@@ -120,8 +148,14 @@ void Player::IdleUpdate(const Input& input)
 
 	if (input.IsTriggered("Call"))
 	{
+		if (callNum_ <= 0)
+		{
+			return;
+		}
+
 		if (CallGhost())
 		{
+			--callNum_;
 			return;
 		}
 	}
@@ -167,7 +201,9 @@ void Player::JumpUpdate(const Input& input)
 
 void Player::DestroyUpdate(const Input& input)
 {
-	if (isDead_)
+	auto& app = Application::Instance();
+
+	if (app.CheckIsGameOver())
 	{
 		return;
 	}
@@ -186,9 +222,7 @@ void Player::DestroyUpdate(const Input& input)
 
 	if (animationComponent_->EndAnim())
 	{
-		isDead_ = true;
-
-		Application::Instance().SetIsGameOver();
+		app.SetIsGameOver();
 	}
 }
 

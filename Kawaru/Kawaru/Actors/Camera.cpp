@@ -56,6 +56,11 @@ void Camera::Update(const Input& input)
 
 	setTarget_ = Lerp(setTarget_, targetPos_, 0.2f);
 
+	UpdateCameraShake();
+}
+
+void Camera::UpdateCameraShake()
+{
 	SetCameraPositionAndTarget_UpVecY(setEye_, VAdd(setTarget_, VScale(nowShakeOffset_, min(GetLength(VSub(targetPos_, pos_)) / 6000.0f, 1.0f))));
 
 	nowShakeOffset_ = Lerp(nowShakeOffset_, targetShakeOffset_, 0.001f);
@@ -249,17 +254,14 @@ void Camera::UpdateTargetFollowMode()
 {
 }
 
-void Camera::UpdateManualMode()
+void Camera::UpdateGameClear()
 {
-	if (followingPlayer_)
-	{
-		LostPlayer();
-	}
+	targetPos_ = Lerp(targetPos_, VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f)), 0.1f);
 
-	const MATRIX rotY = MGetRotY(angle_.horizontal);
-	const MATRIX rotZ = MGetRotZ(angle_.vertical);
+	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
+	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
 
-	targetPos_ = VAdd(VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY), pos_);
+	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
 }
 
 void Camera::ChangeMode(CAMERA_MODE mode)
@@ -281,8 +283,8 @@ void Camera::ChangeMode(CAMERA_MODE mode)
 		updaterByMode_ = &Camera::UpdateTargetFollowMode;
 		break;
 
-	case CAMERA_MODE::Manual:
-		updaterByMode_ = &Camera::UpdateManualMode;
+	case CAMERA_MODE::GameEnd:
+		updaterByMode_ = &Camera::UpdateGameClear;
 		break;
 
 	default:
@@ -293,6 +295,11 @@ void Camera::ChangeMode(CAMERA_MODE mode)
 bool Camera::GetFollowingPlayerFlag()
 {
 	return followingPlayer_;
+}
+
+void Camera::EndGame()
+{
+	ChangeMode(CAMERA_MODE::GameEnd);
 }
 
 bool Camera::CanSeePlayer()

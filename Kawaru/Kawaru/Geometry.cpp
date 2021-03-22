@@ -818,6 +818,16 @@ float GetLength(const VECTOR& v)
 	return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+float GetLengthSQ(const VECTOR& v)
+{
+	return (v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+float GetLength2DSQ(const VECTOR& v)
+{
+	return (v.x * v.x + v.z * v.z);
+}
+
 VECTOR Lerp(const VECTOR& v1, const VECTOR& v2, float rate)
 {
 	rate = std::clamp(rate, 0.0f, 1.0f);

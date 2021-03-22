@@ -415,6 +415,19 @@ bool CheckMatch2D(const VECTOR& v1, const VECTOR& v2);
 float GetLength(const VECTOR& v);
 
 /// <summary>
+/// VECTORの長さの2乗を取得
+/// </summary>
+/// <returns>指定VECTORの長さの2乗</returns>
+float GetLengthSQ(const VECTOR& v);
+
+/// <summary>
+/// VECTORの長さの2乗を取得
+/// ただしY軸は無視
+/// </summary>
+/// <returns>指定VECTORの長さの2乗</returns>
+float GetLength2DSQ(const VECTOR& v);
+
+/// <summary>
 /// 引数1から引数2へ、rate分遷移させた値を取得
 /// </summary>
 /// <param name="v1">rateが0.0fの時の値</param>

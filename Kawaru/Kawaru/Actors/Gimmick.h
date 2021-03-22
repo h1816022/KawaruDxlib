@@ -11,7 +11,7 @@ class Gimmick :
     public Actor
 {
 public:
-    Gimmick(Scene& scene, const wchar_t* modelFilePath, const wchar_t* targetTag);
+    Gimmick(Scene& scene, const wchar_t* modelFilePath, const wchar_t* targetTag, bool onceHit, float px, float py, float pz);
     virtual ~Gimmick();
 
     /// <summary>
@@ -30,10 +30,25 @@ protected:
     /// 当たり判定を検知した時の処理
     /// </summary>
     /// <param name="hitActor">当たったアクター</param>
-    virtual void Hit(std::shared_ptr<Actor> hitActor) = 0;
+    /// <returns>true : 処理を完遂した</returns>
+    virtual bool Hit(std::shared_ptr<Actor> hitActor) = 0;
 
     const std::wstring targetTag_;
 
     Scene& scene_;
+
+    bool collisionEnabled_ = true;
+
+private:
+    /// <summary>
+    /// 当たり判定をする
+    /// </summary>
+    /// <param name="actor">調べるアクター</param>
+    /// <returns>true : ヒットした</returns>
+    bool CheckHit(std::shared_ptr<Actor> actor);
+
+    const bool onceHit_;
+
+    bool hit_ = false;
 };
 

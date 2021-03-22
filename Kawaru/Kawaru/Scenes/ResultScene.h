@@ -56,7 +56,7 @@ private:
 	/// フェードアウト時の更新処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
-	void FadeoutUpdate(const Input& input);
+	void FadeOutUpdate(const Input& input);
 
 	using UpdateFunc = void (ResultScene::*)(const Input& input);
 	UpdateFunc updater_;

@@ -163,22 +163,25 @@ void Character::UpdatePos(const VECTOR& moveVector)
 
 	GetWallPolyAndFloorPoly(polyData, hitDim);
 
-	// 壁ポリゴンとの当たり判定処理
-	if (polyData.wallNum != 0)
+	if (collisionEnabled_)
 	{
-		hitFlag = CheckHitWithWall(moveFlag, polyData, moveVector, nowPos);
-
-		// 当たっていたら押し出す
-		if (hitFlag)
+		// 壁ポリゴンとの当たり判定処理
+		if (polyData.wallNum != 0)
 		{
-			Extrude(polyData, nowPos);
-		}
-	}
+			hitFlag = CheckHitWithWall(moveFlag, polyData, moveVector, nowPos);
 
-	// 床ポリゴンとの当たり判定
-	if (polyData.floorNum != 0)
-	{
-		CheckHitWithFloor(moveFlag, polyData, nowPos);
+			// 当たっていたら押し出す
+			if (hitFlag)
+			{
+				Extrude(polyData, nowPos);
+			}
+		}
+
+		// 床ポリゴンとの当たり判定
+		if (polyData.floorNum != 0)
+		{
+			CheckHitWithFloor(moveFlag, polyData, nowPos);
+		}
 	}
 
 	// 座標の書き換え
