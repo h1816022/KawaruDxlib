@@ -2,7 +2,7 @@
 #include <float.h>
 #include <algorithm>
 #include "Geometry.h"
-#include "Application.h"
+#include "../Application.h"
 
 const Vector2f Vector2f::NIL(NAN, NAN);
 

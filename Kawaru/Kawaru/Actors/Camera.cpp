@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "../Systems/Input.h"
 #include "Stage.h"
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 namespace
 {

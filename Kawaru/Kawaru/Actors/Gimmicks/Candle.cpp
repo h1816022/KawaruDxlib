@@ -1,8 +1,8 @@
 #include <cassert>
 #include "Candle.h"
-#include "../File.h"
-#include "../FileManager.h"
-#include "Players/Player.h"
+#include "../../Systems/File.h"
+#include "../../Systems/FileManager.h"
+#include "../Players/Player.h"
 
 Candle::Candle(Scene& scene, float px, float py, float pz):
 	Gimmick(scene, L"Resources/Models/Candle.mqo", L"Player", true, px, py, pz)

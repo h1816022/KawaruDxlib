@@ -1,12 +1,12 @@
 #include <cassert>
 #include "Goal.h"
-#include "Actor.h"
-#include "../Scenes/Scene.h"
-#include "../Systems/Input.h"
-#include "../Application.h"
-#include "../File.h"
-#include "../FileManager.h"
-#include "Players/Player.h"
+#include "../Actor.h"
+#include "../../Scenes/Scene.h"
+#include "../../Systems/Input.h"
+#include "../../Application.h"
+#include "../../Systems/File.h"
+#include "../../Systems/FileManager.h"
+#include "../Players/Player.h"
 
 Goal::Goal(Scene& scene, float px, float py, float pz):
 	Gimmick(scene, L"Resources/Models/Goal.mqo", L"Player", true, px, py, pz)

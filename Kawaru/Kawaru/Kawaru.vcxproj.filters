@@ -52,15 +52,21 @@
     <Filter Include="Source Files\NavMesh">
       <UniqueIdentifier>{3212272f-7fec-43df-8d96-97239171fe48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Actors\Gimmicks">
+      <UniqueIdentifier>{bab1ad92-e7ea-4fef-9f6d-31ebc03b7a38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Actors\Gimmicks">
+      <UniqueIdentifier>{8eced62e-ef84-4de5-9903-f10f6240ec4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{475ec6c3-38cd-442d-8857-bde6b5913256}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Scenes\SceneController.cpp">
@@ -99,9 +105,6 @@
     <ClCompile Include="Actors\Character.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="Actors\Enemy.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
     <ClCompile Include="Actors\Ghost.cpp">
       <Filter>Source Files\Game\Actors</Filter>
     </ClCompile>
@@ -117,39 +120,39 @@
     <ClCompile Include="NavMesh\NavMeshPath.cpp">
       <Filter>Source Files\NavMesh</Filter>
     </ClCompile>
-    <ClCompile Include="Actors\Gimmick.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
-    <ClCompile Include="Actors\Needle.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="File.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Scenes\ResultScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Systems\File.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Systems\FileManager.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Gimmicks\Candle.cpp">
+      <Filter>Source Files\Game\Actors\Gimmicks</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Gimmicks\Gimmick.cpp">
+      <Filter>Source Files\Game\Actors\Gimmicks</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Gimmicks\Goal.cpp">
+      <Filter>Source Files\Game\Actors\Gimmicks</Filter>
+    </ClCompile>
+    <ClCompile Include="Actors\Gimmicks\Needle.cpp">
+      <Filter>Source Files\Game\Actors\Gimmicks</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\Geometry.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
     <ClCompile Include="ResultData.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Actors\Goal.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
-    </ClCompile>
-    <ClCompile Include="Actors\Candle.cpp">
-      <Filter>Source Files\Game\Actors</Filter>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Scenes\Scene.h">
@@ -191,9 +194,6 @@
     <ClInclude Include="Actors\Character.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Actors\Enemy.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
     <ClInclude Include="Actors\Ghost.h">
       <Filter>Header Files\Game\Actors</Filter>
     </ClInclude>
@@ -209,32 +209,35 @@
     <ClInclude Include="NavMesh\NavMeshMoveComponent.h">
       <Filter>Header Files\NavMesh</Filter>
     </ClInclude>
-    <ClInclude Include="Actors\Gimmick.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
-    <ClInclude Include="Actors\Needle.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="File.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Scenes\ResultScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="Systems\FileManager.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\File.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Gimmicks\Candle.h">
+      <Filter>Header Files\Game\Actors\Gimmicks</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Gimmicks\Gimmick.h">
+      <Filter>Header Files\Game\Actors\Gimmicks</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Gimmicks\Goal.h">
+      <Filter>Header Files\Game\Actors\Gimmicks</Filter>
+    </ClInclude>
+    <ClInclude Include="Actors\Gimmicks\Needle.h">
+      <Filter>Header Files\Game\Actors\Gimmicks</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\Geometry.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="ResultData.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Actors\Goal.h">
-      <Filter>Header Files\Game\Actors</Filter>
-    </ClInclude>
-    <ClInclude Include="Actors\Candle.h">
-      <Filter>Header Files\Game\Actors</Filter>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

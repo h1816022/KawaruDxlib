@@ -1,7 +1,7 @@
 #include "NavMesh.h"
 #include "../NavMesh/NavMeshCells.h"
 #include "../NavMesh/NavMeshPath.h"
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 namespace
 {
@@ -29,15 +29,6 @@ NavMesh::NavMesh(Scene& scene):
 
 NavMesh::~NavMesh()
 {
-}
-
-void NavMesh::Update(const Input& input)
-{
-}
-
-void NavMesh::Draw()
-{
-
 }
 
 bool NavMesh::FindPath(NavMeshPath& path, NAV_TYPE type, int startID, const VECTOR& startPos, int goalID, const VECTOR& goalPos)

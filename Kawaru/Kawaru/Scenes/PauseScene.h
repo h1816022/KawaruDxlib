@@ -2,7 +2,7 @@
 #include <string>
 #include <functional>
 #include "MenuSceneBase.h"
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 class GameplayingScene;
 class PauseScene;

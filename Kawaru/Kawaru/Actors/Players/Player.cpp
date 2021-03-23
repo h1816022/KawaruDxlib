@@ -9,8 +9,8 @@
 #include "../../NavMesh/NavMeshPath.h"
 #include "../../Systems/Input.h"
 #include "../../AnimationComponent.h"
-#include "../../File.h"
-#include "../../FileManager.h"
+#include "../../Systems/File.h"
+#include "../../Systems/FileManager.h"
 #include "../../Scenes/Scene.h"
 #include "../../Application.h"
 

@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "Application.h"
 #include "Scenes/SceneController.h"
-#include "Geometry.h"
+#include "Tools/Geometry.h"
 #include "Systems/Input.h"
-#include "FileManager.h"
+#include "Systems/FileManager.h"
 
 namespace
 {

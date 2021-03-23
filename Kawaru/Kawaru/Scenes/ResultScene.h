@@ -89,7 +89,7 @@ private:
 
 	uint32_t fadeTime_;
 
-	Vector2f logoPos;
+	Vector2f logoPos_;
 
 	int resultImage_ = -1;
 	int pressStartImage_ = -1;

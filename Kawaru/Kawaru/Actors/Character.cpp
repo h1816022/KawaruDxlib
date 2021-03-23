@@ -3,8 +3,8 @@
 #include "Character.h"
 #include "Stage.h"
 #include "../AnimationComponent.h"
-#include "../File.h"
-#include "../FileManager.h"
+#include "../Systems/File.h"
+#include "../Systems/FileManager.h"
 
 namespace
 {

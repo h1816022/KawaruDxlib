@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 class SceneController;
 class Input;

@@ -1,6 +1,6 @@
 #include "Gimmick.h"
-#include "Actor.h"
-#include "../Scenes/Scene.h"
+#include "../Actor.h"
+#include "../../Scenes/Scene.h"
 
 Gimmick::Gimmick(Scene& scene, const wchar_t* modelFilePath, const wchar_t* targetTag, bool onceHit, float px, float py, float pz):
 	Actor(scene, modelFilePath, px, py, pz), scene_(scene), targetTag_(targetTag), onceHit_(onceHit)

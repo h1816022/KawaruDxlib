@@ -3,7 +3,7 @@
 #include <vector>
 #include <array>
 #include "Scene.h"
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 class TitleScene;
 class Stage;
@@ -87,8 +87,14 @@ private:
 	/// </summary>
 	void FadeOutDraw();
 
+	/// <summary>
+	/// 探索の目安の振動タイミングを更新
+	/// </summary>
 	void UpdateVibration();
 
+	/// <summary>
+	/// 画面のUI表示を更新
+	/// </summary>
 	void UpdateHUD();
 
 	int vibrationCount_ = 0;

@@ -2,9 +2,9 @@
 #include "Stage.h"
 #include "../Scenes/Scene.h"
 #include "../Systems/Input.h"
-#include "Needle.h"
-#include "Goal.h"
-#include "Candle.h"
+#include "Gimmicks/Needle.h"
+#include "Gimmicks/Goal.h"
+#include "Gimmicks/Candle.h"
 #include "Players/Player.h"
 
 Stage::Stage(Scene& scene, NavMesh& navMesh):
@@ -25,22 +25,22 @@ Stage::Stage(Scene& scene, NavMesh& navMesh):
 		{
 			if (length01 > length20)
 			{
-				SetIndices(polyData.Polygons[i].VIndex[0], polyData.Polygons[i].VIndex[1]);
+				SetHypotIndices(polyData.Polygons[i].VIndex[0], polyData.Polygons[i].VIndex[1]);
 			}
 			else
 			{
-				SetIndices(polyData.Polygons[i].VIndex[0], polyData.Polygons[i].VIndex[2]);
+				SetHypotIndices(polyData.Polygons[i].VIndex[0], polyData.Polygons[i].VIndex[2]);
 			}
 		}
 		else
 		{
 			if (length12 > length20)
 			{
-				SetIndices(polyData.Polygons[i].VIndex[1], polyData.Polygons[i].VIndex[2]);
+				SetHypotIndices(polyData.Polygons[i].VIndex[1], polyData.Polygons[i].VIndex[2]);
 			}
 			else
 			{
-				SetIndices(polyData.Polygons[i].VIndex[0], polyData.Polygons[i].VIndex[2]);
+				SetHypotIndices(polyData.Polygons[i].VIndex[0], polyData.Polygons[i].VIndex[2]);
 			}
 		}
 	}
@@ -95,7 +95,7 @@ VECTOR Stage::GetRandomBottomCenter(RAFFILE_TYPE type)
 	std::shuffle(bottomCenters_.begin(), bottomCenters_.end(), engine);
 
 	int index = 0;
-	VECTOR ret;
+	VECTOR ret = VECTOR();
 
 	switch (type)
 	{
@@ -115,9 +115,6 @@ VECTOR Stage::GetRandomBottomCenter(RAFFILE_TYPE type)
 			}
 		}
 		break;
-
-	default:
-		break;
 	}
 
 	ret = bottomCenters_[index];
@@ -136,7 +133,7 @@ void Stage::SetPlayer(std::shared_ptr<Player> player)
 	player_ = player;
 }
 
-void Stage::SetIndices(int index1, int index2)
+void Stage::SetHypotIndices(int index1, int index2)
 {
 	for (auto indices : hypotIndices_)
 	{

@@ -5,9 +5,9 @@
 #include "TitleScene.h"
 #include "../Systems/Input.h"
 #include "../Application.h"
-#include "../Geometry.h"
-#include "../FileManager.h"
-#include "../File.h"
+#include "../Tools/Geometry.h"
+#include "../Systems/FileManager.h"
+#include "../Systems/File.h"
 
 namespace
 {
@@ -34,7 +34,7 @@ ResultScene::ResultScene(SceneController& controller) :
 
 	auto wSize = Application::Instance().GetViewport().GetSize();
 
-	logoPos = Vector2f(wSize.w / 8.0f, wSize.h / 8.0f);
+	logoPos_ = Vector2f(wSize.w / 8.0f, wSize.h / 8.0f);
 
 	auto& fileManager = FileManager::Instance();
 
@@ -75,19 +75,19 @@ void ResultScene::FadeOutUpdate(const Input&)
 
 void ResultScene::NormalDraw()
 {
-	DrawGraph(logoPos.x, logoPos.y, resultImage_, true);
+	DrawGraph(logoPos_.x, logoPos_.y, resultImage_, true);
 
 	DrawResultElement(BLINK_INTERVAL_DEFAULT);
 }
 
 void ResultScene::FadeInDraw()
 {
-	DrawGraph(logoPos.x, logoPos.y, resultImage_, true);
+	DrawGraph(logoPos_.x, logoPos_.y, resultImage_, true);
 }
 
 void ResultScene::FadeOutDraw()
 {
-	DrawGraph(logoPos.x, logoPos.y, resultImage_, true);
+	DrawGraph(logoPos_.x, logoPos_.y, resultImage_, true);
 
 	DrawResultElement(BLINK_INTERVAL_FAST);
 }
@@ -97,13 +97,13 @@ void ResultScene::DrawResultElement(int blinkInterval)
 	auto wSize = Application::Instance().GetViewport().GetSize();
 
 	const int LINE_SPACING = 130;
-	int yPos = logoPos.y + LINE_SPACING;
+	int yPos = logoPos_.y + LINE_SPACING;
 
 	auto data = Application::Instance().GetResultData();
 
 	if (data.gameClear)
 	{
-		DrawFormatString(logoPos.x, yPos, 0xffffff, L"Clear Time : %4d:%d", data.playTime / 60, (data.playTime % 60));
+		DrawFormatString(logoPos_.x, yPos, 0xffffff, L"Clear Time : %4d:%d", data.playTime / 60, (data.playTime % 60));
 
 		yPos += +LINE_SPACING;
 	}

@@ -1,7 +1,7 @@
 #include "Needle.h"
-#include "../Scenes/Scene.h"
-#include "../File.h"
-#include "../FileManager.h"
+#include "../../Scenes/Scene.h"
+#include "../../Systems/File.h"
+#include "../../Systems/FileManager.h"
 
 namespace
 {

@@ -39,6 +39,10 @@ void Actor::Init(const wchar_t* modelFilePath, const wchar_t* motionFilePath, co
 	MV1SetPosition(modelHandle_, pos_);
 }
 
+void Actor::Update(const Input& input)
+{
+}
+
 void Actor::Draw()
 {
 }

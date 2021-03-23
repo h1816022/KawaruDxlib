@@ -13,9 +13,7 @@ enum class CAMERA_MODE
     GameEnd         // 1プレイ終了時
 };
 
-/// <summary>
-/// 角度情報
-/// </summary>
+// 角度情報
 struct Angle
 {
     float horizontal;   // 水平角度
@@ -38,6 +36,9 @@ public:
     /// <param name="input">入力情報</param>
     void Update(const Input& input)override final;
 
+    /// <summary>
+    /// カメラのブレ感を更新
+    /// </summary>
     void UpdateCameraShake();
 
     /// <summary>
@@ -88,6 +89,9 @@ public:
     /// <returns>true : 追従している</returns>
     bool GetFollowingPlayerFlag();
 
+    /// <summary>
+    /// 1ゲームが終わった時の処理
+    /// </summary>
     void EndGame();
 
 private:

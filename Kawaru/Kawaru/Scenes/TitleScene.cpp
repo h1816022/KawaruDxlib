@@ -5,9 +5,9 @@
 #include "GameplayingScene.h"
 #include "../Systems/Input.h"
 #include "../Application.h"
-#include "../Geometry.h"
-#include "../FileManager.h"
-#include "../File.h"
+#include "../Tools/Geometry.h"
+#include "../Systems/FileManager.h"
+#include "../Systems/File.h"
 
 namespace
 {

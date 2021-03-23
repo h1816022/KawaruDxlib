@@ -6,6 +6,9 @@
 class Camera;
 class Ghost;
 
+/// <summary>
+/// 操作キャラクター
+/// </summary>
 class Player :
     public Character
 {
@@ -37,7 +40,7 @@ public:
     bool Destroy()override final;
 
     /// <summary>
-    /// ゲームクリア時の処理
+    /// 1ゲーム終わった時の処理
     /// </summary>
     void EndGame();
 
@@ -46,6 +49,10 @@ public:
     /// </summary>
     void AddCallNum();
 
+    /// <summary>
+    /// おばけを呼べる回数を取得
+    /// </summary>
+    /// <returns></returns>
     int GetCallNum()const;
 
 private:

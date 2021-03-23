@@ -7,7 +7,7 @@ class Actor;
 class Input;
 
 /// <summary>
-/// 触れるとクリアとなるアクター
+/// 触れるとクリア
 /// </summary>
 class Goal :
     public Gimmick

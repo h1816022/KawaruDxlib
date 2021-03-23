@@ -7,9 +7,8 @@
 #include "../Actors/Players/Player.h"
 #include "../Actors/Camera.h"
 #include "../Actors/Stage.h"
-#include "../Actors/Goal.h"
+#include "../Actors/Gimmicks/Goal.h"
 #include "../NavMesh/NavMesh.h"
-#include "../Actors/Enemy.h"
 #include "../Actors/Ghost.h"
 #include "PauseScene.h"
 

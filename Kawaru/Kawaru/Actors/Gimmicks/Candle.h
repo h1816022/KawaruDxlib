@@ -1,5 +1,9 @@
 #pragma once
 #include "Gimmick.h"
+
+/// <summary>
+/// æ‚é‚Æ‚¨‚Î‚¯‚ğŒÄ‚×‚é‰ñ”‚ª‘‚¦‚é
+/// </summary>
 class Candle :
     public Gimmick
 {

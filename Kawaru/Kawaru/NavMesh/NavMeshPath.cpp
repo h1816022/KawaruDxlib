@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "NavMeshPath.h"
 #include "NavMeshCells.h"
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 struct NavMeshMath
 {

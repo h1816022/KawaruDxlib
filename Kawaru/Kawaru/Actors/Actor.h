@@ -2,7 +2,7 @@
 #include <DxLib.h>
 #include <string>
 #include <memory>
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 
 class Input;
 class Scene;
@@ -32,7 +32,7 @@ public:
 	/// XVˆ—
 	/// </summary>
 	/// <param name="input">“ü—Íî•ñ</param>
-	virtual void Update(const Input& input) = 0;
+	virtual void Update(const Input& input);
 
 	/// <summary>
 	/// •`‰æˆ—

@@ -4,11 +4,11 @@
 #include "../NavMesh/NavMeshMoveComponent.h"
 #include "../NavMesh/NavMesh.h"
 #include "Camera.h"
-#include "../Geometry.h"
+#include "../Tools/Geometry.h"
 #include "../Scenes/Scene.h"
 #include "../Scenes/GameplayingScene.h"
-#include "../File.h"
-#include "../FileManager.h"
+#include "../Systems/File.h"
+#include "../Systems/FileManager.h"
 
 namespace
 {

@@ -43,17 +43,6 @@ public:
     ~NavMesh();
 
     /// <summary>
-    /// 更新処理
-    /// </summary>
-    /// <param name="input">入力情報</param>
-    void Update(const Input& input)override final;
-
-    /// <summary>
-    /// 描画処理
-    /// </summary>
-    void Draw();
-
-    /// <summary>
     /// パスを探索
     /// </summary>
     /// <param name="path">見つけたパスを格納</param>

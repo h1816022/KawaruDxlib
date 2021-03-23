@@ -18,7 +18,7 @@ struct Waypoint
 };
 
 /// <summary>
-/// 移動経路
+/// 移動経路算出用
 /// </summary>
 class NavMeshPath
 {
