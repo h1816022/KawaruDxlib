@@ -1,5 +1,5 @@
 #include <DxLib.h>
-#include <array>
+#include <vector>
 #include "Character.h"
 #include "Stage.h"
 #include "../AnimationComponent.h"
@@ -42,11 +42,17 @@ namespace
 // 衝突判定をするポリゴンに関するデータ
 struct HitCheckPolyData
 {
+	HitCheckPolyData()
+	{
+		wall.resize(MAX_HIT_COLLISION);
+		floor.resize(MAX_HIT_COLLISION);
+	}
+
 	unsigned int wallNum = 0;
 	unsigned int floorNum = 0;
 
-	std::array<MV1_COLL_RESULT_POLY*, MAX_HIT_COLLISION> wall;	// 壁ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
-	std::array<MV1_COLL_RESULT_POLY*, MAX_HIT_COLLISION> floor;	// 床ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
+	std::vector<MV1_COLL_RESULT_POLY*> wall;	// 壁ポリゴン
+	std::vector<MV1_COLL_RESULT_POLY*> floor;	// 床ポリゴン
 };
 
 Character::Character(Scene& scene, const Stage& stage, const float hitWidth, const float hitHeight, const float posX, const float posY, const float posZ):
@@ -136,98 +142,68 @@ bool Character::Destroy()
 
 void Character::UpdatePos(const VECTOR& moveVector)
 {
-	// 移動したか
-	bool moveFlag;
+	bool moveFlag = false;
+	bool hitFlag = false;
 
-	// 衝突を検知したか
-	bool hitFlag;
-
-	// プレイヤーの周囲にあるポリゴンを検出した結果が代入される当たり判定結果構造体
 	MV1_COLL_RESULT_POLY_DIM hitDim;
-
-	// ポリゴンの構造体にアクセスするために使用するポインタ
-	MV1_COLL_RESULT_POLY* poly;
-
 	VECTOR nowPos;
-
-	// 衝突判定をするポリゴンに関するデータ
 	HitCheckPolyData polyData;
 
 	nowPos = VAdd(pos_, moveVector);
 
-	// プレイヤーの周囲にあるステージポリゴンを取得する
 	hitDim = stage_.CheckHitSphere(pos_, COLLISION_SPHERE_SIZE + VSize(moveVector));
 
-	// x軸かy軸方向に0.01f以上移動した場合は移動したとする
-	moveFlag = (fabs(moveVector.x) > 0.01f || fabs(moveVector.z) > 0.01f);
+	constexpr float MOVE_THRESHOLD = 0.01f;
+	moveFlag = (fabs(moveVector.x) > MOVE_THRESHOLD || fabs(moveVector.z) > MOVE_THRESHOLD);
 
 	GetWallPolyAndFloorPoly(polyData, hitDim);
 
 	if (collisionEnabled_)
 	{
-		// 壁ポリゴンとの当たり判定処理
 		if (polyData.wallNum != 0)
 		{
 			hitFlag = CheckHitWithWall(moveFlag, polyData, moveVector, nowPos);
 
-			// 当たっていたら押し出す
+			// 押し出し
 			if (hitFlag)
 			{
 				Extrude(polyData, nowPos);
 			}
 		}
 
-		// 床ポリゴンとの当たり判定
 		if (polyData.floorNum != 0)
 		{
 			CheckHitWithFloor(moveFlag, polyData, nowPos);
 		}
 	}
 
-	// 座標の書き換え
-	pos_ = nowPos;
+	SetPos(nowPos);
 
-	// モデル座標の更新
-	MV1SetPosition(modelHandle_, pos_);
-
-	// 検出したプレイヤーの周囲のポリゴン情報を開放する
+	// 検出したプレイヤーの周囲のポリゴン情報を開放
 	MV1CollResultPolyDimTerminate(hitDim);
 }
 
 void Character::GetWallPolyAndFloorPoly(HitCheckPolyData& outPolyData, const MV1_COLL_RESULT_POLY_DIM& HitData)
 {
-	// 検出されたポリゴンの数だけ繰り返し
-	for (int i = 0; i < HitData.HitNum; i++)
+	for (int i = 0; i < HitData.HitNum; ++i)
 	{
-		// ＸＺ平面に垂直かどうかはポリゴンの法線のＹ成分が０に限りなく近いかどうかで判断する
-		if (HitData.Dim[i].Normal.y < 0.000001f && HitData.Dim[i].Normal.y > -0.000001f)
+		if (IsVerticalToXZPlane(HitData.Dim[i]))
 		{
-			// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋１．０ｆより高いポリゴンのみ当たり判定を行う
-			if (HitData.Dim[i].Position[0].y > pos_.y + 1.0f ||
-				HitData.Dim[i].Position[1].y > pos_.y + 1.0f ||
-				HitData.Dim[i].Position[2].y > pos_.y + 1.0f)
+			if (IsAbovePos(HitData.Dim[i]))
 			{
-				// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
 				if (outPolyData.wallNum < MAX_HIT_COLLISION)
 				{
-					// ポリゴンの構造体のアドレスを壁ポリゴンポインタ配列に保存する
 					outPolyData.wall[outPolyData.wallNum] = &HitData.Dim[i];
-
-					// 壁ポリゴンの数を加算する
-					outPolyData.wallNum++;
+					++outPolyData.wallNum;
 				}
 			}
 		}
 		else
 		{
-			// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
 			if (outPolyData.floorNum < MAX_HIT_COLLISION)
 			{
-				// ポリゴンの構造体のアドレスを床ポリゴンポインタ配列に保存する
 				outPolyData.floor[outPolyData.floorNum] = &HitData.Dim[i];
-
-				// 床ポリゴンの数を加算する
-				outPolyData.floorNum++;
+				++outPolyData.floorNum;
 			}
 		}
 	}
@@ -235,62 +211,45 @@ void Character::GetWallPolyAndFloorPoly(HitCheckPolyData& outPolyData, const MV1
 
 bool Character::CheckHitWithWall(bool moveFlag, const HitCheckPolyData& polyData, const VECTOR& moveVector, VECTOR& nowPos)
 {
-	// 壁に当たったかどうかのフラグは初期状態では「当たっていない」にしておく
 	bool isHit = false;
-
 	MV1_COLL_RESULT_POLY* poly;
 
-	// 移動したかどうかで処理を分岐
-	if (moveFlag == true)
+	if (moveFlag)
 	{
-		// 壁ポリゴンの数だけ繰り返し
-		for (int i = 0; i < polyData.wallNum; i++)
+		for (int i = 0; i < polyData.wallNum; ++i)
 		{
-			// i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 			poly = polyData.wall[i];
 
-			auto coll = GetCollisionCapsule(nowPos);
+			auto myCollision = GetCollisionCapsule(nowPos);
 
-			// ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
-			if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == false)
+			if (!CheckHitCapsuleAndPoly(myCollision, *poly))
 			{
 				continue;
 			}
 
-			// ここにきたらポリゴンとプレイヤーが当たっているということなので、ポリゴンに当たったフラグを立てる
 			isHit = true;
 
-			// 壁に当たったら壁に遮られない移動成分分だけ移動する
-			{
-				VECTOR slideVec;	// プレイヤーをスライドさせるベクトル
+			VECTOR slideVec;
 
-				// 進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
-				slideVec = VCross(moveVector, poly->Normal);
+			slideVec = VCross(moveVector, poly->Normal);
+			slideVec = VCross(poly->Normal, slideVec);
 
-				// 算出したベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出、これが
-				// 元の移動成分から壁方向の移動成分を抜いたベクトル
-				slideVec = VCross(poly->Normal, slideVec);
-
-				// それを移動前の座標に足したものを新たな座標とする
-				nowPos = VAdd(pos_, slideVec);
-			}
+			nowPos = VAdd(pos_, slideVec);
 
 			int j;
 
-			// 新たな移動座標で壁ポリゴンと当たっていないかどうかを判定する
-			for (j = 0; j < polyData.wallNum; j++)
+			for (j = 0; j < polyData.wallNum; ++j)
 			{
-				// j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 				poly = polyData.wall[j];
 
-				coll = GetCollisionCapsule(nowPos);
+				myCollision = GetCollisionCapsule(nowPos);
 
-				// 当たっていたらループから抜ける
-				if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == true) break;
+				if (CheckHitCapsuleAndPoly(myCollision, *poly))
+				{
+					break;
+				}
 			}
 
-			// j が KabeNum だった場合はどのポリゴンとも当たらなかったということなので
-			// 壁に当たったフラグを倒した上でループから抜ける
 			if (j == polyData.wallNum)
 			{
 				isHit = false;
@@ -300,18 +259,13 @@ bool Character::CheckHitWithWall(bool moveFlag, const HitCheckPolyData& polyData
 	}
 	else
 	{
-		// 移動していない場合の処理
-
-		// 壁ポリゴンの数だけ繰り返し
-		for (int i = 0; i < polyData.wallNum; i++)
+		for (int i = 0; i < polyData.wallNum; ++i)
 		{
-			// i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 			poly = polyData.wall[i];
 
 			auto coll = GetCollisionCapsule(nowPos);
 
-			// ポリゴンに当たっていたら当たったフラグを立てた上でループから抜ける
-			if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == true)
+			if (CheckHitCapsuleAndPoly(coll, *poly))
 			{
 				isHit = true;
 				break;
@@ -326,157 +280,62 @@ void Character::CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyDat
 {
 	MV1_COLL_RESULT_POLY* poly;
 
-	HITRESULT_LINE lineRes;				// 線分とポリゴンとの当たり判定の結果を代入する構造体
+	HITRESULT_LINE result;
 
-	bool isHit = false;
-
-	// ジャンプ中且つ上昇中の場合は処理を分岐
 	if (updater_ == &Character::JumpUpdate && jumpPower_ > 0.0f)
 	{
-		float minY;
-
-		// 天井に頭をぶつける処理を行う
-
-		// 一番低い天井にぶつける為の判定用変数を初期化
-		minY = 0.0f;
-
-		// 当たったかどうかのフラグを当たっていないを意味する０にしておく
-
-		// 床ポリゴンの数だけ繰り返し
-		for (int i = 0; i < polyData.floorNum; i++)
-		{
-			// i番目の床ポリゴンのアドレスを床ポリゴンポインタ配列から取得
-			poly = polyData.floor[i];
-
-			// 足先から頭の高さまでの間でポリゴンと接触しているかどうかを判定
-			lineRes = HitCheck_Line_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
-
-			// 接触していなかったら何もしない
-			if (!lineRes.HitFlag)
-			{
-				continue;
-			}
-
-			// 既にポリゴンに当たっていて、且つ今まで検出した天井ポリゴンより高い場合は何もしない
-			if (isHit && minY < lineRes.Position.y)
-			{
-				continue;
-			}
-
-			// ポリゴンに当たったフラグを立てる
-			isHit = true;
-
-			// 接触したＹ座標を保存する
-			minY = lineRes.Position.y;
-		}
-
-		// 接触したポリゴンがあったかどうかで処理を分岐
-		if (isHit)
-		{
-			// 接触した場合はプレイヤーのＹ座標を接触座標を元に更新
-			nowPos.y = minY - hitHeight_;
-
-			// Ｙ軸方向の速度は反転
-			jumpPower_ = -jumpPower_;
-		}
+		CheckHitCeiling(polyData, nowPos);
 	}
 	else
 	{
-		float maxY;
+		float maxY = 0.0f;
 
-		// 下降中かジャンプ中ではない場合の処理
+		bool isHit = false;
 
-		// 床ポリゴンに当たったかどうかのフラグを倒しておく
-		isHit = false;
-
-		// 一番高い床ポリゴンにぶつける為の判定用変数を初期化
-		maxY = 0.0f;
-
-		// 床ポリゴンの数だけ繰り返し
-		for (int i = 0; i < polyData.floorNum; i++)
+		for (int i = 0; i < polyData.floorNum; ++i)
 		{
-			// i番目の床ポリゴンのアドレスを床ポリゴンポインタ配列から取得
 			poly = polyData.floor[i];
 
-			// ジャンプ中かどうかで処理を分岐
 			if (updater_ == &Character::JumpUpdate)
 			{
-				// ジャンプ中の場合は頭の先から足先より少し低い位置の間で当たっているかを判定
-				lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), VAdd(nowPos, VGet(0.0f, -1.0f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+				constexpr float LITTLE_AHEAD_OFFSET = -1.0f;
+				result = CheckHitLineAndPoly(VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), VAdd(nowPos, VGet(0.0f, LITTLE_AHEAD_OFFSET, 0.0f)), *poly);
 			}
 			else
 			{
-				// 走っている場合は頭の先からそこそこ低い位置の間で当たっているかを判定( 傾斜で落下状態に移行してしまわない為 )
-				lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), VAdd(nowPos, VGet(0.0f, -40.0f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+				constexpr float BODY_OFFSET = -40.0f;
+				result = CheckHitLineAndPoly(VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), VAdd(nowPos, VGet(0.0f, BODY_OFFSET, 0.0f)), *poly);
 			}
 
-			// 当たっていなかったら何もしない
-			if (!lineRes.HitFlag)
+			if (!result.HitFlag)
 			{
 				continue;
 			}
 
-			// 既に当たったポリゴンがあり、且つ今まで検出した床ポリゴンより低い場合は何もしない
-			if (isHit && maxY > lineRes.Position.y)
+			if (isHit && maxY > result.Position.y)
 			{
 				continue;
 			}
 
-			// ポリゴンに当たったフラグを立てる
 			isHit = true;
-
-			// 接触したＹ座標を保存する
-			maxY = lineRes.Position.y;
+			maxY = result.Position.y;
 		}
 
-		// 床ポリゴンに当たったかどうかで処理を分岐
-		if (isHit)
-		{
-			// 当たった場合
-
-			// 「接触したポリゴンで一番高いＹ座標」と現在のY座標の高い方を改めてＹ座標とする
-			nowPos.y = max(nowPos.y, maxY);
-
-			// Ｙ軸方向の移動速度は０に
-			jumpPower_ = 0.0f;
-
-			// もしジャンプ中だった場合は着地状態にする
-			if (updater_ == &Character::JumpUpdate)
-			{
-				// 移動していたかどうかで着地後の状態と再生するアニメーションを分岐する
-				if (moveFlag)
-				{
-					// 移動している場合は走り状態に
-					animationComponent_->ChangeAnim(ANIM_NAME::Walk);
-					ChangeUpadater(UPDATE_TYPE::Run);
-				}
-				else
-				{
-					// 移動していない場合は立ち止り状態に
-					animationComponent_->ChangeAnim(ANIM_NAME::Idle);
-					ChangeUpadater(UPDATE_TYPE::Idle);
-				}
-
-				// 着地時はアニメーションのブレンドは行わない
-				animationComponent_->ForceBlend();
-			}
-		}
-		else
-		{
-			// 床コリジョンに当たっていなくて且つジャンプ状態ではなかった場合は
-			if (updater_ != &Character::JumpUpdate)
-			{
-				// ジャンプ中にする
-				ChangeUpadater(UPDATE_TYPE::Jump);
-
-				// ちょっとだけジャンプする
-				jumpPower_ = FALL_UP_POWER;
-
-				// アニメーションは落下中のものにする
-				animationComponent_->ChangeAnim(ANIM_NAME::Fall);
-			}
-		}
+		ReactionToHitFloor(moveFlag, isHit, nowPos, maxY);
 	}
+}
+
+bool Character::IsVerticalToXZPlane(const tagMV1_COLL_RESULT_POLY& poly) const
+{
+	constexpr float THRESHOLD = 0.000001f;
+	return (poly.Normal.y < THRESHOLD) && (poly.Normal.y > -THRESHOLD);
+}
+
+bool Character::IsAbovePos(const tagMV1_COLL_RESULT_POLY& poly) const
+{
+	return poly.Position[0].y > pos_.y + 1.0f ||
+		poly.Position[1].y > pos_.y + 1.0f ||
+		poly.Position[2].y > pos_.y + 1.0f;
 }
 
 void Character::Jump()
@@ -497,51 +356,45 @@ void Character::Extrude(const HitCheckPolyData& polyData, VECTOR& nowPos)
 {
 	MV1_COLL_RESULT_POLY* poly;
 
-	// 壁からの押し出し処理を試みる最大数だけ繰り返し
-	for (int tryNum = 0; tryNum < HIT_TRY_NUM; tryNum++)
+	for (int tryNum = 0; tryNum < HIT_TRY_NUM; ++tryNum)
 	{
-		// 壁ポリゴンの数だけ繰り返し
 		int polyIndex;
 
-		for (polyIndex = 0; polyIndex < polyData.wallNum; polyIndex++)
+		for (polyIndex = 0; polyIndex < polyData.wallNum; ++polyIndex)
 		{
-			// i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
 			poly = polyData.wall[polyIndex];
 
 			auto coll = GetCollisionCapsule(nowPos);
 
-			// プレイヤーと当たっているかを判定
-			if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == false)
+			if (!CheckHitCapsuleAndPoly(coll, *poly))
 			{
 				continue;
 			}
 
-			// 当たっていたら規定距離分プレイヤーを壁の法線方向に移動させる
+			// 押し出す
 			nowPos = VAdd(nowPos, VScale(VNorm(VSub(nowPos, poly->HitPosition)), HIT_SLIDE_LENGTH));
 
-			// 移動した上で壁ポリゴンと接触しているかどうかを判定
 			int wallIndex;
 
 			coll = GetCollisionCapsule(nowPos);
 
-			for (wallIndex = 0; wallIndex < polyData.wallNum; wallIndex++)
+			for (wallIndex = 0; wallIndex < polyData.wallNum; ++wallIndex)
 			{
-				// 当たっていたらループを抜ける
 				poly = polyData.wall[wallIndex];
-				if (HitCheck_Capsule_Triangle(coll.pos1, coll.pos2, coll.radius, poly->Position[0], poly->Position[1], poly->Position[2]) == true)
+				if (CheckHitCapsuleAndPoly(coll, *poly))
 				{
 					break;
 				}
 			}
 
-			// 全てのポリゴンと当たっていなかったらここでループ終了
+			// 押し出し終わり
 			if (wallIndex == polyData.wallNum)
 			{
 				break;
 			}
 		}
 
-		// i が KabeNum ではない場合は全部のポリゴンで押し出しを試みる前に全ての壁ポリゴンと接触しなくなったということなのでループから抜ける
+		// 押し出し終わり
 		if (polyIndex != polyData.wallNum)
 		{
 			break;
@@ -556,19 +409,16 @@ void Character::DrawShadow()
 	VERTEX3D vertex[3];
 	VECTOR slideVec;
 
-	// ライティングを無効にする
 	SetUseLighting(false);
 
-	// Ｚバッファを有効にする
 	SetUseZBuffer3D(true);
 
-	// テクスチャアドレスモードを CLAMP にする( テクスチャの端より先は端のドットが延々続く )
+	// テクスチャアドレスモードを CLAMP にする(テクスチャの端より先は端のドットが延々続く)
 	SetTextureAddressMode(DX_TEXADDRESS_CLAMP);
 
-	// プレイヤーの直下に存在する地面のポリゴンを取得
 	hitResDim = stage_.CheckHitCapsule(pos_, VAdd(pos_, VGet(0.0f, -SHADOW_HEIGHT, 0.0f)), SHADOW_SIZE);
 
-	// 頂点データで変化が無い部分をセット
+	// 頂点データで変化が無い部分
 	vertex[0].dif = GetColorU8(255, 255, 255, 255);
 	vertex[0].spc = GetColorU8(0, 0, 0, 0);
 	vertex[0].su = 0.0f;
@@ -576,11 +426,9 @@ void Character::DrawShadow()
 	vertex[1] = vertex[0];
 	vertex[2] = vertex[0];
 
-	// 球の直下に存在するポリゴンの数だけ繰り返し
 	hitRes = hitResDim.Dim;
-	for (int i = 0; i < hitResDim.HitNum; i++, hitRes++)
+	for (int i = 0; i < hitResDim.HitNum; ++i, ++hitRes)
 	{
-		// ポリゴンの座標は地面ポリゴンの座標
 		vertex[0].pos = hitRes->Position[0];
 		vertex[1].pos = hitRes->Position[1];
 		vertex[2].pos = hitRes->Position[2];
@@ -591,7 +439,6 @@ void Character::DrawShadow()
 		vertex[1].pos = VAdd(vertex[1].pos, slideVec);
 		vertex[2].pos = VAdd(vertex[2].pos, slideVec);
 
-		// ポリゴンの不透明度を設定する
 		vertex[0].dif.a = 0;
 		vertex[1].dif.a = 0;
 		vertex[2].dif.a = 0;
@@ -610,7 +457,7 @@ void Character::DrawShadow()
 			vertex[2].dif.a = 128 * (1.0f - fabs(hitRes->Position[2].y - pos_.y) / SHADOW_HEIGHT);
 		}
 
-		// ＵＶ値は地面ポリゴンとプレイヤーの相対座標から割り出す
+		// ＵＶ値
 		vertex[0].u = (hitRes->Position[0].x - pos_.x) / (SHADOW_SIZE * 2.0f) + 0.5f;
 		vertex[0].v = (hitRes->Position[0].z - pos_.z) / (SHADOW_SIZE * 2.0f) + 0.5f;
 		vertex[1].u = (hitRes->Position[1].x - pos_.x) / (SHADOW_SIZE * 2.0f) + 0.5f;
@@ -618,17 +465,13 @@ void Character::DrawShadow()
 		vertex[2].u = (hitRes->Position[2].x - pos_.x) / (SHADOW_SIZE * 2.0f) + 0.5f;
 		vertex[2].v = (hitRes->Position[2].z - pos_.z) / (SHADOW_SIZE * 2.0f) + 0.5f;
 
-		// 影ポリゴンを描画
 		DrawPolygon3D(vertex, 1, shadowHandle_, true);
 	}
 
 	// 検出した地面ポリゴン情報の後始末
 	MV1CollResultPolyDimTerminate(hitResDim);
 
-	// ライティングを有効にする
 	SetUseLighting(true);
-
-	// Ｚバッファを無効にする
 	SetUseZBuffer3D(false);
 }
 
@@ -667,37 +510,31 @@ void Character::DestroyUpdate(const Input& input)
 
 void Character::UpdateAngle()
 {
-	float targetAngle;	// 目標角度
-	float diffAngle;	// 目標角度と現在の角度との差
+	float targetAngle;
+	float diff;
 
-	// 目標の方向ベクトルから角度値を算出する
 	targetAngle = atan2(moveDirection_.x, moveDirection_.z);
 
-	// 目標の角度と現在の角度との差を割り出す
-	diffAngle = CalcAngleDiff(targetAngle);
+	diff = CalcAngleDiff(targetAngle);
 
-	// 角度の差が０に近づける
-	if (diffAngle > 0.0f)
+	if (diff > 0.0f)
 	{
-		// 差がプラスの場合は引く
-		diffAngle -= ROT_SPEED;
-		if (diffAngle < 0.0f)
+		diff -= ROT_SPEED;
+		if (diff < 0.0f)
 		{
-			diffAngle = 0.0f;
+			diff = 0.0f;
 		}
 	}
 	else
 	{
-		// 差がマイナスの場合は足す
-		diffAngle += ROT_SPEED;
-		if (diffAngle > 0.0f)
+		diff += ROT_SPEED;
+		if (diff > 0.0f)
 		{
-			diffAngle = 0.0f;
+			diff = 0.0f;
 		}
 	}
 
-	// モデルの角度を更新
-	angle_ = targetAngle - diffAngle;
+	angle_ = targetAngle - diff;
 	MV1SetRotationXYZ(modelHandle_, VGet(0.0f, angle_ + DX_PI_F, 0.0f));
 }
 
@@ -720,6 +557,80 @@ float Character::CalcAngleDiff(float target)const
 	}
 
 	return ret;
+}
+
+void Character::CheckHitCeiling(const HitCheckPolyData& polyData, VECTOR& nowPos)
+{
+	MV1_COLL_RESULT_POLY* poly;
+
+	HITRESULT_LINE result;
+
+	float minY = 0.0f;
+
+	bool isHit = false;
+
+	for (int i = 0; i < polyData.floorNum; ++i)
+	{
+		poly = polyData.floor[i];
+
+		result = CheckHitLineAndPoly(nowPos, VAdd(nowPos, VGet(0.0f, hitHeight_, 0.0f)), *poly);
+
+		if (!result.HitFlag)
+		{
+			continue;
+		}
+
+		if (isHit && minY < result.Position.y)
+		{
+			continue;
+		}
+
+		isHit = true;
+		minY = result.Position.y;
+	}
+
+	if (isHit)
+	{
+		nowPos.y = minY - hitHeight_;
+		jumpPower_ = -jumpPower_;
+	}
+}
+
+void Character::ReactionToHitFloor(bool moveFlag, bool isHit, VECTOR& nowPos, float maxY)
+{
+	if (isHit)
+	{
+		nowPos.y = max(nowPos.y, maxY);
+
+		jumpPower_ = 0.0f;
+
+		if (updater_ == &Character::JumpUpdate)
+		{
+			if (moveFlag)
+			{
+				animationComponent_->ChangeAnim(ANIM_NAME::Walk);
+				ChangeUpadater(UPDATE_TYPE::Run);
+			}
+			else
+			{
+				animationComponent_->ChangeAnim(ANIM_NAME::Idle);
+				ChangeUpadater(UPDATE_TYPE::Idle);
+			}
+
+			animationComponent_->ForceBlend();
+		}
+	}
+	else
+	{
+		if (updater_ != &Character::JumpUpdate)
+		{
+			ChangeUpadater(UPDATE_TYPE::Jump);
+
+			jumpPower_ = FALL_UP_POWER;
+
+			animationComponent_->ChangeAnim(ANIM_NAME::Fall);
+		}
+	}
 }
 
 void Character::UpdateMoveStopTime()

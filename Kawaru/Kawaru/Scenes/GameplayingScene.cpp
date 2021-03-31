@@ -11,6 +11,8 @@
 #include "../NavMesh/NavMesh.h"
 #include "../Actors/Ghost.h"
 #include "PauseScene.h"
+#include "../Systems/File.h"
+#include "../Systems/FileManager.h"
 
 namespace
 {
@@ -22,6 +24,9 @@ namespace
 
 	// 振動の最大インターバル
 	constexpr int MAX_VIBRATION_INTERVAL = 120;
+
+	// ゲームプレイ中のフォントサイズ
+	constexpr int DURING_GAME_PLAY_FONT_SIZE = 35;
 }
 
 GameplayingScene::GameplayingScene(SceneController& controller) :
@@ -30,7 +35,7 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	drawer_(&GameplayingScene::FadeInDraw),
 	vpSize_(Application::Instance().GetViewport().GetSize())
 {
-	SetFontSize(35);
+	SetFontSize(DURING_GAME_PLAY_FONT_SIZE);
 
 	StartFade(FADE_MODE::In);
 
@@ -43,22 +48,29 @@ GameplayingScene::GameplayingScene(SceneController& controller) :
 	auto camera = std::make_shared<Camera>(*this, *stage_);
 	AddActors(camera);
 
-	auto ghost = std::make_shared<Ghost>(*this, *camera, *stage_, -2000.0f, 500.0f, 0.0f);
+	auto ghost = std::make_shared<Ghost>(*this, *camera, *stage_);
 	AddActors(ghost);
 
-	player_ = std::make_shared<Player>(*this, *camera, *ghost, *stage_, 0.0f, 0.0f, 0.0f);
+	player_ = std::make_shared<Player>(*this, *camera, *ghost, *stage_);
 	AddActors(player_);
 
 	stage_->SetPlayer(player_);
 	stage_->InitGimmicks();
 
-	camera->SetTargetActor(player_);
 	camera->SetPlayer(player_);
+
+	ghost->InitPos();
 
 	waveform_.fill(0.0f);
 
 	candleHUDHandle_ = MV1LoadModel(L"Resources/Models/Candle.mqo");
-	MV1SetScale(candleHUDHandle_, VECTOR(0.003f, 0.003f, 0.003f));
+
+	constexpr float CANDLE_HUD_SCALE = 0.003f;
+	MV1SetScale(candleHUDHandle_, VECTOR(CANDLE_HUD_SCALE, CANDLE_HUD_SCALE, CANDLE_HUD_SCALE));
+
+	bgm_ = FileManager::Instance().Load(L"Resources/Sounds/BGM.mp3")->GetHandle();
+	ChangeVolumeSoundMem(128, bgm_);
+	PlaySoundMem(bgm_, DX_PLAYTYPE_LOOP);
 }
 
 void GameplayingScene::NormalUpdate(const Input& input)
@@ -179,6 +191,7 @@ void GameplayingScene::FadeOutDraw()
 
 GameplayingScene::~GameplayingScene()
 {
+	StopSoundMem(bgm_);
 }
 
 void GameplayingScene::Update(const Input& input)

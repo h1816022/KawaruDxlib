@@ -116,4 +116,6 @@ private:
 
 	int candleHUDHandle_ = -1;
 	float candleHUDAngle_ = 0.0f;
+
+	int bgm_ = -1;
 };

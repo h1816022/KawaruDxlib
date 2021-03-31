@@ -42,27 +42,10 @@ public:
     void UpdateCameraShake();
 
     /// <summary>
-    /// 描画処理
-    /// </summary>
-    void Draw()override final;
-
-    /// <summary>
-    /// 座標のセット
-    /// </summary>
-    /// <param name="pos">座標</param>
-    void SetPos(const VECTOR& pos);
-
-    /// <summary>
     /// 注視点の座標を取得
     /// </summary>
     /// <returns>注視点の座標</returns>
     const VECTOR& GetTargetPos()const;
-
-    /// <summary>
-    /// 注視点の基準とするアクターをセット
-    /// </summary>
-    /// <param name="target">注視点の基準</param>
-    void SetTargetActor(std::shared_ptr<Actor> target);
 
     /// <summary>
     /// プレイヤーのポインタをセット
@@ -96,50 +79,14 @@ public:
 
 private:
     /// <summary>
-    /// 角度更新
-    /// </summary>
-    /// <param name="input">入力情報</param>
-    void UpdateAngle(const Input& input);
-
-    /// <summary>
     /// 座標(視点)更新
     /// </summary>
     void UpdatePos();
 
     /// <summary>
-    /// 膨らんだ角度を同等の数値に整える
-    /// </summary>
-    void ClampAngle();
-
-    /// <summary>
-    /// 角度を計算して返す
-    /// </summary>
-    /// <param name="nowVec">現在の向きベクトル</param>
-    /// <param name="targetVec">目標の向きベクトル</param>
-    /// <returns>目標への角度</returns>
-    Angle CalcAngle(const VECTOR& nowVec, const VECTOR& targetVec);
-
-    /// <summary>
-    /// カメラアームの更新
-    /// </summary>
-    /// <param name="rotY">Y回転</param>
-    /// <param name="rotZ">Z回転</param>
-    void UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ);
-
-    /// <summary>
-    /// プレイヤーを見失った時の処理
-    /// </summary>
-    void LostPlayer();
-
-    /// <summary>
     /// プレイヤー追従モードのときの更新処理
     /// </summary>
     void UpdatePlayerFollowMode();
-
-    /// <summary>
-    /// 指定ターゲットアクター追従モードのときの更新処理
-    /// </summary>
-    void UpdateTargetFollowMode();
     
     /// <summary>
     /// ゲームクリアしたときの更新処理
@@ -160,9 +107,6 @@ private:
 
     // カメラの角度
     Angle angle_;
-
-    // 注視するアクター
-    std::shared_ptr<Actor> targetActor_;
 
     std::shared_ptr<Player> player_;
 

@@ -29,14 +29,11 @@ Actor::~Actor()
 
 void Actor::Init(const wchar_t* modelFilePath, const wchar_t* motionFilePath, const float posX, const float posY, const float posZ)
 {
-	pos_ = VGet(posX, posY, posZ);
-
 	scale_ = VGet(1.0f, 1.0f, 1.0f);
 
 	MV1SetLoadModelAnimFilePath(motionFilePath);
 	modelHandle_ = MV1LoadModel(modelFilePath);
-
-	MV1SetPosition(modelHandle_, pos_);
+	SetPos(posX, posY, posZ);
 }
 
 void Actor::Update(const Input& input)
@@ -92,4 +89,16 @@ bool Actor::Destroy()
 bool Actor::CheckIsDead() const
 {
 	return isDead_;
+}
+
+void Actor::SetPos(const VECTOR& newPos)
+{
+	pos_ = newPos;
+	MV1SetPosition(modelHandle_, pos_);
+}
+
+void Actor::SetPos(float newX, float newY, float newZ)
+{
+	pos_ = VGet(newX, newY, newZ);
+	MV1SetPosition(modelHandle_, pos_);
 }

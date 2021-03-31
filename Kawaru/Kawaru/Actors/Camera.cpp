@@ -73,45 +73,15 @@ void Camera::UpdateCameraShake()
 	}
 }
 
-void Camera::Draw()
-{
-}
-
-void Camera::SetPos(const VECTOR& pos)
-{
-	pos_ = pos;
-}
-
 const VECTOR& Camera::GetTargetPos() const
 {
 	return targetPos_;
 }
 
-void Camera::SetTargetActor(std::shared_ptr<Actor> target)
-{
-	targetActor_ = target;
-}
-
 void Camera::SetPlayer(std::shared_ptr<Player> player)
 {
 	player_ = player;
-}
-
-void Camera::UpdateAngle(const Input& input)
-{
-	auto analogInpoutData = input.GetAnalogInput(ANALOG_INPUT_TYPE::Right);
-
-	if (analogInpoutData.horizontal != 0.0f)
-	{
-		angle_.horizontal += ROT_SPEED * analogInpoutData.horizontal;
-	}
-
-	if (analogInpoutData.vertical != 0.0f)
-	{
-		angle_.vertical += ROT_SPEED * analogInpoutData.vertical;
-	}
-
-	ClampAngle();
+	targetPos_ = player_->GetPos();
 }
 
 void Camera::UpdatePos()
@@ -120,123 +90,11 @@ void Camera::UpdatePos()
 	const MATRIX rotZ = MGetRotZ(angle_.vertical);
 }
 
-void Camera::ClampAngle()
-{
-	if (angle_.horizontal < -DX_PI_F)
-	{
-		angle_.horizontal += DX_TWO_PI_F;
-	}
-	else if (angle_.horizontal > DX_PI_F)
-	{
-		angle_.horizontal -= DX_TWO_PI_F;
-	}
-
-	if (angle_.vertical < -DX_PI_F / 2.0f + 0.6f)
-	{
-		angle_.vertical = -DX_PI_F / 2.0f + 0.6f;
-	}
-	else if (angle_.vertical > DX_PI_F / 2.0f - 0.6f)
-	{
-		angle_.vertical = DX_PI_F / 2.0f - 0.6f;
-	}
-}
-
-Angle Camera::CalcAngle(const VECTOR& nowVec, const VECTOR& targetVec)
-{
-	Angle ret;
-
-	VECTOR toPlayerXZ = VGet(targetVec.x, 0.0f, targetVec.z);
-	VECTOR toFrontXZ = VGet(nowVec.x, 0.0f, nowVec.z);
-
-	float newAngleH = 0.0f;
-	float newAngleV = 0.0f;
-
-	float size = (GetLength(toPlayerXZ) * GetLength(toFrontXZ));
-	if (size != 0.0f)
-	{
-		newAngleH = acosf(VDot(toPlayerXZ, toFrontXZ) / size);
-		const MATRIX rotY = MGetRotY(angle_.horizontal);
-		const MATRIX rotZ = MGetRotZ(angle_.vertical);
-
-		VECTOR v = VGet(0.0f, 0.0f, 1.0f);
-		VECTOR v2 = VGet(1.0f, 0.0f, 0.0f);
-		VECTOR p = VTransform(VTransform(VGet(1.0f, 0.0f, 0.0f), rotZ), rotY);
-
-		auto s = VDot(v, VSub(p, v2));
-		newAngleH = (s <= 0.0f) ? -newAngleH : newAngleH;
-	}
-
-	VECTOR toPlayerXY = VGet(targetVec.x, targetVec.y, 0.0f);
-	VECTOR toFrontXY = VGet(nowVec.x, nowVec.y, 0.0f);
-
-	size = (GetLength(toPlayerXY) * GetLength(toFrontXY));
-	if (size != 0.0f)
-	{
-		newAngleV = acosf(VDot(toPlayerXY, toFrontXY) / size);
-	}
-
-	ret.horizontal = newAngleH;
-	ret.vertical = angle_.vertical;
-
-	return ret;
-}
-
-void Camera::UpdateArmLength(const MATRIX& rotY, const MATRIX& rotZ)
-{
-	MV1_COLL_RESULT_POLY_DIM hitResult;
-	int hitNum;
-
-	hitResult = stage_.CheckHitCapsule(targetPos_, pos_, COLLISION_SIZE);
-	hitNum = hitResult.HitNum;
-	MV1CollResultPolyDimTerminate(hitResult);
-	if (hitNum != 0)
-	{
-		float notHitLength;
-		float hitLength;
-		float testLength;
-		VECTOR testPosition;
-
-		notHitLength = 0.0f;
-
-		hitLength = armLength_;
-		do
-		{
-			testLength = notHitLength + (hitLength - notHitLength) / 2.0f;
-
-			testPosition = VAdd(VTransform(VTransform(VGet(-testLength, 0.0f, 0.0f), rotZ), rotY), targetPos_);
-
-			hitResult = stage_.CheckHitCapsule(targetPos_, testPosition, COLLISION_SIZE);
-			hitNum = hitResult.HitNum;
-			MV1CollResultPolyDimTerminate(hitResult);
-			if (hitNum != 0)
-			{
-				hitLength = testLength;
-			}
-			else
-			{
-				notHitLength = testLength;
-			}
-
-		} while (hitLength - notHitLength > 0.1f);
-
-		pos_ = testPosition;
-	}
-}
-
-void Camera::LostPlayer()
-{
-	followingPlayer_ = false;
-
-	Angle newAngle = CalcAngle(VNorm(VSub(VGet(1.0f, 0.0f, 0.0f), pos_)), VNorm(VSub(targetPos_, pos_)));
-	angle_.horizontal = newAngle.horizontal;
-	angle_.vertical = newAngle.vertical;
-}
-
 void Camera::UpdatePlayerFollowMode()
 {
 	if (CanSeePlayer())
 	{
-		targetPos_ = Lerp(targetPos_, VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f)), 0.1f);
+		targetPos_ = Lerp(targetPos_, VAdd(player_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f)), 0.1f);
 		followingPlayer_ = true;
 	}
 	else
@@ -250,13 +108,9 @@ void Camera::UpdatePlayerFollowMode()
 	SetCameraPositionAndTarget_UpVecY(setEye_, setTarget_);
 }
 
-void Camera::UpdateTargetFollowMode()
-{
-}
-
 void Camera::UpdateGameClear()
 {
-	targetPos_ = Lerp(targetPos_, VAdd(targetActor_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f)), 0.1f);
+	targetPos_ = Lerp(targetPos_, VAdd(player_->GetPos(), VGet(0.0f, targetHeightOffset_, 0.0f)), 0.1f);
 
 	setEye_ = VAdd(setEye_, VScale(VSub(pos_, setEye_), 0.2f));
 	setTarget_ = VAdd(setTarget_, VScale(VSub(targetPos_, setTarget_), 0.2f));
@@ -277,10 +131,6 @@ void Camera::ChangeMode(CAMERA_MODE mode)
 	{
 	case CAMERA_MODE::PlayerFollow:
 		updaterByMode_ = &Camera::UpdatePlayerFollowMode;
-		break;
-
-	case CAMERA_MODE::TargetFollow:
-		updaterByMode_ = &Camera::UpdateTargetFollowMode;
 		break;
 
 	case CAMERA_MODE::GameEnd:

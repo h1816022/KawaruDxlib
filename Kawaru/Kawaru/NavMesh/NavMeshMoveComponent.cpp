@@ -17,9 +17,9 @@ bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPo
 {
 	NavMesh& navMesh = stage_.GetNavMesh();
 
-	auto nowPos = navMesh.CheckHitLine(VAdd(startPos, VGet(0.0f, 5000.0f, 0.0f)), VSub(startPos, VGet(0.0f, 5000.0f, 0.0f)));
-
-	auto goal = navMesh.CheckHitLine(VAdd(goalPos, VGet(0.0f, 5000.0f, 0.0f)), VSub(goalPos, VGet(0.0f, 5000.0f, 0.0f)));
+	constexpr float SEARCH_HEIGHT = 5000.0f;
+	auto nowPos = navMesh.CheckHitLine(VAdd(startPos, VGet(0.0f, SEARCH_HEIGHT, 0.0f)), VSub(startPos, VGet(0.0f, SEARCH_HEIGHT, 0.0f)));
+	auto goal = navMesh.CheckHitLine(VAdd(goalPos, VGet(0.0f, SEARCH_HEIGHT, 0.0f)), VSub(goalPos, VGet(0.0f, SEARCH_HEIGHT, 0.0f)));
 
 	if (!nowPos.HitFlag || !goal.HitFlag)
 	{
@@ -32,7 +32,8 @@ bool NavMeshMoveComponent::CalcPath(const VECTOR& startPos, const VECTOR& goalPo
 		return false;
 	}
 
-	paths_ = path.GetStraightPath(0.5f);
+	constexpr float CORNER_OFFSET_RATIO = 0.5f;
+	paths_ = path.GetStraightPath(CORNER_OFFSET_RATIO);
 
 	for (int i = 1; i < paths_.size() - 1; ++i)
 	{

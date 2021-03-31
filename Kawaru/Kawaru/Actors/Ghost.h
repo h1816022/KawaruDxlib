@@ -39,6 +39,8 @@ public:
     /// </summary>
     void EndGame();
 
+    void InitPos();
+
 private:
     /// <summary>
     /// ƒvƒŒƒCƒ„[‚Ì‚à‚Æ‚ÉŒü‚©‚¤

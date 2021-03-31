@@ -48,11 +48,11 @@ bool NavMesh::FindPath(NavMeshPath& path, NAV_TYPE type, int startID, const VECT
 	openList.emplace_back(startNode);
 
 	int loopCount = 0;
-	const int loopLimit = 1000;
+	constexpr int LOOP_LIMIT = 1000;
 
 	bool success = false;
 
-	while (openList.size() != 0 && loopCount < loopLimit)
+	while (openList.size() != 0 && loopCount < LOOP_LIMIT)
 	{
 		++loopCount;
 
@@ -184,17 +184,20 @@ void NavMesh::CalcNeighbor()
 	{
 		for (auto& otherCell : cells_)
 		{
+			// 同じものを比べようとしているなら次へ
 			if (currentCell == otherCell)
 			{
 				continue;
 			}
 
-			if (currentCell->CheckAlreadyLink(otherCell))
+			// 3辺とも隣接セルを見つけているなら次へ
+			if (currentCell->CheckAllLinked())
 			{
 				continue;
 			}
 
-			if (currentCell->CheckAllLinked())
+			// 既にリンクさせているなら次へ
+			if (currentCell->CheckAlreadyLink(otherCell))
 			{
 				continue;
 			}
@@ -208,14 +211,21 @@ void NavMesh::SetNeighbor(std::shared_ptr<NavMeshCells>& currentCell, std::share
 {
 	std::vector<int> matchIndices;
 
+	// 一致する頂点インデックスを、Floatedタイプ(Y軸のズレを無視する)で取得
 	FindMatchingIndices(matchIndices, NAV_TYPE::Floated, currentCell, otherCell);
 
-	if (matchIndices.size() == 4)
+	// 共有する辺が見つかった(取得できたインデックスが4つ)なら
+	constexpr int NUM_OF_CAN_DETERMINE_FOUND_SHARED_EDGE = 4;
+	if (matchIndices.size() == NUM_OF_CAN_DETERMINE_FOUND_SHARED_EDGE)
 	{
+		// 空路としては繋がってるとみなし、隣接セルに登録
 		currentCell->SetNeighbor(NAV_TYPE::Floated, otherCell, matchIndices[0], matchIndices[2]);
 		otherCell->SetNeighbor(NAV_TYPE::Floated, currentCell, matchIndices[1], matchIndices[3]);
 
-		if (abs(currentCell->GetPositions()[matchIndices[0]].y) - abs(otherCell->GetPositions()[matchIndices[1]].y) < 0.1f)
+		// 更にY軸のズレも見られない場合、陸路としても繋がっているとして登録
+		// なお今回は斜めの床など無いため、お互いのセルの一点(インデックス0と1)を比べ差がなければ同一の高さにあるとする
+		constexpr float THRESHOLD = 0.1f;
+		if (abs(currentCell->GetPositions()[matchIndices[0]].y) - abs(otherCell->GetPositions()[matchIndices[1]].y) < THRESHOLD)
 		{
 			currentCell->SetNeighbor(NAV_TYPE::Grounded, otherCell, matchIndices[0], matchIndices[2]);
 			otherCell->SetNeighbor(NAV_TYPE::Grounded, currentCell, matchIndices[1], matchIndices[3]);

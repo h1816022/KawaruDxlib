@@ -92,6 +92,9 @@ public:
 	/// <returns>true : Ž€‚ñ‚Å‚¢‚é</returns>
 	bool CheckIsDead()const;
 
+	void SetPos(const VECTOR& newPos);
+	void SetPos(float newX, float newY, float newZ);
+
 protected:
 	int modelHandle_ = -1;
 	

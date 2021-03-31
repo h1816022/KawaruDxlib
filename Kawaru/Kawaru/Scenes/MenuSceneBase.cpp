@@ -47,7 +47,7 @@ MenuSceneBase::MenuSceneBase(SceneController& controller,
 		drawer_ = &MenuSceneBase::NormalDraw;
 	}
 
-	cursorH_ = LoadGraph(L"Images/Indicator.png");
+	cursorH_ = LoadGraph(L"Resources/Images/Indicator.png");
 
 	GetGraphSize(cursorH_, &cursorSize_.x, &cursorSize_.y);
 

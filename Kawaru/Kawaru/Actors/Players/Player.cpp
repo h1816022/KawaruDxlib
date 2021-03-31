@@ -30,6 +30,8 @@ namespace
 
 	// 開始時、おばけを呼べる回数
 	constexpr int INIT_CALL_NUM = 10;
+
+	constexpr float SCALE = 35.0f;
 }
 
 Player::Player(Scene& scene, Camera& camera, Ghost& ghost, const Stage& stage, const float posX, const float posY, const float posZ):
@@ -46,16 +48,9 @@ Player::Player(Scene& scene, Camera& camera, Ghost& ghost, const Stage& stage, c
 	lineTraceSamplingOffsets_.emplace_back(VGet(-BODY_WIDTH, HIT_HEIGHT, BODY_WIDTH));
 	lineTraceSamplingOffsets_.emplace_back(VGet(BODY_WIDTH, HIT_HEIGHT, BODY_WIDTH));
 
-	MV1SetScale(modelHandle_, VGet(35.0f, 35.0f, 35.0f));
+	MV1SetScale(modelHandle_, VGet(SCALE, SCALE, SCALE));
 
 	int materialNum = MV1GetMaterialNum(modelHandle_);
-
-	//for (int i = 0; i < materialNum; ++i)
-	//{
-	//	float dotWidth = MV1GetMaterialOutLineDotWidth(modelHandle_, i);
-
-	//	MV1SetMaterialOutLineDotWidth(modelHandle_, i, dotWidth / 25.0f);
-	//}
 
 	auto& fileManager = FileManager::Instance();
 
@@ -64,6 +59,8 @@ Player::Player(Scene& scene, Camera& camera, Ghost& ghost, const Stage& stage, c
 	tag_ = L"Player";
 
 	callNum_ = INIT_CALL_NUM;
+
+	animationComponent_->ChangeAnim(ANIM_NAME::Idle);
 }
 
 Player::~Player()
@@ -155,6 +152,7 @@ void Player::IdleUpdate(const Input& input)
 
 		if (CallGhost())
 		{
+			Application::Instance().AddCallCount();
 			--callNum_;
 			return;
 		}
@@ -179,8 +177,15 @@ void Player::RunUpdate(const Input& input)
 
 	if (input.IsTriggered("Call"))
 	{
+		if (callNum_ <= 0)
+		{
+			return;
+		}
+
 		if (CallGhost())
 		{
+			Application::Instance().AddCallCount();
+			--callNum_;
 			return;
 		}
 	}
@@ -235,21 +240,18 @@ void Player::CalcUnitMoveVector(VECTOR& upMoveVec, VECTOR& leftMoveVec)
 	// 左右入力
 	leftMoveVec = VCross(upMoveVec, VGet(0.0f, 1.0f, 0.0f));
 
-	// 二つのベクトルを正規化
 	upMoveVec = VNorm(upMoveVec);
 	leftMoveVec = VNorm(leftMoveVec);
 }
 
 bool Player::CalcMoveVector(VECTOR& moveVec, const VECTOR& upMoveVec, const VECTOR& leftMoveVec, const Input& input)
 {
-	// このフレームでの移動ベクトルを初期化
 	moveVec = VGet(0.0f, 0.0f, 0.0f);
 
 	bool moveFlag = false;
 
 	auto analogInpoutData = input.GetAnalogInput(ANALOG_INPUT_TYPE::Left);
 
-	// 左右移動
 	if (analogInpoutData.horizontal != 0.0f)
 	{
 		moveVec = VAdd(moveVec, VScale(leftMoveVec, -analogInpoutData.horizontal));
@@ -272,10 +274,8 @@ void Player::UpdateMove(const Input& input)
 	VECTOR upMoveVec;
 	VECTOR leftMoveVec;
 
-	// プレイヤーの移動方向のベクトルを算出
 	CalcUnitMoveVector(upMoveVec, leftMoveVec);
 
-	// 各成分のベクトルより、移動ベクトルを算出
 	moveFlag_ = CalcMoveVector(moveVec_, upMoveVec, leftMoveVec, input);
 
 	if (moveFlag_)
@@ -297,7 +297,10 @@ bool Player::CallGhost()
 
 	animationComponent_->ChangeAnim(ANIM_NAME::Call);
 
+	// 呼ぶ時のアニメーションに掛かる総時間
 	const int CALL_ANIM_TOTAL_TIME = animationComponent_->GetNowAnimTotalTime();
+	
+	// 呼ぶ音の再生待ち時間	
 	const int CALL_SE_TIME = CALL_ANIM_TOTAL_TIME - 10;
 
 	StopMove(CALL_ANIM_TOTAL_TIME);

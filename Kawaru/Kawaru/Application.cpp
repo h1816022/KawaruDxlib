@@ -36,7 +36,7 @@ bool Application::Initialize()
 	const auto& wSize = viewport_.GetSize();
 	SetGraphMode(wSize.w, wSize.h, 32);
 	ChangeWindowMode(true);
-	SetWindowText(L"Kawaru");
+	SetWindowText(L"Ghost Come Here!");
 
 	if (DxLib_Init())
 	{
@@ -219,4 +219,9 @@ bool Application::CheckIsGameClear() const
 bool Application::CheckIsGameOver() const
 {
 	return resultData_.gameOver;
+}
+
+void Application::AddCallCount()
+{
+	++resultData_.callCount;
 }

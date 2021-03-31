@@ -450,3 +450,20 @@ float Lerp(float f1, float f2, float rate);
 /// </summary>
 /// <returns>ランダムな単位ベクトル</returns>
 VECTOR RandomVector();
+
+/// <summary>
+/// 線分とポリゴンの当たり判定
+/// </summary>
+/// <param name="v1">線分の座標1</param>
+/// <param name="v2">線分の座標2</param>
+/// <param name="poly">ポリゴン</param>
+/// <returns>true : 当たっている</returns>
+HITRESULT_LINE CheckHitLineAndPoly(const VECTOR& v1, const VECTOR& v2, const MV1_COLL_RESULT_POLY& poly);
+
+/// <summary>
+/// カプセルとポリゴンの当たり判定
+/// </summary>
+/// <param name="capsule">カプセル</param>
+/// <param name="poly">ポリゴン</param>
+/// <returns>true : 当たっている</returns>
+bool CheckHitCapsuleAndPoly(const Capsule3D& capsule, const MV1_COLL_RESULT_POLY& poly);

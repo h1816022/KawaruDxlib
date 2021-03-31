@@ -67,7 +67,8 @@ void Scene::PostDraw()
 
 void Scene::DrawDropShadowString(const Position2& pos, const wchar_t* text, unsigned int color)
 {
-	DrawString(pos.x + 2, pos.y + 2, text, 0x777777);
+	constexpr int SHIFT_AMOUNT = 2;
+	DrawString(pos.x + SHIFT_AMOUNT, pos.y + SHIFT_AMOUNT, text, 0x777777);
 	DrawString(pos.x, pos.y, text, color);
 }
 
@@ -96,11 +97,11 @@ void Scene::DrawActors()
 
 void Scene::Fade(float rate)
 {
-	constexpr int blendParamMax = 255;
+	constexpr int BLEND_PARAM_MAX = 255;
 
 	const auto& vpSize = Application::Instance().GetViewport().GetSize();
 
-	SetDrawBlendMode(DX_BLENDMODE_MULA, static_cast<int>(static_cast<float>(blendParamMax) * rate));
+	SetDrawBlendMode(DX_BLENDMODE_MULA, static_cast<int>(static_cast<float>(BLEND_PARAM_MAX) * rate));
 	DrawBox(0, 0, vpSize.w, vpSize.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 

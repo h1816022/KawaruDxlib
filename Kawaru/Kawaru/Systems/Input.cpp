@@ -17,7 +17,7 @@ Input::Input()
 	rawKeyState_.resize(256);
 
 	currentInputIndex_ = 0;
-	RegistAcceptPeripheral("OK", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_SPACE }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_R} });
+	RegistAcceptPeripheral("OK", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_RETURN }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_R} });
 	RegistAcceptPeripheral("Pause", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_P }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_L} });
 	
 	RegistAcceptPeripheral("LUp", { { PERIPHERAL_TYPE::Keyboard, KEY_INPUT_W }, { PERIPHERAL_TYPE::Gamepad, PAD_INPUT_INVALID} });
@@ -86,16 +86,18 @@ AnalogInputData Input::GetAnalogInput(ANALOG_INPUT_TYPE type)const
 
 	AnalogInputData data;
 
+	constexpr float MAX_ANALOG_NUM = 1000.0f;
+
 	if (type == ANALOG_INPUT_TYPE::Left)
 	{
-		data = { static_cast<float>(input.X) / 1000.0f, static_cast<float>(input.Y) / -1000.0f };
+		data = { static_cast<float>(input.X) / MAX_ANALOG_NUM, static_cast<float>(input.Y) / -MAX_ANALOG_NUM };
 
 		data.horizontal = IsPressed("LLeft") ? -1.0f : (IsPressed("LRight") ? 1.0f : data.horizontal);
 		data.vertical = IsPressed("LDown") ? -1.0f : (IsPressed("LUp") ? 1.0f : data.vertical);
 	}
 	else
 	{
-		data = { static_cast<float>(input.Rx) / 1000.0f, static_cast<float>(input.Ry) / -1000.0f };
+		data = { static_cast<float>(input.Rx) / MAX_ANALOG_NUM, static_cast<float>(input.Ry) / -MAX_ANALOG_NUM };
 
 		data.horizontal = IsPressed("RLeft") ? -1.0f : (IsPressed("RRight") ? 1.0f : data.horizontal);
 		data.vertical = IsPressed("RDown") ? -1.0f : (IsPressed("RUp") ? 1.0f : data.vertical);

@@ -119,6 +119,8 @@ public:
 	/// <returns>true : ゲームオーバーになっている</returns>
 	bool CheckIsGameOver()const;
 
+	void AddCallCount();
+
 private:
 	Application();
 

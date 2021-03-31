@@ -7,6 +7,13 @@
 #include "Gimmicks/Candle.h"
 #include "Players/Player.h"
 
+namespace
+{
+	constexpr int NEEDLE_NUM = 20;
+
+	constexpr int CANDLE_NUM = 10;
+}
+
 Stage::Stage(Scene& scene, NavMesh& navMesh):
 	Actor(scene, L"Resources/Models/TestMap2.mqo"), navMesh_(navMesh)
 {
@@ -17,9 +24,9 @@ Stage::Stage(Scene& scene, NavMesh& navMesh):
 
 	for (int i = 0; i < polyData.PolygonNum; ++i)
 	{
-		float length01 = GetLengthSQ(VSub(polyData.Vertexs[polyData.Polygons[i].VIndex[0]].Position, polyData.Vertexs[polyData.Polygons[i].VIndex[1]].Position));
-		float length12 = GetLengthSQ(VSub(polyData.Vertexs[polyData.Polygons[i].VIndex[1]].Position, polyData.Vertexs[polyData.Polygons[i].VIndex[2]].Position));
-		float length20 = GetLengthSQ(VSub(polyData.Vertexs[polyData.Polygons[i].VIndex[2]].Position, polyData.Vertexs[polyData.Polygons[i].VIndex[0]].Position));
+		const float length01 = GetLengthSQ(VSub(polyData.Vertexs[polyData.Polygons[i].VIndex[0]].Position, polyData.Vertexs[polyData.Polygons[i].VIndex[1]].Position));
+		const float length12 = GetLengthSQ(VSub(polyData.Vertexs[polyData.Polygons[i].VIndex[1]].Position, polyData.Vertexs[polyData.Polygons[i].VIndex[2]].Position));
+		const float length20 = GetLengthSQ(VSub(polyData.Vertexs[polyData.Polygons[i].VIndex[2]].Position, polyData.Vertexs[polyData.Polygons[i].VIndex[0]].Position));
 
 		if (length01 > length12)
 		{
@@ -53,13 +60,13 @@ Stage::Stage(Scene& scene, NavMesh& navMesh):
 
 void Stage::InitGimmicks()
 {
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < NEEDLE_NUM; ++i)
 	{
 		VECTOR pos = GetRandomBottomCenter();
 		scene_.AddActors(std::make_shared<Needle>(scene_, pos.x, pos.y, pos.z));
 	}
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < CANDLE_NUM; ++i)
 	{
 		VECTOR pos = GetRandomBottomCenter();
 		scene_.AddActors(std::make_shared<Candle>(scene_, pos.x, pos.y, pos.z));
@@ -105,7 +112,8 @@ VECTOR Stage::GetRandomBottomCenter(RAFFILE_TYPE type)
 	case RAFFILE_TYPE::PriorityToDistantThings:
 		float distance = GetLength2DSQ(VSub(player_->GetPos(), bottomCenters_[0]));
 
-		for (int i = 1; i < 10; ++i)
+		constexpr int CHOICE_NUM = 10;
+		for (int i = 1; i < CHOICE_NUM; ++i)
 		{
 			float tmpDistance = GetLength2DSQ(VSub(player_->GetPos(), bottomCenters_[i]));
 			if (distance < tmpDistance)

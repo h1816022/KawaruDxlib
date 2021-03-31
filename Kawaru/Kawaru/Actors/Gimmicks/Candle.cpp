@@ -4,12 +4,17 @@
 #include "../../Systems/FileManager.h"
 #include "../Players/Player.h"
 
+namespace
+{
+	constexpr float SCALE = 0.4f;
+}
+
 Candle::Candle(Scene& scene, float px, float py, float pz):
 	Gimmick(scene, L"Resources/Models/Candle.mqo", L"Player", true, px, py, pz)
 {
-	hitSE_ = FileManager::Instance().Load(L"Resources/Sounds/HitNeedle.mp3")->GetHandle();
+	hitSE_ = FileManager::Instance().Load(L"Resources/Sounds/Candle.mp3")->GetHandle();
 
-	MV1SetScale(modelHandle_, VGet(0.4f, 0.4f, 0.4f));
+	MV1SetScale(modelHandle_, VGet(SCALE, SCALE, SCALE));
 }
 
 Candle::~Candle()
@@ -22,7 +27,9 @@ void Candle::Update(const Input& input)
 
 	MV1SetRotationXYZ(modelHandle_, VGet(0.0f, angle_, 0.0f));
 
-	angle_ += 0.03f;
+	constexpr float ROTATE_SPEED = 0.03f;
+
+	angle_ += ROTATE_SPEED;
 	angle_ = (angle_ > DX_PI_F * 2) ? (angle_ - DX_PI_F * 2) : angle_;
 }
 

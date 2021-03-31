@@ -851,6 +851,16 @@ VECTOR RandomVector()
 	return VNorm(VGet(1.0f - static_cast<float>(x) / 100.0f, 1.0f - static_cast<float>(y) / 100.0f, 1.0f - static_cast<float>(z) / 100.0f));
 }
 
+HITRESULT_LINE CheckHitLineAndPoly(const VECTOR& v1, const VECTOR& v2, const MV1_COLL_RESULT_POLY& poly)
+{
+	return HitCheck_Line_Triangle(v1, v2, poly.Position[0], poly.Position[1], poly.Position[2]);
+}
+
+bool CheckHitCapsuleAndPoly(const Capsule3D& capsule, const MV1_COLL_RESULT_POLY& poly)
+{
+	return HitCheck_Capsule_Triangle(capsule.pos1, capsule.pos2, capsule.radius, poly.Position[0], poly.Position[1], poly.Position[2]);
+}
+
 SlashShape::SlashShape(const Position2f& inCenter, const Vector2f& inV1, const Vector2f& inV2) :
 	center(inCenter), v1(inV1), v2(inV2)
 {

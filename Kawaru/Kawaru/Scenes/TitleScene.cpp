@@ -22,8 +22,6 @@ namespace
 
 	// ì_ñ≈Ç≈è¡Ç¶ÇƒÇ©ÇÁì_Ç≠Ç‹Ç≈ÇÃéûä‘
 	constexpr uint32_t BLINK_TIME = 3;
-
-	constexpr uint32_t EMISSIVE_TIME = 30;
 }
 
 TitleScene::TitleScene(SceneController& controller) :
@@ -72,7 +70,11 @@ void TitleScene::FadeoutUpdate(const Input&)
 void TitleScene::NormalDraw()
 {
 	auto wSize = Application::Instance().GetViewport().GetSize();
+
 	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+	SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	if (blinkCount_ < BLINK_INTERVAL_DEFAULT)
 	{
@@ -89,12 +91,18 @@ void TitleScene::FadeInDraw()
 {
 	auto wSize = Application::Instance().GetViewport().GetSize();
 	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+	SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void TitleScene::FadeOutDraw()
 {
 	auto wSize = Application::Instance().GetViewport().GetSize();
 	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+	SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+	DrawRotaGraph(wSize.w / 2.0f, wSize.h / 3.0f, 1.0, 0.0, titleImage_, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	if (blinkCount_ < BLINK_INTERVAL_FAST)
 	{

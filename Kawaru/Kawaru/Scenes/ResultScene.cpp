@@ -103,10 +103,19 @@ void ResultScene::DrawResultElement(int blinkInterval)
 
 	if (data.gameClear)
 	{
-		DrawFormatString(logoPos_.x, yPos, 0xffffff, L"Clear Time : %4d:%d", data.playTime / 60, (data.playTime % 60));
-
-		yPos += +LINE_SPACING;
+		DrawFormatString(logoPos_.x, yPos, 0xffffff, L"クリアタイム : %4d:%02d", data.playTime / 60, (data.playTime % 60));
 	}
+	else
+	{
+		DrawFormatString(logoPos_.x, yPos, 0xffffff, L"タイム : %4d:%02d", data.playTime / 60, (data.playTime % 60));
+	}
+
+	yPos += LINE_SPACING;
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	DrawFormatString(logoPos_.x, yPos, 0xffffff, L"呼んだ回数 : %03d", data.callCount);
+	DrawFormatString(logoPos_.x, yPos, 0xffffff, L"呼んだ回数 : %3d", data.callCount);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	if (blinkCount_ < blinkInterval)
 	{

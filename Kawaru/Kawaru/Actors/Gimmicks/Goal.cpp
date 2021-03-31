@@ -25,7 +25,9 @@ void Goal::Update(const Input& input)
 
 	MV1SetRotationXYZ(modelHandle_, VGet(0.0f, angle_, 0.0f));
 
-	angle_ += 0.03f;
+	constexpr float ROTATE_SPEED = 0.03f;
+
+	angle_ += ROTATE_SPEED;
 	angle_ = (angle_ > DX_PI_F * 2) ? (angle_ - DX_PI_F * 2) : angle_;
 }
 
@@ -40,7 +42,9 @@ bool Goal::Hit(std::shared_ptr<Actor> hitActor)
 	{
 		PlaySoundMem(suuSE_, DX_PLAYTYPE_BACK);
 
-		FileManager::Instance().DelayPlaySound(clearSE_, 80);
+		// ‚±‚ÌŒø‰Ê‰¹‚Ì‘Ò‚¿ŽžŠÔ
+		constexpr int SOUND_DELAY_COUNT = 80;
+		FileManager::Instance().DelayPlaySound(clearSE_, SOUND_DELAY_COUNT);
 
 		auto player = std::dynamic_pointer_cast<Player>(hitActor);
 		if (player == nullptr)

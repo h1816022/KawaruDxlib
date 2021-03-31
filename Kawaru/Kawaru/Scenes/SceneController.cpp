@@ -7,7 +7,7 @@
 
 SceneController::SceneController()
 {
-	scenes_.emplace_front(new GameplayingScene(*this));
+	scenes_.emplace_front(new TitleScene(*this));
 }
 
 void SceneController::ChangeScene(Scene* newScene)

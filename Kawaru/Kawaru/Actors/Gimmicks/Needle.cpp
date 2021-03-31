@@ -33,8 +33,7 @@ void Needle::Update(const Input& input)
 
 	if (moveCount_ > MOVE_INTERVAL)
 	{
-		pos_ = VAdd(pos_, VGet(0.0f, moveLengthPerFrame_, 0.0f));
-		MV1SetPosition(modelHandle_, pos_);
+		SetPos(VAdd(pos_, VGet(0.0f, moveLengthPerFrame_, 0.0f)));
 	}
 
 	++moveCount_;

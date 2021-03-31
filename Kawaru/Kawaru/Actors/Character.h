@@ -101,6 +101,20 @@ protected:
     void CheckHitWithFloor(bool moveFlag, const HitCheckPolyData& polyData, VECTOR& nowPos);
 
     /// <summary>
+    /// 指定ポリゴンがXZ平面上に垂直か
+    /// </summary>
+    /// <param name="poly">調べたいポリゴン</param>
+    /// <returns>true : 垂直である</returns>
+    bool IsVerticalToXZPlane(const tagMV1_COLL_RESULT_POLY& poly)const;
+
+    /// <summary>
+    /// 指定ポリゴンが現在座標より上にあるか
+    /// </summary>
+    /// <param name="poly">調べたいポリゴン</param>
+    /// <returns>true : 上にある</returns>
+    bool IsAbovePos(const tagMV1_COLL_RESULT_POLY& poly)const;
+
+    /// <summary>
     /// ジャンプさせる
     /// </summary>
     void Jump();
@@ -182,6 +196,10 @@ private:
     /// <param name="target">目標の角度</param>
     /// <returns>角度の差</returns>
     float CalcAngleDiff(float target)const;
+
+    void CheckHitCeiling(const HitCheckPolyData& polyData, VECTOR& nowPos);
+
+    void ReactionToHitFloor(bool moveFlag, bool isHit, VECTOR& nowPos, float maxY);
 
     /// <summary>
     /// 移動停止時間の更新
